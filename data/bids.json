@@ -1,0 +1,15 @@
+[
+  {
+    "id": "bid_lipo4eqhjk_1769369899002",
+    "brokerId": "u_as7f9j19ew_1769350285005",
+    "brokerName": "Broker 1",
+    "brokerEmail": "b@b",
+    "brokerPhone": null,
+    "brokerAddress": null,
+    "driverId": "u_o1w14on4r0_1769369748329",
+    "driverName": "Martin from Web Services",
+    "price": 1250,
+    "status": "submitted",
+    "createdAt": "2026-01-25T19:38:19.002Z"
+  }
+]

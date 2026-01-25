@@ -1,0 +1,495 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Admin - Trucking Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/theme.css">
+</head>
+<body class="min-h-screen bg-gray-50">
+  <header class="bg-white border-b">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="font-bold text-lg"><span class="flex items-center gap-3"><img src="/assets/jts-logo.png" class="h-8" alt="JTS"><span>Admin Panel</span></span></div>
+      <div class="flex items-center gap-3">
+        <a href="/home.html" class="underline text-sm">Home</a>
+        <a href="/admin-loads.html" class="underline text-sm">Loads</a>
+        <a href="/admin-users.html" class="underline text-sm">Users</a>
+        <a href="/gps.html" class="underline text-sm">GPS</a>
+        <button id="logout" class="px-4 py-2 rounded jts-btn text-sm">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+    <div class="flex flex-wrap items-center gap-3">
+      <button id="tabApprovals" class="px-4 py-2 rounded jts-btn">Approvals</button>
+      <button id="tabInbox" class="px-4 py-2 rounded border bg-white">Documents Inbox</button>
+      <button id="tabBids" class="px-4 py-2 rounded border bg-white">Bids</button>
+
+      <div class="ml-auto flex items-center gap-2">
+        <button id="refresh" class="px-4 py-2 rounded border bg-white text-sm">Refresh</button>
+        <span id="status" class="text-sm text-gray-600"></span>
+      </div>
+    </div>
+
+    <!-- Approvals -->
+    <section id="approvalsSection" class="mt-6">
+      <div class="bg-white border rounded-lg p-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="font-semibold text-lg">Pending Account Approvals</h2>
+          <div class="flex items-center gap-2">
+            <label class="text-sm text-gray-700">Status:</label>
+            <select id="approvalStatus" class="border rounded p-2 text-sm">
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-auto mt-4">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="text-left p-2 border">Requested At</th>
+                <th class="text-left p-2 border">Name</th>
+                <th class="text-left p-2 border">Email</th>
+                <th class="text-left p-2 border">Phone</th>
+                <th class="text-left p-2 border">Company</th>
+                <th class="text-left p-2 border">Role</th>
+                <th class="text-left p-2 border">Status</th>
+                <th class="text-left p-2 border">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="approvalsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Documents Inbox -->
+    <section id="inboxSection" class="mt-6 hidden">
+      <div class="bg-white border rounded-lg p-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="font-semibold text-lg">Documents Inbox</h2>
+          <div class="flex items-center gap-2">
+            <label class="text-sm text-gray-700">Status:</label>
+            <select id="docStatus" class="border rounded p-2 text-sm">
+              <option value="">All</option>
+              <option value="submitted">Submitted</option>
+              <option value="needs_fix">Needs Fix</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-auto mt-4">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="text-left p-2 border">Created At</th>
+                <th class="text-left p-2 border">Driver ID</th>
+                <th class="text-left p-2 border">Load ID</th>
+                <th class="text-left p-2 border">Category</th>
+                <th class="text-left p-2 border">Status</th>
+                <th class="text-left p-2 border">File</th>
+                <th class="text-left p-2 border">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="docsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bids -->
+    <section id="bidsSection" class="mt-6 hidden">
+      <div class="bg-white border rounded-lg p-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="font-semibold text-lg">Broker Bids</h2>
+            <p class="text-sm text-gray-600 mt-1">Bids submitted by brokers (read-only).</p>
+          </div>
+          <button id="refreshBids" class="px-4 py-2 rounded border bg-white text-sm">Refresh</button>
+        </div>
+
+        <div class="overflow-auto mt-4">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="text-left p-2 border">Created</th>
+                <th class="text-left p-2 border">Broker</th>
+                <th class="text-left p-2 border">Phone</th>
+                <th class="text-left p-2 border">Address</th>
+                <th class="text-left p-2 border">Driver</th>
+                <th class="text-left p-2 border">Price</th>
+              </tr>
+            </thead>
+            <tbody id="bidsTbody"></tbody>
+          </table>
+        </div>
+        <div id="bidsMsg" class="text-xs text-gray-500 mt-3"></div>
+      </div>
+    </section>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4">
+      <div class="bg-white rounded-lg max-w-lg w-full p-4">
+        <div class="flex justify-between items-start gap-3">
+          <h3 id="modalTitle" class="font-semibold text-lg">Action</h3>
+          <button id="modalClose" class="text-sm underline">Close</button>
+        </div>
+        <div class="mt-3">
+          <p id="modalText" class="text-sm text-gray-700"></p>
+          <textarea id="modalTextarea" class="mt-3 w-full border rounded p-2 text-sm" rows="4"
+            placeholder="Enter a comment (required for Needs Fix / Reject)"></textarea>
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+          <button id="modalCancel" class="px-4 py-2 rounded border">Cancel</button>
+          <button id="modalConfirm" class="px-4 py-2 rounded jts-btn">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { api, getToken } from "./assets/api.js";
+    import { openPreview, initNotifications } from "./assets/ui.js";
+
+    if (!getToken()) location.href = "/index.html";
+    initNotifications();
+
+    const els = {
+      status: document.getElementById("status"),
+      refresh: document.getElementById("refresh"),
+
+      tabApprovals: document.getElementById("tabApprovals"),
+      tabInbox: document.getElementById("tabInbox"),
+      tabBids: document.getElementById("tabBids"),
+      approvalsSection: document.getElementById("approvalsSection"),
+      inboxSection: document.getElementById("inboxSection"),
+      bidsSection: document.getElementById("bidsSection"),
+
+      approvalStatus: document.getElementById("approvalStatus"),
+      approvalsTbody: document.getElementById("approvalsTbody"),
+
+      docStatus: document.getElementById("docStatus"),
+      docsTbody: document.getElementById("docsTbody"),
+
+      refreshBids: document.getElementById("refreshBids"),
+      bidsTbody: document.getElementById("bidsTbody"),
+      bidsMsg: document.getElementById("bidsMsg"),
+
+      logout: document.getElementById("logout"),
+
+      modal: document.getElementById("modal"),
+      modalTitle: document.getElementById("modalTitle"),
+      modalText: document.getElementById("modalText"),
+      modalTextarea: document.getElementById("modalTextarea"),
+      modalClose: document.getElementById("modalClose"),
+      modalCancel: document.getElementById("modalCancel"),
+      modalConfirm: document.getElementById("modalConfirm"),
+    };
+
+    function fmtDate(s) {
+      if (!s) return "-";
+      try { return new Date(s).toLocaleString(); } catch { return s; }
+    }
+
+    function setStatus(msg) { els.status.textContent = msg || ""; }
+
+    function showModal({ title, text, requireText = false, onConfirm }) {
+      els.modalTitle.textContent = title;
+      els.modalText.textContent = text || "";
+      els.modalTextarea.value = "";
+      els.modalTextarea.classList.toggle("hidden", !requireText);
+
+      els.modal.classList.remove("hidden");
+      els.modal.classList.add("flex");
+
+      const close = () => {
+        els.modal.classList.add("hidden");
+        els.modal.classList.remove("flex");
+        els.modalConfirm.onclick = null;
+      };
+
+      els.modalClose.onclick = close;
+      els.modalCancel.onclick = close;
+
+      els.modalConfirm.onclick = async () => {
+        const comment = els.modalTextarea.value.trim();
+        if (requireText && !comment) {
+          alert("Please enter a comment.");
+          return;
+        }
+        await onConfirm(comment);
+        close();
+      };
+    }
+
+    function showApprovals() {
+      els.tabApprovals.className = "px-4 py-2 rounded jts-btn";
+      els.tabInbox.className = "px-4 py-2 rounded border bg-white";
+      els.tabBids.className = "px-4 py-2 rounded border bg-white";
+      els.approvalsSection.classList.remove("hidden");
+      els.inboxSection.classList.add("hidden");
+      els.bidsSection.classList.add("hidden");
+      loadApprovals();
+    }
+
+    function showInbox() {
+      els.tabInbox.className = "px-4 py-2 rounded jts-btn";
+      els.tabApprovals.className = "px-4 py-2 rounded border bg-white";
+      els.tabBids.className = "px-4 py-2 rounded border bg-white";
+      els.inboxSection.classList.remove("hidden");
+      els.approvalsSection.classList.add("hidden");
+      els.bidsSection.classList.add("hidden");
+      loadDocs();
+    }
+
+    function showBids() {
+      els.tabBids.className = "px-4 py-2 rounded jts-btn";
+      els.tabApprovals.className = "px-4 py-2 rounded border bg-white";
+      els.tabInbox.className = "px-4 py-2 rounded border bg-white";
+      els.bidsSection.classList.remove("hidden");
+      els.approvalsSection.classList.add("hidden");
+      els.inboxSection.classList.add("hidden");
+      loadBids();
+    }
+
+    els.tabApprovals.onclick = showApprovals;
+    els.tabInbox.onclick = showInbox;
+    els.tabBids.onclick = showBids;
+
+    els.refresh.onclick = () => {
+      if (!els.inboxSection.classList.contains("hidden")) loadDocs();
+      else if (!els.bidsSection.classList.contains("hidden")) loadBids();
+      else loadApprovals();
+    };
+
+    if (els.refreshBids) els.refreshBids.onclick = loadBids;
+
+    els.logout.onclick = () => {
+      localStorage.removeItem("token");
+      location.href = "/index.html";
+    };
+
+    async function loadApprovals() {
+      setStatus("Loading approvals...");
+      els.approvalsTbody.innerHTML = "";
+      try {
+        const status = els.approvalStatus.value;
+        const rows = await api(`/api/admin/approvals?status=${encodeURIComponent(status)}`);
+
+        if (!rows.length) {
+          els.approvalsTbody.innerHTML = `<tr><td colspan="8" class="p-3 text-center text-gray-500">No approvals found.</td></tr>`;
+          setStatus("Done");
+          return;
+        }
+
+        els.approvalsTbody.innerHTML = rows.map(a => {
+          const ud = a.userData || {};
+          const actions = (a.status === "pending")
+            ? `
+              <select data-role="${a.id}" class="border rounded px-2 py-1 text-xs bg-white">
+                <option value="driver" ${(a.requestedRole||"driver")==="driver"?"selected":""}>Driver</option>
+                <option value="dispatcher" ${(a.requestedRole||"driver")==="dispatcher"?"selected":""}>Dispatcher</option>
+                <option value="broker" ${(a.requestedRole||"driver")==="broker"?"selected":""}>Broker</option>
+              </select>
+              <button data-act="approve" data-id="${a.id}" class="px-3 py-1 rounded jts-btn text-xs">Approve</button>
+              <button data-act="reject" data-id="${a.id}" class="px-3 py-1 rounded border text-xs">Reject</button>
+            `
+            : `<span class="text-xs text-gray-500">-</span>`;
+
+          return `
+            <tr class="hover:bg-gray-50">
+              <td class="p-2 border whitespace-nowrap">${fmtDate(a.requestedAt)}</td>
+              <td class="p-2 border">${ud.name || "-"}</td>
+              <td class="p-2 border">${ud.email || "-"}</td>
+              <td class="p-2 border">${ud.phone || "-"}</td>
+              <td class="p-2 border">${ud.companyId || "-"}</td>
+              <td class="p-2 border">${a.requestedRole || "driver"}</td>
+              <td class="p-2 border">${a.status}</td>
+              <td class="p-2 border space-x-2">${actions}</td>
+            </tr>
+          `;
+        }).join("");
+
+        els.approvalsTbody.querySelectorAll("button[data-act]").forEach(btn => {
+          btn.onclick = async () => {
+            const id = btn.dataset.id;
+            const act = btn.dataset.act;
+
+            if (act === "approve") {
+              showModal({
+                title: "Approve Account",
+                text: "Approve this account request?",
+                requireText: false,
+                onConfirm: async () => {
+                  setStatus("Approving...");
+                  const roleSel = document.querySelector(`select[data-role="${id}"]`);
+                  const role = roleSel ? roleSel.value : "driver";
+                  await api(`/api/admin/approvals/${id}/approve`, { method: "POST", body: { role } });
+                  setStatus("Approved");
+                  loadApprovals();
+                }
+              });
+            }
+
+            if (act === "reject") {
+              showModal({
+                title: "Reject Account",
+                text: "Provide a rejection reason:",
+                requireText: true,
+                onConfirm: async (reason) => {
+                  setStatus("Rejecting...");
+                  await api(`/api/admin/approvals/${id}/reject`, { method: "POST", body: { reason } });
+                  setStatus("Rejected");
+                  loadApprovals();
+                }
+              });
+            }
+          };
+        });
+
+        setStatus("Done");
+      } catch (e) {
+        setStatus("Error: " + e.message);
+        els.approvalsTbody.innerHTML = `<tr><td colspan="8" class="p-3 text-center text-red-600">${e.message}</td></tr>`;
+      }
+    }
+
+    els.approvalStatus.onchange = loadApprovals;
+
+    async function loadDocs() {
+      setStatus("Loading documents...");
+      els.docsTbody.innerHTML = "";
+      try {
+        const status = els.docStatus.value;
+        const qs = status ? `?status=${encodeURIComponent(status)}` : "";
+        const rows = await api(`/api/documents${qs}`);
+
+        if (!rows.length) {
+          els.docsTbody.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-gray-500">No documents found.</td></tr>`;
+          setStatus("Done");
+          return;
+        }
+
+        els.docsTbody.innerHTML = rows.map(d => {
+          const fileLink = d.id
+            ? `<a class="underline text-xs" href="#" data-preview="${d.id}" class="underline text-xs">Preview</a>`
+            : `<span class="text-xs text-gray-500">No file</span>`;
+
+          const canAct = (d.status === "submitted" || d.status === "needs_fix");
+          const actions = canAct ? `
+            <button data-docact="approve" data-id="${d.id}" class="px-3 py-1 rounded jts-btn text-xs">Approve</button>
+            <button data-docact="fix" data-id="${d.id}" class="px-3 py-1 rounded border text-xs">Needs Fix</button>
+          ` : `<span class="text-xs text-gray-500">-</span>`;
+
+          return `
+            <tr class="hover:bg-gray-50">
+              <td class="p-2 border whitespace-nowrap">${fmtDate(d.createdAt)}</td>
+              <td class="p-2 border">${d.driverId || "-"}</td>
+              <td class="p-2 border">${d.loadId || "-"}</td>
+              <td class="p-2 border">${d.category || "-"}</td>
+              <td class="p-2 border">${d.status || "-"}</td>
+              <td class="p-2 border">${fileLink}</td>
+              <td class="p-2 border space-x-2">${actions}</td>
+            </tr>
+          `;
+        }).join("");
+
+        // Bind Preview links (open modal preview)
+        els.docsTbody.querySelectorAll("[data-preview]").forEach(a => {
+          a.onclick = (e) => {
+            e.preventDefault();
+            openPreview({ docId: a.getAttribute("data-preview"), title: "Document Preview" });
+          };
+        });
+
+        // bind preview
+        els.docsTbody.querySelectorAll("a[data-preview]").forEach(a => {
+          a.onclick = (e) => {
+            e.preventDefault();
+            openPreview({ docId: a.dataset.preview, title: "Document Preview" });
+          };
+        });
+
+        els.docsTbody.querySelectorAll("button[data-docact]").forEach(btn => {
+          btn.onclick = async () => {
+            const id = btn.dataset.id;
+            const act = btn.dataset.docact;
+
+            if (act === "approve") {
+              showModal({
+                title: "Approve Document",
+                text: "Approve this document?",
+                requireText: false,
+                onConfirm: async () => {
+                  setStatus("Approving document...");
+                  await api(`/api/documents/${id}/approve`, { method:"POST", body:{} });
+                  setStatus("Approved");
+                  loadDocs();
+                }
+              });
+            }
+
+            if (act === "fix") {
+              showModal({
+                title: "Request Fix",
+                text: "Write what needs to be fixed (e.g., missing signature, wrong date, blurry photo):",
+                requireText: true,
+                onConfirm: async (comment) => {
+                  setStatus("Sending fix request...");
+                  await api(`/api/documents/${id}/needs-fix`, { method:"POST", body:{ comment } });
+                  setStatus("Requested fix");
+                  loadDocs();
+                }
+              });
+            }
+          };
+        });
+
+        setStatus("Done");
+      } catch (e) {
+        setStatus("Error: " + e.message);
+        els.docsTbody.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-red-600">${e.message}</td></tr>`;
+      }
+    }
+
+    async function loadBids() {
+      els.bidsMsg.textContent = "Loading...";
+      els.bidsTbody.innerHTML = "";
+      try {
+        const rows = await api("/api/bids");
+        if (!rows.length) {
+          els.bidsTbody.innerHTML = `<tr><td colspan="6" class="p-3 text-center text-gray-500">No bids yet.</td></tr>`;
+          els.bidsMsg.textContent = "Done";
+          return;
+        }
+        els.bidsTbody.innerHTML = rows.map(b => `
+          <tr class="hover:bg-gray-50">
+            <td class="p-2 border whitespace-nowrap">${fmtDate(b.createdAt)}</td>
+            <td class="p-2 border">${(b.brokerName || "-")}</td>
+            <td class="p-2 border">${(b.brokerPhone || "-")}</td>
+            <td class="p-2 border">${(b.brokerAddress || "-")}</td>
+            <td class="p-2 border">${(b.driverName || b.driverId || "-")}</td>
+            <td class="p-2 border"><b>${(b.price ?? "-")}</b></td>
+          </tr>
+        `).join("");
+        els.bidsMsg.textContent = `Done (${rows.length})`;
+      } catch (e) {
+        els.bidsMsg.textContent = "Error: " + e.message;
+        els.bidsTbody.innerHTML = `<tr><td colspan="6" class="p-3 text-center text-red-600">${e.message}</td></tr>`;
+      }
+    }
+
+    els.docStatus.onchange = loadDocs;
+
+    showApprovals();
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "n_utzin6xi55_1769369899010",
+    "toUserId": "u_admin",
+    "type": "bid_created",
+    "title": "New Bid",
+    "message": "Broker 1 submitted a bid for Martin from Web Services: $1250",
+    "data": {
+      "bidId": "bid_lipo4eqhjk_1769369899002"
+    },
+    "createdAt": "2026-01-25T19:38:19.010Z",
+    "readAt": null
+  }
+]

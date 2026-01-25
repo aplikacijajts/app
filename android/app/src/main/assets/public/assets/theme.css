@@ -1,0 +1,20 @@
+:root{
+  --jts-teal:#00A6A6;
+  --jts-teal-dark:#008B8B;
+  --jts-gray:#4B5563;
+  --jts-bg:#F7FAFC;
+}
+body{ background: var(--jts-bg); }
+.jts-bg{ background: var(--jts-teal); }
+.jts-bg-dark{ background: var(--jts-teal-dark); }
+.jts-text{ color: var(--jts-teal); }
+.jts-border{ border-color: rgba(0,166,166,.35) !important; }
+.jts-btn{
+  background: var(--jts-teal);
+  color: #fff;
+}
+.jts-btn:hover{ background: var(--jts-teal-dark); }
+.jts-pill{
+  border: 1px solid rgba(0,166,166,.35);
+  background: rgba(0,166,166,.06);
+}

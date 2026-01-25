@@ -21,5 +21,16 @@
     "status": "approved",
     "passwordHash": "$2a$10$3wScB.pQ8MDdJTG9b1XhqOU4niB2tkFY6acqQ8TD3ubpkEc39x4Ci",
     "createdAt": "2026-01-25T14:11:25.005Z"
+  },
+  {
+    "id": "u_o1w14on4r0_1769369748329",
+    "name": "Martin from Web Services",
+    "email": "m@m",
+    "phone": null,
+    "companyId": "default",
+    "role": "driver",
+    "status": "approved",
+    "passwordHash": "$2a$10$qhz7n88UMHebGP/UHH1/8OlxVvW9tWIUoYqlnZWqwHVnsI1igQNg6",
+    "createdAt": "2026-01-25T19:35:48.329Z"
   }
 ]

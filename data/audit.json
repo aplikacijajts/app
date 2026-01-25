@@ -125,5 +125,96 @@
       "role": "admin"
     },
     "at": "2026-01-25T16:40:38.791Z"
+  },
+  {
+    "id": "log_6radmbom3p_1769365658694",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-01-25T18:27:38.694Z"
+  },
+  {
+    "id": "log_qh3deymi8w_1769369674831",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-01-25T19:34:34.831Z"
+  },
+  {
+    "id": "log_gvr1eah3tq_1769369711006",
+    "event": "register_pending",
+    "meta": {
+      "approvalId": "appr_lohumsfzq4_1769369710910",
+      "email": "m@m"
+    },
+    "at": "2026-01-25T19:35:11.006Z"
+  },
+  {
+    "id": "log_gpk9g1jhdr_1769369745107",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-01-25T19:35:45.107Z"
+  },
+  {
+    "id": "log_c0tn0juz7g_1769369748342",
+    "event": "approval_approved",
+    "meta": {
+      "approvalId": "appr_lohumsfzq4_1769369710910"
+    },
+    "at": "2026-01-25T19:35:48.342Z"
+  },
+  {
+    "id": "log_fuk3olso2h_1769369877260",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-01-25T19:37:57.260Z"
+  },
+  {
+    "id": "log_ekmzubj5ns_1769369891748",
+    "event": "login",
+    "meta": {
+      "userId": "u_as7f9j19ew_1769350285005",
+      "role": "broker"
+    },
+    "at": "2026-01-25T19:38:11.748Z"
+  },
+  {
+    "id": "log_gvycxudvqx_1769369899007",
+    "event": "bid_created",
+    "meta": {
+      "bidId": "bid_lipo4eqhjk_1769369899002",
+      "brokerId": "u_as7f9j19ew_1769350285005",
+      "driverId": "u_o1w14on4r0_1769369748329",
+      "price": 1250
+    },
+    "at": "2026-01-25T19:38:19.007Z"
+  },
+  {
+    "id": "log_2o5kzr5nw5_1769369906540",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-01-25T19:38:26.540Z"
+  },
+  {
+    "id": "log_8zjaas7j2g_1769369944005",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-01-25T19:39:04.005Z"
   }
 ]

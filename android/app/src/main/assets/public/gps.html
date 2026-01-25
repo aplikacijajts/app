@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>GPS - Trucking Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/theme.css">
+</head>
+<body class="min-h-screen bg-gray-50">
+  <header class="bg-white border-b">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="font-bold text-lg">
+        <span class="flex items-center gap-3">
+          <img src="/assets/jts-logo.png" class="h-8" alt="JTS">
+          <span>GPS</span>
+        </span>
+      </div>
+      <div class="flex items-center gap-3">
+        <a id="back" href="/home.html" class="underline text-sm">Back</a>
+        <button id="logout" class="px-4 py-2 rounded jts-btn text-sm">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-6">
+    <div class="bg-white border rounded-lg p-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 class="text-xl font-semibold">GPS / Tracking</h1>
+          <p class="text-sm text-gray-600 mt-1">Opens the configured tracking page inside the portal.</p>
+        </div>
+        <a id="openNewTab" href="#" target="_blank" rel="noopener" class="underline text-sm">Open in new tab</a>
+      </div>
+
+      <div class="mt-4 border rounded-lg overflow-hidden bg-gray-50" style="height:75vh;">
+        <iframe id="frame" title="GPS" class="w-full h-full" referrerpolicy="no-referrer" sandbox="allow-forms allow-scripts allow-same-origin allow-popups"></iframe>
+      </div>
+
+      <div id="msg" class="text-xs text-gray-500 mt-3"></div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { api, getToken } from "./assets/api.js";
+
+    const token = getToken();
+    if (!token) location.href = "/index.html";
+
+    function decodeJwt(token) {
+      try {
+        const payload = token.split(".")[1];
+        const json = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+        return JSON.parse(decodeURIComponent(escape(json)));
+      } catch {
+        return {};
+      }
+    }
+
+    const me = decodeJwt(token);
+    const role = me.role;
+
+    // Back link per role
+    const back = document.getElementById("back");
+    if (role === "admin") back.href = "/admin.html";
+    else if (role === "dispatcher") back.href = "/dispatcher.html";
+    else if (role === "broker") back.href = "/broker.html";
+    else back.href = "/driver.html";
+
+    document.getElementById("logout").onclick = () => {
+      localStorage.removeItem("token");
+      location.href = "/index.html";
+    };
+
+    const frame = document.getElementById("frame");
+    const openNewTab = document.getElementById("openNewTab");
+    const msg = document.getElementById("msg");
+
+    // Default fallback (can be changed later by backend/.env)
+    let url = "https://time.mk/";
+
+    try {
+      const cfg = await api("/api/gps/config");
+      if (cfg?.url) url = cfg.url;
+    } catch {
+      // ignore
+    }
+
+    frame.src = url;
+    openNewTab.href = url;
+    msg.textContent = `Loaded: ${url}`;
+  </script>
+</body>
+</html>
