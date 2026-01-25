@@ -12,6 +12,7 @@ import usersRoutes from "./src/routes/users.routes.js";
 import bidsRoutes from "./src/routes/bids.routes.js";
 import notificationsRoutes from "./src/routes/notifications.routes.js";
 import gpsRoutes from "./src/routes/gps.routes.js";
+import pushRoutes from "./src/routes/push.routes.js";
 
 import { errorHandler } from "./src/middleware/error.js";
 import { readJson, writeJson } from "./src/services/jsonStore.js";
@@ -24,6 +25,9 @@ app.use(express.json({ limit: "3mb" }));
 
 // Serve frontend
 app.use(express.static(path.resolve("public")));
+
+app.use("/api/push", pushRoutes);
+
 
 // Default homepage
 app.get("/", (req, res) => res.sendFile(path.resolve("public/home.html")));

@@ -116,5 +116,14 @@
       "role": "broker"
     },
     "at": "2026-01-25T16:17:28.945Z"
+  },
+  {
+    "id": "log_litd0pe4dp_1769359238791",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-01-25T16:40:38.791Z"
   }
 ]
