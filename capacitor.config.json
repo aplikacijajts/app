@@ -1,5 +1,9 @@
 {
   "appId": "com.jtslogistics.portal",
   "appName": "JTS Logistics",
-  "webDir": "public"
+  "webDir": "public",
+  "server": {
+    "url": "https://app-rj6m.onrender.com",
+    "cleartext": false
+  }
 }

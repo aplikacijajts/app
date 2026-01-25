@@ -45,6 +45,9 @@
   </main>
 
   <script type="module">
+  import { initPush } from "./assets/push-client.js";
+initPush();
+
     import { api } from "./assets/api.js";
 
     document.getElementById("btn").onclick = async () => {
@@ -63,6 +66,7 @@
         document.getElementById("msg").textContent = e.message;
       }
     };
+	
   </script>
 </body>
 </html>
