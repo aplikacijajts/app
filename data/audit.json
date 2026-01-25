@@ -1,0 +1,120 @@
+[
+  {
+    "id": "log_mxzxvck1ua_1769350251128",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-01-25T14:10:51.128Z"
+  },
+  {
+    "id": "log_3buyjgsqy4_1769350285012",
+    "event": "admin_user_created",
+    "meta": {
+      "userId": "u_as7f9j19ew_1769350285005",
+      "role": "broker",
+      "email": "b@b"
+    },
+    "at": "2026-01-25T14:11:25.012Z"
+  },
+  {
+    "id": "log_u441ktguoa_1769350298264",
+    "event": "login",
+    "meta": {
+      "userId": "u_as7f9j19ew_1769350285005",
+      "role": "broker"
+    },
+    "at": "2026-01-25T14:11:38.264Z"
+  },
+  {
+    "id": "log_z4ymbn1274_1769350880227",
+    "event": "login",
+    "meta": {
+      "userId": "u_as7f9j19ew_1769350285005",
+      "role": "broker"
+    },
+    "at": "2026-01-25T14:21:20.227Z"
+  },
+  {
+    "id": "log_c6h4ao7xtz_1769350988255",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-01-25T14:23:08.255Z"
+  },
+  {
+    "id": "log_yax0sfu9kf_1769351145531",
+    "event": "login",
+    "meta": {
+      "userId": "u_as7f9j19ew_1769350285005",
+      "role": "broker"
+    },
+    "at": "2026-01-25T14:25:45.531Z"
+  },
+  {
+    "id": "log_ftmfiqp2je_1769351213853",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-01-25T14:26:53.853Z"
+  },
+  {
+    "id": "log_71a0e2bkp2_1769351261767",
+    "event": "login",
+    "meta": {
+      "userId": "u_as7f9j19ew_1769350285005",
+      "role": "broker"
+    },
+    "at": "2026-01-25T14:27:41.767Z"
+  },
+  {
+    "id": "log_a7kyi2dhb3_1769351279159",
+    "event": "login",
+    "meta": {
+      "userId": "u_as7f9j19ew_1769350285005",
+      "role": "broker"
+    },
+    "at": "2026-01-25T14:27:59.159Z"
+  },
+  {
+    "id": "log_cl2sgxk3n9_1769351301088",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-01-25T14:28:21.088Z"
+  },
+  {
+    "id": "log_sts8qgkmjw_1769351615601",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-01-25T14:33:35.601Z"
+  },
+  {
+    "id": "log_de7x3ieism_1769351625320",
+    "event": "login",
+    "meta": {
+      "userId": "u_as7f9j19ew_1769350285005",
+      "role": "broker"
+    },
+    "at": "2026-01-25T14:33:45.320Z"
+  },
+  {
+    "id": "log_yo4guedp2y_1769357848945",
+    "event": "login",
+    "meta": {
+      "userId": "u_as7f9j19ew_1769350285005",
+      "role": "broker"
+    },
+    "at": "2026-01-25T16:17:28.945Z"
+  }
+]

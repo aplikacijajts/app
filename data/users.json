@@ -1,0 +1,25 @@
+[
+  {
+    "id": "u_admin",
+    "name": "Default Admin",
+    "email": "admin@local",
+    "phone": null,
+    "companyId": "default",
+    "role": "admin",
+    "status": "approved",
+    "passwordHash": "$2a$10$KlMx6MV5UV0Kqeix0Wu6Oe6Xv4wLs2WmfKO4OfCqRCBXsFWUNvgt2",
+    "createdAt": "2026-01-25T14:10:30.611Z"
+  },
+  {
+    "id": "u_as7f9j19ew_1769350285005",
+    "name": "Broker 1",
+    "email": "b@b",
+    "phone": null,
+    "address": null,
+    "companyId": "Brok",
+    "role": "broker",
+    "status": "approved",
+    "passwordHash": "$2a$10$3wScB.pQ8MDdJTG9b1XhqOU4niB2tkFY6acqQ8TD3ubpkEc39x4Ci",
+    "createdAt": "2026-01-25T14:11:25.005Z"
+  }
+]

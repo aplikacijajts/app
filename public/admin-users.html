@@ -1,0 +1,242 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Admin - Users</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/theme.css">
+</head>
+<body class="min-h-screen bg-gray-50">
+  <header class="bg-white border-b">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="font-bold text-lg"><span class="flex items-center gap-3"><img src="/assets/jts-logo.png" class="h-8" alt="JTS"><span>Admin Panel</span></span></div>
+      <div class="flex items-center gap-3">
+        <a href="/home.html" class="underline text-sm">Home</a>
+        <a href="/admin.html" class="underline text-sm">Approvals & Inbox</a>
+        <a href="/admin-loads.html" class="underline text-sm">Loads</a>
+        <button id="logout" class="px-4 py-2 rounded jts-btn text-sm">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+    <div class="flex flex-wrap items-center gap-3">
+      <h1 class="text-2xl font-bold">User Management</h1>
+      <span id="status" class="text-sm text-gray-600"></span>
+      <button id="refresh" class="ml-auto px-4 py-2 rounded border bg-white text-sm">Refresh</button>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6 mt-6">
+      <!-- Create User -->
+      <section class="bg-white border rounded-lg p-4">
+        <h2 class="font-semibold text-lg">Create User</h2>
+        <p class="text-sm text-gray-600 mt-1">Create an approved user directly (no JSON editing).</p>
+
+        <div class="mt-4 space-y-3">
+          <div>
+            <label class="text-sm text-gray-700">Full Name *</label>
+            <input id="name" class="border rounded p-2 w-full mt-1" placeholder="e.g., John Dispatcher">
+          </div>
+
+          <div>
+            <label class="text-sm text-gray-700">Email *</label>
+            <input id="email" class="border rounded p-2 w-full mt-1" placeholder="e.g., dispatch@company.com">
+          </div>
+
+          <div>
+            <label class="text-sm text-gray-700">Phone (optional)</label>
+            <input id="phone" class="border rounded p-2 w-full mt-1" placeholder="e.g., +1 555 123 4567">
+          </div>
+
+          <div>
+            <label class="text-sm text-gray-700">Address (optional)</label>
+            <input id="address" class="border rounded p-2 w-full mt-1" placeholder="e.g., 123 Main St, Chicago, IL">
+          </div>
+
+          <div>
+            <label class="text-sm text-gray-700">Company ID (optional)</label>
+            <input id="companyId" class="border rounded p-2 w-full mt-1" placeholder="default">
+          </div>
+
+          <div>
+            <label class="text-sm text-gray-700">Role *</label>
+            <select id="role" class="border rounded p-2 w-full mt-1">
+              <option value="dispatcher" selected>dispatcher</option>
+              <option value="driver">driver</option>
+              <option value="broker">broker</option>
+              <option value="admin">admin</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-sm text-gray-700">Password *</label>
+            <input id="password" type="password" class="border rounded p-2 w-full mt-1" placeholder="Set a password">
+            <p class="text-xs text-gray-500 mt-1">This will be hashed and stored in <code>users.json</code>.</p>
+          </div>
+
+          <button id="create" class="w-full px-4 py-2 rounded jts-btn">Create User</button>
+          <div id="msg" class="text-sm"></div>
+        </div>
+      </section>
+
+      <!-- Users List -->
+      <section class="bg-white border rounded-lg p-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="font-semibold text-lg">Approved Users</h2>
+            <p class="text-sm text-gray-600 mt-1">Drivers and dispatchers created or approved.</p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <label class="text-sm text-gray-700">Role</label>
+            <select id="filterRole" class="border rounded p-2 text-sm">
+              <option value="">All</option>
+              <option value="driver">driver</option>
+              <option value="dispatcher">dispatcher</option>
+              <option value="broker">broker</option>
+              <option value="admin">admin</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-auto mt-4">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="text-left p-2 border">Name</th>
+                <th class="text-left p-2 border">Email</th>
+                <th class="text-left p-2 border">Role</th>
+                <th class="text-left p-2 border">Company</th>
+              </tr>
+            </thead>
+            <tbody id="usersTbody"></tbody>
+          </table>
+        </div>
+
+        <div id="listMsg" class="text-xs text-gray-500 mt-3"></div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module">
+    import { api, getToken } from "./assets/api.js";
+
+    if (!getToken()) location.href = "/index.html";
+
+    const els = {
+      logout: document.getElementById("logout"),
+      refresh: document.getElementById("refresh"),
+      status: document.getElementById("status"),
+
+      name: document.getElementById("name"),
+      email: document.getElementById("email"),
+      phone: document.getElementById("phone"),
+      address: document.getElementById("address"),
+      companyId: document.getElementById("companyId"),
+      role: document.getElementById("role"),
+      password: document.getElementById("password"),
+      create: document.getElementById("create"),
+      msg: document.getElementById("msg"),
+
+      filterRole: document.getElementById("filterRole"),
+      usersTbody: document.getElementById("usersTbody"),
+      listMsg: document.getElementById("listMsg"),
+    };
+
+    function setStatus(t) { els.status.textContent = t || ""; }
+
+    els.logout.onclick = () => {
+      localStorage.removeItem("token");
+      location.href = "/index.html";
+    };
+
+    async function loadUsers() {
+      els.listMsg.textContent = "Loading...";
+      els.usersTbody.innerHTML = "";
+      try {
+        const role = els.filterRole.value;
+        const qs = role ? `?role=${encodeURIComponent(role)}` : "";
+        const users = await api(`/api/admin/users${qs}`);
+        if (!users.length) {
+          els.usersTbody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-gray-500">No users found.</td></tr>`;
+          els.listMsg.textContent = "Done";
+          return;
+        }
+        els.usersTbody.innerHTML = users.map(u => `
+          <tr class="hover:bg-gray-50">
+            <td class="p-2 border">${u.name || "-"}</td>
+            <td class="p-2 border">${u.email || "-"}</td>
+            <td class="p-2 border">${u.role || "-"}</td>
+            <td class="p-2 border">${u.companyId || "-"}</td>
+          </tr>
+        `).join("");
+        els.listMsg.textContent = `Done (${users.length})`;
+      } catch (e) {
+        els.listMsg.textContent = "Error: " + e.message;
+        els.usersTbody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-red-600">${e.message}</td></tr>`;
+      }
+    }
+
+    els.filterRole.onchange = loadUsers;
+
+    els.create.onclick = async () => {
+      els.msg.textContent = "";
+      const name = els.name.value.trim();
+      const email = els.email.value.trim().toLowerCase();
+      const phone = els.phone.value.trim();
+      const address = els.address.value.trim();
+      const companyId = els.companyId.value.trim();
+      const role = els.role.value;
+      const password = els.password.value;
+
+      if (!name || !email || !role || !password) {
+        els.msg.innerHTML = `<span class="text-red-600">Name, Email, Role and Password are required.</span>`;
+        return;
+      }
+
+      try {
+        setStatus("Creating user...");
+        const r = await api("/api/admin/users", {
+          method: "POST",
+          body: {
+            name,
+            email,
+            phone: phone || null,
+            address: address || null,
+            companyId: companyId || "default",
+            role,
+            password
+          }
+        });
+
+        els.msg.innerHTML = `<span class="text-green-700">✅ Created ${r.user.role}: ${r.user.email}</span>`;
+        els.name.value = "";
+        els.email.value = "";
+        els.phone.value = "";
+        els.address.value = "";
+        els.companyId.value = "";
+        els.password.value = "";
+        setStatus("Done");
+
+        await loadUsers();
+      } catch (e) {
+        setStatus("Error");
+        els.msg.innerHTML = `<span class="text-red-600">❌ ${e.message}</span>`;
+      }
+    };
+
+    els.refresh.onclick = async () => {
+      setStatus("Refreshing...");
+      await loadUsers();
+      setStatus("Done");
+    };
+
+    (async function init() {
+      setStatus("Loading...");
+      await loadUsers();
+      setStatus("Done");
+    })();
+  </script>
+</body>
+</html>

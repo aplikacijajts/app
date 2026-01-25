@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Login - Trucking Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/theme.css">
+</head>
+<body class="min-h-screen bg-gray-50">
+  <header class="bg-white border-b">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/home.html" class="font-bold text-lg">Trucking Portal</a>
+      <a href="/register.html" class="underline text-sm">Register</a>
+    </div>
+  </header>
+
+  <main class="max-w-md mx-auto px-6 py-10">
+    <div class="bg-white border rounded-lg p-6">
+      <h1 class="text-2xl font-bold mb-1">Login</h1>
+      <p class="text-sm text-gray-600 mb-5">Use your email and password.</p>
+
+      <label class="text-sm text-gray-700">Email</label>
+      <input id="email" class="border rounded p-2 w-full mt-1 mb-3" placeholder="you@company.com">
+
+      <label class="text-sm text-gray-700">Password</label>
+      <input id="password" type="password" class="border rounded p-2 w-full mt-1 mb-4" placeholder="••••••••">
+
+      <button id="btn" class="jts-btn px-4 py-2 w-full rounded">Login</button>
+
+      <p class="mt-4 text-sm">
+        New driver? <a class="underline" href="/register.html">Create an account</a>
+      </p>
+
+      <p id="msg" class="mt-4 text-sm text-red-600"></p>
+    </div>
+
+    <div class="mt-4 text-xs text-gray-500">
+      Default admin (first run): <span class="font-mono">admin@local</span> / <span class="font-mono">admin123</span>
+    </div>
+
+    <div class="mt-4 text-center text-sm text-gray-600">
+      <a href="https://www.jstlogistics.net" target="_blank" rel="noopener" class="underline">Go to Website www.jstlogistics.net</a>
+    </div>
+  </main>
+
+  <script type="module">
+    import { api } from "./assets/api.js";
+
+    document.getElementById("btn").onclick = async () => {
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+
+      try {
+        const r = await api("/api/auth/login", { method:"POST", body:{ email, password }});
+        localStorage.setItem("token", r.token);
+
+        if (r.user.role === "admin") location.href = "/admin.html";
+        else if (r.user.role === "dispatcher") location.href = "/dispatcher.html";
+        else if (r.user.role === "broker") location.href = "/broker.html";
+        else location.href = "/driver.html";
+      } catch (e) {
+        document.getElementById("msg").textContent = e.message;
+      }
+    };
+  </script>
+</body>
+</html>
