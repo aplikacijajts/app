@@ -10,7 +10,6 @@ import { uid } from "../utils/id.js";
 import { safeToken, dateStamp, extFromOriginal } from "../utils/filename.js";
 import { audit } from "../services/audit.js";
 import { notify } from "../services/notify.js";
-import { sendPushToRoles, sendPushToUser } from "../services/push.js";
 
 const router = express.Router();
 router.use(requireAuth);
@@ -23,11 +22,11 @@ router.get("/my", requireRole("driver", "dispatcher", "admin"), async (req, res)
   let mine = docs.filter(d => d.driverId === req.user.sub);
   if (status) mine = mine.filter(d => d.status === status);
 
-  mine.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
+  mine.sort((a,b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
   res.json(mine);
 });
 
-// POST /api/documents/upload (multipart/form-data: file, category, loadId?, note?)
+// POST /api/documents/upload  (multipart/form-data: file, category, loadId?, note?)
 router.post(
   "/upload",
   requireRole("driver", "dispatcher", "admin"),
@@ -50,28 +49,28 @@ router.post(
       else loadPart = `Load${safeToken(loadId)}`;
     }
 
-    // Rename file
+    // Rename file to deterministic pattern
     const ext = extFromOriginal(req.file.originalname) || "";
     const unique = `${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
     const finalName = `${cat}_${loadPart}_${ds}_${unique}${ext}`;
 
-    const oldAbs = req.file.path; // from multer
+    const oldAbs = req.file.path; // absolute path from multer
     const dir = path.dirname(oldAbs);
     const newAbs = path.join(dir, finalName);
     await fs.rename(oldAbs, newAbs);
 
-    // Store relative path
+    // Store relative path (used internally; NOT public)
     const relPath = "/" + path.relative(path.resolve(), newAbs).replaceAll("\\", "/");
 
     // Versioning/grouping: same driver + category + loadId => versions
-    const allDocs = await readJson("documents.json");
-    const same = allDocs
+    const docs = await readJson("documents.json");
+    const same = docs
       .filter(d =>
         d.driverId === req.user.sub &&
         (d.category || "").toUpperCase() === cat &&
         (d.loadId || null) === (loadId || null)
       )
-      .sort((a, b) => (b.version || 1) - (a.version || 1))[0];
+      .sort((a,b) => (b.version || 1) - (a.version || 1))[0];
 
     const groupId = same?.groupId || uid("grp");
     const nextVersion = same ? ((same.version || 1) + 1) : 1;
@@ -106,33 +105,15 @@ router.post(
       return arr;
     });
 
-    await audit("document_uploaded", {
-      docId: doc.id,
-      category: cat,
-      loadId: loadId || null,
-      version: nextVersion
-    });
+    await audit("document_uploaded", { docId: doc.id, category: cat, loadId: loadId || null, version: nextVersion });
 
-    // In-app notifications (existing)
+    // Notify dispatchers/admins about new document
     await notify.roles(["dispatcher", "admin"], {
       type: "document_uploaded",
       title: "New Document Uploaded",
-      message: `${req.user.name || "A driver"} uploaded ${cat}${loadId ? ` for load ${loadPart.replace("Load", "")}` : ""}`,
+      message: `${req.user.name || "A driver"} uploaded ${cat}${loadId ? ` for load ${loadPart.replace("Load","")}` : ""}`,
       data: { docId: doc.id, loadId: loadId || null, category: cat }
     });
-
-    // ✅ Push notifications (FCM)
-    try {
-      await sendPushToRoles({
-        roles: ["admin", "dispatcher"],
-        title: "New Document Uploaded",
-        body: `${req.user.name || "A driver"} uploaded ${cat}${loadId ? ` for ${loadPart}` : ""}`,
-        data: { type: "document_uploaded", docId: doc.id, loadId: loadId || "" }
-      });
-    } catch (e) {
-      // do not break upload on push failure
-      console.warn("Push failed (document_uploaded):", e.message);
-    }
 
     res.json({
       ok: true,
@@ -147,11 +128,11 @@ router.get("/", requireRole("dispatcher", "admin"), async (req, res) => {
   const docs = await readJson("documents.json");
   const status = req.query.status;
   const out = status ? docs.filter(d => d.status === status) : docs;
-  out.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
+  out.sort((a,b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
   res.json(out);
 });
 
-// GET /api/documents/:id (metadata)
+// GET /api/documents/:id  (metadata)
 router.get("/:id", requireRole("driver", "dispatcher", "admin"), async (req, res) => {
   const docs = await readJson("documents.json");
   const doc = docs.find(d => d.id === req.params.id);
@@ -183,31 +164,17 @@ router.post("/:id/approve", requireRole("dispatcher", "admin"), async (req, res)
 
   await audit("document_approved", { docId: id });
 
+  // Notify owner
   const docs = await readJson("documents.json");
   const doc = docs.find(d => d.id === id);
-
-  if (doc?.driverId) {
-    // In-app
+  if (doc) {
     await notify.users([doc.driverId], {
       type: "document_approved",
       title: "Document Approved",
       message: `${doc.category || "Document"} was approved.`,
       data: { docId: id, loadId: doc.loadId || null }
     });
-
-    // ✅ Push
-    try {
-      await sendPushToUser({
-        userId: doc.driverId,
-        title: "Document Approved",
-        body: `Your ${doc.category || "document"} was approved.`,
-        data: { type: "document_approved", docId: id, loadId: doc.loadId || "" }
-      });
-    } catch (e) {
-      console.warn("Push failed (document_approved):", e.message);
-    }
   }
-
   res.json({ ok: true });
 });
 
@@ -235,35 +202,24 @@ router.post("/:id/needs-fix", requireRole("dispatcher", "admin"), async (req, re
 
   await audit("document_needs_fix", { docId: id });
 
+  // Notify owner
   const docs = await readJson("documents.json");
   const doc = docs.find(d => d.id === id);
-
-  if (doc?.driverId) {
-    // In-app
+  if (doc) {
     await notify.users([doc.driverId], {
       type: "document_needs_fix",
       title: "Document Needs Fix",
-      message: comment ? `${doc.category || "Document"} needs fixes: ${comment}` : `${doc.category || "Document"} needs fixes.`,
+      message: `${doc.category || "Document"} needs fixes.`,
       data: { docId: id, loadId: doc.loadId || null }
     });
-
-    // ✅ Push
-    try {
-      await sendPushToUser({
-        userId: doc.driverId,
-        title: "Document Needs Fix",
-        body: comment ? `Fix requested: ${comment}` : "Please fix and re-upload the document.",
-        data: { type: "document_needs_fix", docId: id, loadId: doc.loadId || "" }
-      });
-    } catch (e) {
-      console.warn("Push failed (document_needs_fix):", e.message);
-    }
   }
-
   res.json({ ok: true });
 });
 
-// GET /api/documents/:id/file (secure file preview/download)
+
+
+// Secure file preview/download (checks permissions)
+// GET /api/documents/:id/file?token=...&dl=1
 router.get("/:id/file", requireRole("driver", "dispatcher", "admin"), async (req, res) => {
   const docs = await readJson("documents.json");
   const doc = docs.find(d => d.id === req.params.id);

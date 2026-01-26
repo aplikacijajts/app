@@ -77,4 +77,23 @@ router.get("/my", requireRole("broker"), async (req, res) => {
   res.json(mine);
 });
 
+// Delete bid (broker can delete own, admin can delete any)
+router.delete("/:id", async (req, res) => {
+  const id = req.params.id;
+  const role = req.user?.role;
+
+  const rows = await readJson("bids.json");
+  const bid = rows.find(b => b.id === id);
+  if (!bid) return res.status(404).json({ error: "Not found" });
+
+  const isAdmin = role === "admin";
+  const isOwner = role === "broker" && bid.brokerId === req.user.sub;
+  if (!isAdmin && !isOwner) return res.status(403).json({ error: "Forbidden" });
+
+  await updateJson("bids.json", (arr) => arr.filter(b => b.id !== id));
+  await audit("bid_deleted", { bidId: id, by: req.user.sub, role: role || "" });
+
+  res.json({ ok: true });
+});
+
 export default router;

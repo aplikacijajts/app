@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Dispatcher - Trucking Portal</title>
+  <title>Dispatcher - JTS Logistics Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/theme.css">
 </head>
@@ -543,5 +543,11 @@ if (els.viewFinished) els.viewFinished.onclick = () => setView("finished");
       showLoads();
     })();
   </script>
+
+  <script type="module">
+    import { initPushUI } from "/assets/push.js";
+    initPushUI();
+  </script>
+
 </body>
 </html>

@@ -26,14 +26,11 @@ app.use(express.json({ limit: "3mb" }));
 // Serve frontend
 app.use(express.static(path.resolve("public")));
 
-app.use("/api/push", pushRoutes);
-
-
 // Default homepage
 app.get("/", (req, res) => res.sendFile(path.resolve("public/home.html")));
 
 // Health
-app.get("/health", (req, res) => res.json({ ok: true }));
+app.get("/health", (req, res) => res.json({ ok: true, pushConfigured: !!process.env.VAPID_PUBLIC_KEY && !!process.env.VAPID_PRIVATE_KEY }));
 
 // API routes
 app.use("/api/auth", authRoutes);
@@ -45,8 +42,11 @@ app.use("/api/bids", bidsRoutes);
 app.use("/api/notifications", notificationsRoutes);
 
 // GPS routes
-app.use("/gps", gpsRoutes);       // ✅ за /gps/ (iframe)
-app.use("/api/gps", gpsRoutes);   // (опционално, ако ти треба и API path)
+app.use("/gps", gpsRoutes);       // за /gps/ (iframe)
+app.use("/api/gps", gpsRoutes);   // опционално
+
+// Push routes
+app.use("/api/push", pushRoutes);
 
 app.use(errorHandler);
 
@@ -80,4 +80,4 @@ const port = process.env.PORT || 4000;
 
 await ensureDefaultAdmin();
 
-app.listen(port, () => console.log(`API running on http://localhost:${port}`));
+app.listen(port, () => console.log(`✅ API running on http://localhost:${port}`));

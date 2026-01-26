@@ -1,5 +1,6 @@
 import { uid } from "../utils/id.js";
 import { readJson, updateJson } from "./jsonStore.js";
+import { sendPushToUser } from "./webpushSender.js";
 
 // In-memory SSE clients per user
 const clients = new Map(); // userId -> Set(res)
@@ -43,6 +44,17 @@ async function createNotification({ toUserId, type, title, message, data }) {
   });
 
   await emitToUser(toUserId, { event: "notification", notification: n });
+
+  // Best-effort Web Push (if user has subscribed)
+  try {
+    await sendPushToUser(toUserId, {
+      title: n.title || "Notification",
+      body: n.message || "",
+      url: (n.data && (n.data.url || n.data.href)) || "/"
+    });
+  } catch {
+    // ignore
+  }
   return n;
 }
 

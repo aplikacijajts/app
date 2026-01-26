@@ -3,14 +3,17 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Login - Trucking Portal</title>
+  <title>Login - JTS Logistics Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/theme.css">
 </head>
 <body class="min-h-screen bg-gray-50">
   <header class="bg-white border-b">
     <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="/home.html" class="font-bold text-lg">Trucking Portal</a>
+      <a href="/home.html" class="font-bold text-lg flex items-center gap-3">
+        <img src="/assets/jts-logo.png" class="h-8" alt="JTS">
+        <span>JTS Logistics Portal</span>
+      </a>
       <a href="/register.html" class="underline text-sm">Register</a>
     </div>
   </header>
@@ -45,9 +48,6 @@
   </main>
 
   <script type="module">
-  import { initPush } from "./assets/push-client.js";
-initPush();
-
     import { api } from "./assets/api.js";
 
     document.getElementById("btn").onclick = async () => {
@@ -66,7 +66,6 @@ initPush();
         document.getElementById("msg").textContent = e.message;
       }
     };
-	
   </script>
 </body>
 </html>

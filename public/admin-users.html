@@ -108,6 +108,7 @@
                 <th class="text-left p-2 border">Email</th>
                 <th class="text-left p-2 border">Role</th>
                 <th class="text-left p-2 border">Company</th>
+                <th class="text-right p-2 border">Actions</th>
               </tr>
             </thead>
             <tbody id="usersTbody"></tbody>
@@ -159,22 +160,41 @@
         const qs = role ? `?role=${encodeURIComponent(role)}` : "";
         const users = await api(`/api/admin/users${qs}`);
         if (!users.length) {
-          els.usersTbody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-gray-500">No users found.</td></tr>`;
+          els.usersTbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-500">No users found.</td></tr>`;
           els.listMsg.textContent = "Done";
           return;
         }
-        els.usersTbody.innerHTML = users.map(u => `
+          els.usersTbody.innerHTML = users.map(u => `
           <tr class="hover:bg-gray-50">
             <td class="p-2 border">${u.name || "-"}</td>
             <td class="p-2 border">${u.email || "-"}</td>
             <td class="p-2 border">${u.role || "-"}</td>
             <td class="p-2 border">${u.companyId || "-"}</td>
+            <td class="p-2 border text-right">
+              <button data-del-user="${u.id}" class="px-3 py-1 rounded border bg-white text-xs">Delete</button>
+            </td>
           </tr>
         `).join("");
+
+        // bind delete buttons
+        els.usersTbody.querySelectorAll("button[data-del-user]").forEach(btn => {
+          btn.onclick = async () => {
+            const id = btn.getAttribute("data-del-user");
+            if (!confirm("Delete this user?")) return;
+            btn.disabled = true;
+            try {
+              await api(`/api/admin/users/${id}`, { method: "DELETE" });
+              await loadUsers();
+            } catch (e) {
+              btn.disabled = false;
+              els.listMsg.textContent = "Error: " + e.message;
+            }
+          };
+        });
         els.listMsg.textContent = `Done (${users.length})`;
       } catch (e) {
         els.listMsg.textContent = "Error: " + e.message;
-        els.usersTbody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-red-600">${e.message}</td></tr>`;
+        els.usersTbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-red-600">${e.message}</td></tr>`;
       }
     }
 

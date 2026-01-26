@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Broker - Trucking Portal</title>
+  <title>Broker - JTS Logistics Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/theme.css">
 </head>
@@ -72,6 +72,34 @@
       <div id="bidMsg" class="text-sm mt-3"></div>
     </section>
 
+    <!-- Recent Bids -->
+    <section class="bg-white border rounded-lg p-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="font-semibold text-lg">My Recent Bids</h2>
+          <p class="text-sm text-gray-600 mt-1">View and delete your latest bids.</p>
+        </div>
+        <button id="refreshBids" class="px-4 py-2 rounded border bg-white text-sm">Refresh</button>
+      </div>
+
+      <div class="mt-4 overflow-auto border rounded-lg">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="text-left px-3 py-2 border-b">Date</th>
+              <th class="text-left px-3 py-2 border-b">Driver</th>
+              <th class="text-left px-3 py-2 border-b">Price</th>
+              <th class="text-left px-3 py-2 border-b">Status</th>
+              <th class="text-right px-3 py-2 border-b">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="bidsBody"></tbody>
+        </table>
+      </div>
+
+      <div id="bidsMsg" class="text-sm mt-3"></div>
+    </section>
+
   </main>
 
   <script type="module">
@@ -124,6 +152,62 @@
       msg: document.getElementById("bidMsg"),
     };
 
+    const bidsEls = {
+      body: document.getElementById("bidsBody"),
+      msg: document.getElementById("bidsMsg"),
+      refresh: document.getElementById("refreshBids")
+    };
+
+    const fmtDate = (iso) => {
+      if (!iso) return "";
+      const d = new Date(iso);
+      return d.toLocaleString();
+    };
+
+    async function loadMyBids() {
+      bidsEls.msg.textContent = "";
+      bidsEls.body.innerHTML = `<tr><td colspan="5" class="px-3 py-3 text-gray-500">Loading...</td></tr>`;
+      try {
+        const bids = await api("/api/bids/my");
+        if (!bids.length) {
+          bidsEls.body.innerHTML = `<tr><td colspan="5" class="px-3 py-3 text-gray-500">No bids yet.</td></tr>`;
+          return;
+        }
+
+        bidsEls.body.innerHTML = bids.map(b => {
+          return `
+            <tr class="hover:bg-gray-50">
+              <td class="px-3 py-2 border-b whitespace-nowrap">${fmtDate(b.createdAt)}</td>
+              <td class="px-3 py-2 border-b">${b.driverName || "-"}</td>
+              <td class="px-3 py-2 border-b">$${Number(b.price || 0).toFixed(2)}</td>
+              <td class="px-3 py-2 border-b">${b.status || "-"}</td>
+              <td class="px-3 py-2 border-b text-right">
+                <button data-del="${b.id}" class="px-3 py-1 rounded border bg-white text-xs">Delete</button>
+              </td>
+            </tr>
+          `;
+        }).join("");
+
+        // bind delete buttons
+        bidsEls.body.querySelectorAll("button[data-del]").forEach(btn => {
+          btn.onclick = async () => {
+            const id = btn.getAttribute("data-del");
+            if (!confirm("Delete this bid?")) return;
+            btn.disabled = true;
+            try {
+              await api(`/api/bids/${id}`, { method: "DELETE" });
+              await loadMyBids();
+            } catch (e) {
+              btn.disabled = false;
+              bidsEls.msg.innerHTML = `<span class="text-red-600">${e.message}</span>`;
+            }
+          };
+        });
+      } catch (e) {
+        bidsEls.body.innerHTML = `<tr><td colspan="5" class="px-3 py-3 text-red-600">Failed to load bids</td></tr>`;
+      }
+    }
+
     async function loadDrivers() {
       try {
         const users = await api("/api/users?role=driver");
@@ -149,6 +233,7 @@
         await api("/api/bids", { method: "POST", body: { driverId, price } });
         els.msg.innerHTML = `<span class="text-green-600">BID saved successfully.</span>`;
         els.price.value = "";
+        await loadMyBids();
       } catch (e) {
         els.msg.innerHTML = `<span class="text-red-600">${e.message}</span>`;
       }
@@ -161,6 +246,14 @@
     };
 
     loadDrivers();
+    bidsEls.refresh.onclick = loadMyBids;
+    loadMyBids();
   </script>
+
+  <script type="module">
+    import { initPushUI } from "/assets/push.js";
+    initPushUI();
+  </script>
+
 </body>
 </html>

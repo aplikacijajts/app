@@ -146,4 +146,43 @@ router.post("/users", async (req, res) => {
   });
 });
 
+// DELETE /api/admin/users/:id (delete user)
+router.delete("/users/:id", async (req, res) => {
+  const id = req.params.id;
+  if (!id) return res.status(400).json({ error: "Missing id" });
+
+  // Prevent deleting the currently logged in admin
+  if (id === req.user.sub) return res.status(400).json({ error: "Cannot delete current user" });
+
+  const users = await readJson("users.json");
+  const target = users.find(u => u.id === id);
+  if (!target) return res.status(404).json({ error: "Not found" });
+  if ((target.role || "").toLowerCase() === "admin") {
+    return res.status(400).json({ error: "Refusing to delete an admin user" });
+  }
+
+  await updateJson("users.json", (arr) => arr.filter(u => u.id !== id));
+  await audit("admin_user_deleted", { userId: id });
+  res.json({ ok: true });
+});
+
+// DELETE /api/admin/data/:table  (clear JSON tables)
+router.delete("/data/:table", async (req, res) => {
+  const t = String(req.params.table || "").toLowerCase();
+  const map = {
+    bids: "bids.json",
+    loads: "loads.json",
+    documents: "documents.json",
+    notifications: "notifications.json",
+    approvals: "approvals.json",
+    audit: "audit.json",
+  };
+  const file = map[t];
+  if (!file) return res.status(400).json({ error: "Invalid table" });
+
+  await updateJson(file, () => []);
+  await audit("admin_data_cleared", { table: t, file });
+  res.json({ ok: true });
+});
+
 export default router;
