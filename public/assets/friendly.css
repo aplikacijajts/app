@@ -1,0 +1,97 @@
+:root{
+  --jts-bg1:#0b1220;
+  --jts-bg2:#0f2a33;
+  --jts-surface:#ffffff;
+  --jts-surface-2:#f8fafc;
+  --jts-text:#0f172a;
+  --jts-muted:#64748b;
+  --jts-border:rgba(15, 23, 42, .10);
+  --jts-ring:rgba(0,166,166,.30);
+  --jts-shadow:0 12px 30px rgba(2, 6, 23, .10);
+}
+
+/* Page background */
+body{
+  background:
+    radial-gradient(1200px 600px at 10% 10%, rgba(0,166,166,.16), transparent 60%),
+    radial-gradient(900px 500px at 90% 20%, rgba(56,189,248,.14), transparent 55%),
+    linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
+  color: var(--jts-text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Header */
+header{
+  background: rgba(255,255,255,.85) !important;
+  backdrop-filter: blur(10px);
+}
+header .underline{ text-decoration-thickness: 2px; text-underline-offset: 3px; }
+header a:hover{ opacity:.9; }
+
+/* Cards */
+.bg-white.border.rounded-lg,
+.bg-white.border.rounded,
+.bg-white.rounded-lg,
+.bg-white.rounded{
+  border-color: var(--jts-border) !important;
+  box-shadow: var(--jts-shadow);
+}
+
+/* Inputs */
+input, select, textarea{
+  border-color: var(--jts-border) !important;
+  background: #fff;
+}
+input:focus, select:focus, textarea:focus{
+  outline: none !important;
+  border-color: rgba(0,166,166,.55) !important;
+  box-shadow: 0 0 0 4px var(--jts-ring) !important;
+}
+
+/* Buttons */
+.jts-btn{
+  border: 1px solid rgba(0,166,166,.25);
+  box-shadow: 0 10px 18px rgba(0,166,166,.15);
+}
+.jts-btn:active{ transform: translateY(1px); }
+button, a[role="button"]{
+  transition: transform .08s ease, box-shadow .15s ease, opacity .15s ease;
+}
+
+/* Pills/Badges */
+.jts-pill{
+  border-radius: 999px;
+}
+
+/* Tables */
+table{
+  border-collapse: collapse;
+}
+table thead th{
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: rgba(248,250,252,.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--jts-border);
+  color: #0f172a;
+}
+table tbody tr:nth-child(odd){
+  background: rgba(2,6,23,.02);
+}
+table td, table th{
+  padding: .65rem .75rem;
+  border-bottom: 1px solid var(--jts-border);
+}
+table tbody tr:hover{
+  background: rgba(0,166,166,.06);
+}
+
+/* Small helpers */
+.jts-surface{
+  background: rgba(255,255,255,.92);
+  border: 1px solid var(--jts-border);
+  box-shadow: var(--jts-shadow);
+  border-radius: 16px;
+}
