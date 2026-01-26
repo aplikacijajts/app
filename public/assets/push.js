@@ -55,6 +55,8 @@ async function subscribeIfPossible({ forcePrompt=false } = {}) {
   });
 
   await api("/api/push/subscribe", { method:"POST", body: sub });
+  // quick sanity check (optional)
+  try { await api("/api/push/status"); } catch {}
   return { ok:true };
 }
 

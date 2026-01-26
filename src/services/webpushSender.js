@@ -35,11 +35,17 @@ function writeSubs(subs) {
   fs.writeFileSync(SUBS_FILE, JSON.stringify(subs, null, 2));
 }
 
+const DEBUG_PUSH = process.env.DEBUG_PUSH === "1";
+
 export async function sendPushToUser(userKey, payloadObj) {
   if (!userKey) return;
   if (!ensureConfigured()) return;
 
   const subs = readSubs();
+  if (DEBUG_PUSH) {
+    const c = subs.filter(s => s.userKey === userKey).length;
+    console.log(`[webpush] user ${userKey}: ${c} subscription(s)`);
+  }
   const alive = [];
 
   for (const s of subs) {
