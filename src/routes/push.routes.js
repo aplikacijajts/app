@@ -82,7 +82,6 @@ router.get("/status", requireAuth, (req, res) => {
   res.json({ ok: true, userKey, subscriptions: mine.length });
 });
 
- (auth required)
 router.post("/unsubscribe", requireAuth, (req, res) => {
   const userKey = req.user?.sub;
   const subs = readSubs().filter(s => s.userKey !== userKey);
