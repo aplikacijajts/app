@@ -16,57 +16,97 @@
     var style = document.createElement("style");
     style.id = "jts-splash-style";
     style.textContent = `
-      #jts-splash {
-        position: fixed;
-        inset: 0;
-        z-index: 2147483647;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #0a1a2f;
+      #jts-splash{
+        position:fixed;
+        inset:0;
+        z-index:2147483647;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        background:#fff;
+        background:rgba(255,255,255,0.92);
+        -webkit-backdrop-filter: blur(18px);
+        backdrop-filter: blur(18px);
+        opacity:0;
+        transform: translateZ(0);
+        animation: jtsFadeIn 260ms ease forwards;
       }
-      #jts-splash .jts-inner {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 22px;
-        padding: 24px;
+      #jts-splash .jts-inner{
+        width:100%;
+        height:100%;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:22px;
+        padding:24px;
       }
-      #jts-splash img {
-        width: 120px;
-        height: auto;
-        max-width: 55vw;
-        filter: drop-shadow(0 10px 30px rgba(0,0,0,.35));
-        user-select: none;
-        -webkit-user-drag: none;
+      #jts-splash img{
+        width:128px;
+        height:auto;
+        max-width:52vw;
+        object-fit:contain;
+        transform: scale(0.92);
+        opacity:0;
+        animation: jtsLogoPop 620ms cubic-bezier(.2,.8,.2,1) 120ms forwards;
+        will-change: transform, opacity;
       }
-      #jts-splash .dots {
-        position: absolute;
-        bottom: 26px;
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        justify-content: center;
+      #jts-splash .dots{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:10px;
       }
-      #jts-splash .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 999px;
-        background: rgba(255,255,255,.85);
-        animation: jtsDot 1.05s infinite ease-in-out;
+      #jts-splash .dot{
+        width:10px;
+        height:10px;
+        border-radius:999px;
+        background:#0a1a2f;
+        opacity:.35;
+        animation:jtsDotPulse 1.0s ease-in-out infinite;
       }
-      #jts-splash .dot:nth-child(2) { animation-delay: .15s; }
-      #jts-splash .dot:nth-child(3) { animation-delay: .30s; }
-      @keyframes jtsDot {
-        0%, 80%, 100% { transform: scale(0.6); opacity: .35; }
-        40% { transform: scale(1.05); opacity: 1; }
+      #jts-splash .dot:nth-child(2){ animation-delay: 140ms; }
+      #jts-splash .dot:nth-child(3){ animation-delay: 280ms; }
+
+      #jts-splash.jts-hide{
+        animation: jtsFadeOut 240ms ease forwards;
       }
-      @media (prefers-reduced-motion: reduce) {
-        #jts-splash .dot { animation: none; opacity: .7; }
+      #jts-splash.jts-hide img{
+        animation: jtsLogoOut 220ms ease forwards;
       }
+
+      @keyframes jtsFadeIn{
+        from{ opacity:0; }
+        to{ opacity:1; }
+      }
+      @keyframes jtsFadeOut{
+        from{ opacity:1; }
+        to{ opacity:0; }
+      }
+      @keyframes jtsLogoPop{
+        0%{ opacity:0; transform:scale(0.90); }
+        60%{ opacity:1; transform:scale(1.04); }
+        100%{ opacity:1; transform:scale(1.00); }
+      }
+      @keyframes jtsLogoOut{
+        from{ opacity:1; transform:scale(1.00); }
+        to{ opacity:0; transform:scale(0.98); }
+      }
+      @keyframes jtsDotPulse{
+        0%,100%{ transform:scale(0.78); opacity:.30; }
+        50%{ transform:scale(1.12); opacity:.95; }
+      }
+
+      @media (prefers-reduced-motion: reduce){
+        #jts-splash, #jts-splash img, #jts-splash .dot{
+          animation:none !important;
+          transition:none !important;
+        }
+        #jts-splash{ opacity:1; }
+        #jts-splash img{ opacity:1; transform:none; }
+        #jts-splash .dot{ opacity:.7; }
+      }
+
     `;
     document.head.appendChild(style);
   }
@@ -100,8 +140,7 @@
 
     // Hide after randomized duration
     setTimeout(function () {
-      splash.style.opacity = "0";
-      splash.style.transition = "opacity 220ms ease";
+      splash.classList.add("jts-hide");
       setTimeout(function () {
         if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
       }, 260);
