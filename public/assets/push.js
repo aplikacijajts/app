@@ -1,5 +1,9 @@
 import { api, getToken } from "./api.js";
 
+
+function isIOS() { return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+function isStandalone() { return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true; }
+
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -105,8 +109,9 @@ function ensureBanner() {
 function explainReason(reason) {
   switch (reason) {
     case "requires_https":
-      return "Web Push requires HTTPS (or localhost). Open the site using https://";
+      return "Web Push requires HTTPS (or localhost). Please open the site using https://";
     case "not_supported":
+      if (isIOS() && !isStandalone()) return "On iPhone/iPad, notifications work only after you install the app to Home Screen (Share → Add to Home Screen).";
       return "This browser does not support Web Push notifications.";
     case "sw_failed":
       return "Service Worker failed to register. Try hard refresh (Ctrl+F5) or check DevTools > Application > Service Workers.";
