@@ -69,7 +69,7 @@ function ensureBanner() {
 
   const el = document.createElement("div");
   el.id = "pushBanner";
-  el.className = "fixed bottom-4 right-4 bg-white border shadow-lg rounded-lg p-4 w-[320px] z-50";
+  el.className = "fixed bottom-4 left-4 right-4 md:left-auto md:right-4 bg-white border shadow-lg rounded-lg p-4 md:w-[360px] z-50";
   el.innerHTML = `
     <div class="font-semibold mb-1">Enable notifications</div>
     <div class="text-sm text-gray-600 mb-3">Get alerts for new loads, bids and updates.</div>

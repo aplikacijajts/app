@@ -85,7 +85,9 @@ export function initNotifications() {
   if (!wrap) {
     wrap = document.createElement("div");
     wrap.id = "jtsToasts";
-    wrap.className = "fixed bottom-4 right-4 z-50 space-y-2";
+    wrap.className = "fixed bottom-4 left-4 right-4 md:left-auto md:right-4 z-50 space-y-2";
+el.className = "bg-white border shadow-lg rounded-lg px-4 py-3 max-w-sm md:max-w-sm";
+
     document.body.appendChild(wrap);
   }
 

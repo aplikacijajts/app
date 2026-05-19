@@ -54,7 +54,7 @@ function mountBanner({ mode, onInstall } = {}) {
       "position:fixed",
       "left:12px",
       "right:12px",
-      "bottom:12px",
+      "bottom:calc(12px + env(safe-area-inset-bottom))",
       "z-index:99999",
       "font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial",
     ].join(";")
