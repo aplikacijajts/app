@@ -119,3 +119,70 @@
     document.documentElement.classList.add('jts-motion-ready');
   });
 })();
+
+// Final UI polish: segmented tab wrappers, active-state indicator, smart button labels.
+(function () {
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once: true });
+    else fn();
+  }
+
+  function wrapTabs(ids) {
+    var buttons = ids.map(function (id) { return document.getElementById(id); }).filter(Boolean);
+    if (buttons.length < 2 || buttons[0].parentElement.classList.contains('jts-tab-strip')) return;
+    var parent = buttons[0].parentElement;
+    var strip = document.createElement('div');
+    strip.className = 'jts-tab-strip';
+    var indicator = document.createElement('span');
+    indicator.className = 'jts-tab-indicator';
+    strip.appendChild(indicator);
+    parent.insertBefore(strip, buttons[0]);
+    buttons.forEach(function (btn) { strip.appendChild(btn); });
+  }
+
+  function isActive(btn) {
+    if (!btn) return false;
+    return btn.className.indexOf('jts-btn') !== -1 || btn.getAttribute('aria-selected') === 'true';
+  }
+
+  function updateIndicators() {
+    document.querySelectorAll('.jts-tab-strip').forEach(function (strip) {
+      var indicator = strip.querySelector('.jts-tab-indicator');
+      var buttons = Array.prototype.slice.call(strip.querySelectorAll('button'));
+      var active = buttons.find(isActive) || buttons[0];
+      if (!indicator || !active) return;
+      var s = strip.getBoundingClientRect();
+      var a = active.getBoundingClientRect();
+      indicator.style.width = a.width + 'px';
+      indicator.style.transform = 'translateX(' + (a.left - s.left) + 'px)';
+      indicator.style.opacity = isActive(active) ? '.22' : '.10';
+    });
+  }
+
+  function observeTabClassChanges() {
+    var observer = new MutationObserver(function () { window.requestAnimationFrame(updateIndicators); });
+    document.querySelectorAll('.jts-tab-strip button').forEach(function (btn) {
+      observer.observe(btn, { attributes: true, attributeFilter: ['class', 'aria-selected'] });
+    });
+    window.addEventListener('resize', function () { window.requestAnimationFrame(updateIndicators); }, { passive: true });
+    document.addEventListener('click', function () { setTimeout(updateIndicators, 60); }, true);
+    setTimeout(updateIndicators, 80);
+    setTimeout(updateIndicators, 450);
+  }
+
+  function enhanceDynamicButtons() {
+    document.body.addEventListener('mouseenter', function (e) {
+      var btn = e.target.closest && e.target.closest('button');
+      if (!btn || btn.dataset.jtsEnhanced) return;
+      btn.dataset.jtsEnhanced = '1';
+    }, true);
+  }
+
+  ready(function () {
+    wrapTabs(['tabApprovals', 'tabInbox', 'tabBids']);
+    wrapTabs(['tabLoads', 'tabDocs', 'tabBids']);
+    wrapTabs(['viewActive', 'viewFinished']);
+    observeTabClassChanges();
+    enhanceDynamicButtons();
+  });
+})();
