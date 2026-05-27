@@ -9,41 +9,5 @@
     "status": "approved",
     "passwordHash": "$2a$10$KlMx6MV5UV0Kqeix0Wu6Oe6Xv4wLs2WmfKO4OfCqRCBXsFWUNvgt2",
     "createdAt": "2026-01-25T14:10:30.611Z"
-  },
-  {
-    "id": "u_hb9n2ukb2d_1779868478659",
-    "name": "Martin Nikolov",
-    "email": "a@a",
-    "phone": "12312",
-    "address": "71-75 Shelton Street",
-    "companyId": "default",
-    "role": "dispatcher",
-    "status": "approved",
-    "passwordHash": "$2a$10$Sa6gRHnZFqx.4uxzUpV.YeUOAEvPFTQmliRWWZ7lnZdVNPVlknXay",
-    "createdAt": "2026-05-27T07:54:38.659Z"
-  },
-  {
-    "id": "u_zv391c54uu_1779868497097",
-    "name": "Martin Nikolov",
-    "email": "s@d",
-    "phone": null,
-    "address": "71-75 Shelton Street",
-    "companyId": "default",
-    "role": "broker",
-    "status": "approved",
-    "passwordHash": "$2a$10$kPUaAtnGWMxwtJ3l5ropxOpP/D8HqIGSvVBlkTCwEMpN5HOFuTqqO",
-    "createdAt": "2026-05-27T07:54:57.098Z"
-  },
-  {
-    "id": "u_ypwhk98s4l_1779868643393",
-    "name": "qwert",
-    "email": "qwert@qwert",
-    "phone": "12312",
-    "address": "71-75 Shelton Street",
-    "companyId": "default",
-    "role": "driver",
-    "status": "approved",
-    "passwordHash": "$2a$10$9whEO9sSGWFf8M0Ajf81UuOWxNkSpiOwCqJ73cZzQJzfN1czZMQ9K",
-    "createdAt": "2026-05-27T07:57:23.394Z"
   }
 ]
