@@ -5,6 +5,17 @@
 2. `npm start`
 3. Open: http://localhost:4000
 
+## Required local environment
+
+This app needs `JWT_SECRET` for login tokens. A local `.env` file is included for development:
+
+```env
+JWT_SECRET=local_dev_jwt_secret_change_before_production_2026
+PORT=4000
+```
+
+For production, replace `JWT_SECRET` with a long random value.
+
 ## Default admin (auto-created on first start)
 - Email: admin@local
 - Password: admin123

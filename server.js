@@ -19,6 +19,13 @@ import { readJson, writeJson } from "./src/services/jsonStore.js";
 
 dotenv.config();
 
+// Local development safety: JWT_SECRET is required for login tokens.
+// If .env is missing, use a stable development-only fallback instead of crashing.
+if (!process.env.JWT_SECRET) {
+  process.env.JWT_SECRET = "local_dev_jwt_secret_change_before_production_2026";
+  console.warn("⚠️ JWT_SECRET is missing. Using local development fallback. Set JWT_SECRET in .env for production.");
+}
+
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "3mb" }));
