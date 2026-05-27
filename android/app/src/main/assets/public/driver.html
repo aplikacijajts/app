@@ -3,9 +3,18 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Driver - Trucking Portal</title>
+  <title>Driver - JTS Logistics Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/theme.css">
+  <link rel="stylesheet" href="/assets/friendly.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="JTS Portal">
+
 </head>
 <body class="min-h-screen bg-gray-50">
   <header class="bg-white border-b">
@@ -333,5 +342,16 @@
     loadMyDocs();
     loadFinishedLoads();
   </script>
+
+  <script type="module">
+    import { initPushUI } from "/assets/push.js";
+    initPushUI();
+  </script>
+
+
+  <script type="module" src="/assets/install.js"></script>
+
+  <script type="module" src="/assets/loader.js"></script>
+  <script src="/assets/app-motion.js"></script>
 </body>
 </html>

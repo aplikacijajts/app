@@ -3,19 +3,31 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Login - Trucking Portal</title>
+  <title>JTS Logistics Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/theme.css">
+  <link rel="stylesheet" href="/assets/friendly.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="JTS Portal">
+
 </head>
 <body class="min-h-screen bg-gray-50">
   <header class="bg-white border-b">
     <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="/home.html" class="font-bold text-lg">Trucking Portal</a>
-      <a href="/register.html" class="underline text-sm">Register</a>
+      <a href="/home.html" class="font-bold text-lg flex items-center gap-3">
+        <img src="/assets/jts-logo.png" class="h-8" alt="JTS">
+        <span>JTS Logistics Portal</span>
+      </a>
+      
     </div>
   </header>
 
-  <main class="max-w-md mx-auto px-6 py-10">
+  <main class="max-w-md mx-auto px-6 py-10"><BR><BR>
     <div class="bg-white border rounded-lg p-6">
       <h1 class="text-2xl font-bold mb-1">Login</h1>
       <p class="text-sm text-gray-600 mb-5">Use your email and password.</p>
@@ -35,12 +47,9 @@
       <p id="msg" class="mt-4 text-sm text-red-600"></p>
     </div>
 
-    <div class="mt-4 text-xs text-gray-500">
-      Default admin (first run): <span class="font-mono">admin@local</span> / <span class="font-mono">admin123</span>
-    </div>
-
+   <BR><BR>
     <div class="mt-4 text-center text-sm text-gray-600">
-      <a href="https://www.jstlogistics.net" target="_blank" rel="noopener" class="underline">Go to Website www.jstlogistics.net</a>
+      <a href="https://www.jtslogistics.net" target="_blank" rel="noopener" class="underline">Go to Website www.jtslogistics.net</a>
     </div>
   </main>
 
@@ -64,5 +73,10 @@
       }
     };
   </script>
+
+  <script type="module" src="/assets/install.js"></script>
+
+  <script type="module" src="/assets/loader.js"></script>
+  <script src="/assets/app-motion.js"></script>
 </body>
 </html>

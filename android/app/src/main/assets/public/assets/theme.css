@@ -1,20 +1,41 @@
 :root{
-  --jts-teal:#00A6A6;
-  --jts-teal-dark:#008B8B;
-  --jts-gray:#4B5563;
-  --jts-bg:#F7FAFC;
+  --jts-primary:#0f766e;
+  --jts-primary-2:#14b8a6;
+  --jts-primary-dark:#064e3b;
+  --jts-accent:#2563eb;
+  --jts-accent-2:#7c3aed;
+  --jts-danger:#ef4444;
+  --jts-success:#10b981;
+  --jts-warning:#f59e0b;
+  --jts-ink:#06121f;
+  --jts-text:#172033;
+  --jts-muted:#64748b;
+  --jts-line:rgba(15,23,42,.10);
+  --jts-glass:rgba(255,255,255,.78);
+  --jts-card:rgba(255,255,255,.88);
+  --jts-card-solid:#ffffff;
+  --jts-bg:#edf6f7;
+  --jts-shadow-xs:0 2px 8px rgba(15,23,42,.06);
+  --jts-shadow-sm:0 10px 25px rgba(15,23,42,.08);
+  --jts-shadow:0 26px 70px rgba(15,23,42,.13);
+  --jts-shadow-lg:0 42px 110px rgba(15,23,42,.22);
+  --jts-radius-xs:12px;
+  --jts-radius-sm:16px;
+  --jts-radius:26px;
+  --jts-radius-lg:34px;
+  --jts-safe-top:env(safe-area-inset-top,0px);
+  --jts-safe-bottom:env(safe-area-inset-bottom,0px);
 }
-body{ background: var(--jts-bg); }
-.jts-bg{ background: var(--jts-teal); }
-.jts-bg-dark{ background: var(--jts-teal-dark); }
-.jts-text{ color: var(--jts-teal); }
-.jts-border{ border-color: rgba(0,166,166,.35) !important; }
+
+.jts-bg{background:linear-gradient(135deg,var(--jts-primary),var(--jts-accent));}
+.jts-bg-dark{background:var(--jts-primary-dark);}
+.jts-text{color:var(--jts-primary);}
+.jts-border{border-color:rgba(20,184,166,.42)!important;}
+.jts-pill{border:1px solid rgba(20,184,166,.28);background:rgba(20,184,166,.12);color:#0f766e;border-radius:999px;}
 .jts-btn{
-  background: var(--jts-teal);
-  color: #fff;
+  color:#fff!important;
+  border:0!important;
+  background:linear-gradient(135deg,#10b981 0%,#0f766e 48%,#2563eb 100%)!important;
+  box-shadow:0 16px 34px rgba(15,118,110,.26), inset 0 1px 0 rgba(255,255,255,.26)!important;
 }
-.jts-btn:hover{ background: var(--jts-teal-dark); }
-.jts-pill{
-  border: 1px solid rgba(0,166,166,.35);
-  background: rgba(0,166,166,.06);
-}
+.jts-btn:hover{background:linear-gradient(135deg,#2dd4bf 0%,#0f766e 45%,#1d4ed8 100%)!important;}

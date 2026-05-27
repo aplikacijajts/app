@@ -3,9 +3,18 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Admin - Trucking Portal</title>
+  <title>Admin - JTS Logistics Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/theme.css">
+  <link rel="stylesheet" href="/assets/friendly.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="JTS Portal">
+
 </head>
 <body class="min-h-screen bg-gray-50">
   <header class="bg-white border-b">
@@ -22,6 +31,9 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-6 py-8">
+
+    <!-- Data Management -->
+    
     <div class="flex flex-wrap items-center gap-3">
       <button id="tabApprovals" class="px-4 py-2 rounded jts-btn">Approvals</button>
       <button id="tabInbox" class="px-4 py-2 rounded border bg-white">Documents Inbox</button>
@@ -102,8 +114,24 @@
           </table>
         </div>
       </div>
+    </section><BR><BR><BR>
+<section class="bg-white border rounded-lg p-4 mb-6">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 class="font-semibold text-lg">Data Management</h2>
+          <p class="text-sm text-gray-600 mt-1">Admin-only tools to clear JSON tables (use with care).</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button data-clear="bids" class="px-4 py-2 rounded border bg-white text-sm">Clear Bids</button>
+          <button data-clear="loads" class="px-4 py-2 rounded border bg-white text-sm">Clear Loads</button>
+          <button data-clear="documents" class="px-4 py-2 rounded border bg-white text-sm">Clear Documents</button>
+          <button data-clear="notifications" class="px-4 py-2 rounded border bg-white text-sm">Clear Notifications</button>
+          <button data-clear="approvals" class="px-4 py-2 rounded border bg-white text-sm">Clear Approvals</button>
+          <button data-clear="audit" class="px-4 py-2 rounded border bg-white text-sm">Clear Audit Log</button>
+        </div>
+      </div>
+      <div id="clearMsg" class="text-sm mt-3"></div>
     </section>
-
     <!-- Bids -->
     <section id="bidsSection" class="mt-6 hidden">
       <div class="bg-white border rounded-lg p-4">
@@ -193,6 +221,28 @@
       modalCancel: document.getElementById("modalCancel"),
       modalConfirm: document.getElementById("modalConfirm"),
     };
+
+    const clearMsg = document.getElementById("clearMsg");
+    document.querySelectorAll("button[data-clear]").forEach((btn) => {
+      btn.onclick = async () => {
+        const table = btn.getAttribute("data-clear");
+        if (!table) return;
+        if (!confirm(`Clear all records in "${table}"? This cannot be undone.`)) return;
+        btn.disabled = true;
+        try {
+          await api(`/api/admin/data/${table}`, { method: "DELETE" });
+          if (clearMsg) clearMsg.innerHTML = `<span class="text-green-700">✅ Cleared ${table}</span>`;
+          // refresh visible sections
+          try { await loadApprovals(); } catch {}
+          try { await loadDocs(); } catch {}
+          try { await loadBids(); } catch {}
+        } catch (e) {
+          if (clearMsg) clearMsg.innerHTML = `<span class="text-red-600">❌ ${e.message}</span>`;
+        } finally {
+          btn.disabled = false;
+        }
+      };
+    });
 
     function fmtDate(s) {
       if (!s) return "-";
@@ -491,5 +541,37 @@
 
     showApprovals();
   </script>
+
+  <script type="module">
+    import { initPushUI } from "/assets/push.js";
+    initPushUI();
+
+    const btnTP = document.getElementById("btnTestPush");
+    if (btnTP) btnTP.onclick = async () => { try { const m = await (await import("/assets/push.js")).sendTestPush(); alert("Sent ✅"); } catch(e){ alert(e.message||e); } };
+  </script>
+
+
+<script type="module">
+  import { sendTestPush } from "/assets/push.js";
+  const btn = document.getElementById("testPushBtn");
+  const msg = document.getElementById("testPushMsg");
+  if (btn) btn.addEventListener("click", async () => {
+    btn.disabled = true; msg.textContent = "Sending...";
+    try {
+      await sendTestPush();
+      msg.textContent = "Sent. Check your notifications.";
+    } catch (e) {
+      msg.textContent = (e && e.message) ? e.message : "Failed.";
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>
+
+
+  <script type="module" src="/assets/install.js"></script>
+
+  <script type="module" src="/assets/loader.js"></script>
+  <script src="/assets/app-motion.js"></script>
 </body>
 </html>
