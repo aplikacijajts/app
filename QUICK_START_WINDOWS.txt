@@ -1,0 +1,11 @@
+JTS Logistics Portal - Windows Start
+
+1. Open this folder: app-main
+2. Double-click START_JTS_LOGISTICS.bat
+3. Open: http://localhost:4000
+
+Login:
+admin@jtslogistics.local
+admin123
+
+This ZIP already includes node_modules so it can start without npm install.

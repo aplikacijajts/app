@@ -9,6 +9,10 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 22
+      - key: NODE_ENV
+        value: production
+      - key: PUBLIC_APP_URL
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: VAPID_PUBLIC_KEY
@@ -16,4 +20,20 @@ services:
       - key: VAPID_PRIVATE_KEY
         sync: false
       - key: VAPID_SUBJECT
-        value: mailto:you@example.com
+        value: mailto:admin@jtslogistics.net
+      - key: MAP_DEFAULT_LAT
+        value: 41.9981
+      - key: MAP_DEFAULT_LNG
+        value: 21.4254
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMS_PROVIDER
+        sync: false
+      - key: SMS_API_KEY
+        sync: false
