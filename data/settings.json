@@ -1,0 +1,33 @@
+{
+  "company": {
+    "name": "JTS Logistics",
+    "timezone": "Europe/Skopje",
+    "locale": "en",
+    "roles": [
+      "admin",
+      "dispatcher",
+      "driver",
+      "broker"
+    ]
+  },
+  "billing": {
+    "plan": "Enterprise",
+    "status": "Production Ready"
+  },
+  "deployment": {
+    "provider": "Render",
+    "repository": "GitHub",
+    "serviceName": "jts-logistics-portal"
+  },
+  "security": {
+    "roles": [
+      "admin",
+      "dispatcher",
+      "driver",
+      "broker"
+    ],
+    "passwordHashing": "bcrypt",
+    "rateLimit": "enabled",
+    "jwt": "enabled"
+  }
+}

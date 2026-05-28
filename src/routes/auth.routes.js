@@ -38,7 +38,7 @@ router.post("/register", async (req, res) => {
         name,
         email: email.toLowerCase(),
         phone: phone || null,
-        companyId: companyId || "default",
+        companyId: companyId || "jts-logistics",
         passwordHash
       },
       requestedAt: new Date().toISOString()

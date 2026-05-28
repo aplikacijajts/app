@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="/assets/theme.css">
   <link rel="stylesheet" href="/assets/friendly.css">
   <link rel="stylesheet" href="/assets/premium-enterprise.css">
+  <link rel="stylesheet" href="/assets/enterprise-live.css">
+  <link rel="stylesheet" href="/assets/final-professional.css">
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#0b1220">
   <link rel="icon" href="/icons/icon-192.png">
@@ -16,6 +18,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="JTS Portal">
 
+  <link rel="stylesheet" href="/assets/jts-2026-clean-ui.css">
 </head>
 <body class="min-h-screen bg-gray-50">
   <header class="bg-white border-b">
@@ -65,10 +68,13 @@
         const r = await api("/api/auth/login", { method:"POST", body:{ email, password }});
         localStorage.setItem("token", r.token);
 
-        if (r.user.role === "admin") location.href = "/admin.html";
-        else if (r.user.role === "dispatcher") location.href = "/dispatcher.html";
-        else if (r.user.role === "broker") location.href = "/broker.html";
-        else location.href = "/driver.html";
+        const params = new URLSearchParams(location.search);
+        const next = params.get("next");
+        const roleHome = r.user.role === "admin" ? "/admin.html"
+          : r.user.role === "dispatcher" ? "/dispatcher.html"
+          : r.user.role === "broker" ? "/broker.html"
+          : "/driver.html";
+        location.href = next && next.startsWith("/") ? next : roleHome;
       } catch (e) {
         document.getElementById("msg").textContent = e.message;
       }
@@ -79,5 +85,9 @@
 
   <script type="module" src="/assets/loader.js"></script>
   <script src="/assets/app-motion.js"></script>
+  <script type="module" src="/assets/enterprise-live.js"></script>
+  <script src="/assets/role-ui.js"></script>
+  <script src="/assets/final-professional.js"></script>
+  <script src="/assets/jts-2026-clean-ui.js"></script>
 </body>
 </html>

@@ -1,13 +1,13 @@
 [
   {
     "id": "u_admin",
-    "name": "Default Admin",
-    "email": "admin@local",
+    "name": "JTS Logistics Admin",
+    "email": "admin@jtslogistics.local",
     "phone": null,
-    "companyId": "default",
+    "companyId": "jts-logistics",
     "role": "admin",
     "status": "approved",
     "passwordHash": "$2a$10$KlMx6MV5UV0Kqeix0Wu6Oe6Xv4wLs2WmfKO4OfCqRCBXsFWUNvgt2",
-    "createdAt": "2026-01-25T14:10:30.611Z"
+    "createdAt": "2026-05-27T00:00:00.000Z"
   }
 ]

@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="/assets/theme.css">
   <link rel="stylesheet" href="/assets/friendly.css">
   <link rel="stylesheet" href="/assets/premium-enterprise.css">
+  <link rel="stylesheet" href="/assets/enterprise-live.css">
+  <link rel="stylesheet" href="/assets/final-professional.css">
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#0b1220">
   <link rel="icon" href="/icons/icon-192.png">
@@ -16,6 +18,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="JTS Portal">
 
+  <link rel="stylesheet" href="/assets/jts-2026-clean-ui.css">
 </head>
 <body class="min-h-screen bg-gray-50">
   <header class="bg-white border-b">
@@ -308,7 +311,7 @@
       if (!els.loadsSection.classList.contains("hidden")) await loadAllLoads();
       else if (!els.docsSection.classList.contains("hidden")) await loadDocs();
       else await loadBids();
-      setStatus("Done");
+      setStatus("Ready");
     };
 
     els.filterStatus.onchange = loadAllLoads;
@@ -365,7 +368,7 @@
 
         if (!filtered.length) {
           els.loadsTbody.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-gray-500">No loads found.</td></tr>`;
-          els.loadsMsg.textContent = "Done";
+          els.loadsMsg.textContent = "Ready";
           return;
         }
 
@@ -407,7 +410,7 @@
           };
         });
 
-        els.loadsMsg.textContent = "Done";
+        els.loadsMsg.textContent = "Ready";
       } catch (e) {
         els.loadsMsg.textContent = "Error: " + e.message;
         els.loadsTbody.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-red-600">${e.message}</td></tr>`;
@@ -425,7 +428,7 @@
 
         if (!rows.length) {
           els.docsTbody.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-gray-500">No documents found.</td></tr>`;
-          els.docsMsg.textContent = "Done";
+          els.docsMsg.textContent = "Ready";
           return;
         }
 
@@ -499,7 +502,7 @@
           };
         });
 
-        els.docsMsg.textContent = "Done";
+        els.docsMsg.textContent = "Ready";
       } catch (e) {
         els.docsMsg.textContent = "Error: " + e.message;
         els.docsTbody.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-red-600">${e.message}</td></tr>`;
@@ -513,7 +516,7 @@
         const rows = await api("/api/bids");
         if (!rows.length) {
           els.bidsTbody.innerHTML = `<tr><td colspan="6" class="p-3 text-center text-gray-500">No bids yet.</td></tr>`;
-          els.bidsMsg.textContent = "Done";
+          els.bidsMsg.textContent = "Ready";
           return;
         }
         els.bidsTbody.innerHTML = rows.map(b => `
@@ -526,7 +529,7 @@
             <td class="p-2 border"><b>${(b.price ?? "-")}</b></td>
           </tr>
         `).join("");
-        els.bidsMsg.textContent = `Done (${rows.length})`;
+        els.bidsMsg.textContent = `Ready (${rows.length})`;
       } catch (e) {
         els.bidsMsg.textContent = "Error: " + e.message;
         els.bidsTbody.innerHTML = `<tr><td colspan="6" class="p-3 text-center text-red-600">${e.message}</td></tr>`;
@@ -549,7 +552,7 @@ if (els.viewFinished) els.viewFinished.onclick = () => setView("finished");
       setStatus("Loading...");
       await loadDrivers();
       await loadAllLoads();
-      setStatus("Done");
+      setStatus("Ready");
       showLoads();
     })();
   </script>
@@ -582,5 +585,9 @@ if (els.viewFinished) els.viewFinished.onclick = () => setView("finished");
 
   <script type="module" src="/assets/loader.js"></script>
   <script src="/assets/app-motion.js"></script>
+  <script type="module" src="/assets/enterprise-live.js"></script>
+  <script src="/assets/role-ui.js"></script>
+  <script src="/assets/final-professional.js"></script>
+  <script src="/assets/jts-2026-clean-ui.js"></script>
 </body>
 </html>

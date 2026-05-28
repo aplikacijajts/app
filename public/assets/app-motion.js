@@ -209,12 +209,26 @@
     var saved = localStorage.getItem('pe-theme');
     if(saved === 'dark') document.body.classList.add('pe-dark');
     var btn = document.createElement('button'); btn.type='button'; btn.className='pe-theme-toggle'; btn.title='Toggle theme'; btn.innerHTML = document.body.classList.contains('pe-dark') ? '☀' : '☾';
-    btn.onclick = function(){ document.body.classList.toggle('pe-dark'); var dark = document.body.classList.contains('pe-dark'); localStorage.setItem('pe-theme', dark ? 'dark':'light'); btn.innerHTML = dark ? '☀':'☾'; window.peToast && window.peToast('Theme updated', dark ? 'Dark mode enabled' : 'Light mode enabled'); };
+    btn.onclick = function(){ document.body.classList.toggle('pe-dark'); var dark = document.body.classList.contains('pe-dark'); localStorage.setItem('pe-theme', dark ? 'dark':'light'); btn.innerHTML = dark ? '☀':'☾'; };
     document.body.appendChild(btn);
   }
   function addBottomNav(){
     if(document.querySelector('.pe-bottom-nav')) return;
-    var headerLinks = Array.prototype.slice.call(document.querySelectorAll('header a[href]')).filter(function(a){ return !a.href.includes('jtslogistics.net'); });
+    var auth = window.JTSAuth;
+    var user = auth && auth.currentUser ? auth.currentUser() : null;
+    var headerLinks = Array.prototype.slice.call(document.querySelectorAll('header a[href]')).filter(function(a){
+      var href = a.getAttribute('href') || '';
+      if(!href || href.indexOf('jtslogistics.net') !== -1) return false;
+      try {
+        var url = new URL(href, location.origin);
+        if(url.origin !== location.origin) return true;
+        if(auth && auth.isProtectedPath && auth.isProtectedPath(url.pathname)){
+          if(!user) return false;
+          return auth.allowedForPath ? auth.allowedForPath(url.pathname, user.role) : true;
+        }
+      } catch(e) {}
+      return true;
+    });
     if(!headerLinks.length) return;
     var nav = document.createElement('nav'); nav.className = 'pe-bottom-nav'; nav.setAttribute('aria-label','Mobile navigation');
     headerLinks.slice(0,5).forEach(function(a){
@@ -238,7 +252,7 @@
     if(document.querySelector('.pe-command-palette')) return;
     var links = Array.prototype.slice.call(document.querySelectorAll('a[href]')).filter(function(a){ return a.getAttribute('href') && !a.getAttribute('href').startsWith('http'); });
     if(!links.length) return;
-    var p = document.createElement('div'); p.className='pe-command-palette'; p.innerHTML='<div class="pe-command-box"><input placeholder="Search quick actions...  Ctrl + K" aria-label="Search quick actions"><div class="pe-command-list"></div></div>';
+    var p = document.createElement('div'); p.className='pe-command-palette'; p.innerHTML='<div class="pe-command-box"><input placeholder="Search...  Ctrl + K" aria-label="Search"><div class="pe-command-list"></div></div>';
     var list = p.querySelector('.pe-command-list');
     links.forEach(function(a){ var x=document.createElement('a'); x.href=a.getAttribute('href'); x.textContent=(a.textContent||a.href).trim(); list.appendChild(x); });
     var input = p.querySelector('input'); input.addEventListener('input', function(){ var q=input.value.toLowerCase(); list.querySelectorAll('a').forEach(function(a){ a.style.display = a.textContent.toLowerCase().includes(q) ? '' : 'none'; }); });
@@ -253,7 +267,7 @@
     var title = document.title || 'Portal';
     if(/login|register/i.test(title)) return;
     var grid = document.createElement('div'); grid.className='pe-dashboard-grid';
-    grid.innerHTML = '<div class="pe-kpi"><small>Workspace</small><strong>Live</strong><span>Premium control center</span></div><div class="pe-kpi"><small>Tables</small><strong>'+kpiNumber('table')+'</strong><span>Smart data views</span></div><div class="pe-kpi"><small>Actions</small><strong>'+kpiNumber('button')+'</strong><span>Fast operation buttons</span></div><div class="pe-kpi"><small>Status</small><strong>Ready</strong><span>Optimized for mobile</span></div>';
+    grid.innerHTML = '<div class="pe-kpi"><small>Operations</small><strong>Live</strong><span>Online</span></div><div class="pe-kpi"><small>Views</small><strong>'+kpiNumber('table')+'</strong><span>Available</span></div><div class="pe-kpi"><small>Actions</small><strong>'+kpiNumber('button')+'</strong><span>Ready</span></div><div class="pe-kpi"><small>Status</small><strong>Active</strong><span>Connected</span></div>';
     main.insertBefore(grid, main.firstElementChild);
   }
   function enhanceButtons(){
@@ -270,9 +284,9 @@
       var btn = e.target.closest && e.target.closest('button, .jts-btn, a.border');
       if(!btn || !window.peToast) return;
       var txt = (btn.textContent || '').replace(/^[↻✓×!⇧↪⎋+→◉⌖⌂•]\s*/, '').trim();
-      if(/logout/i.test(txt)) window.peToast('Signing out', 'Your session is closing.');
-      else if(/refresh/i.test(txt)) window.peToast('Refreshing', 'Latest information is being loaded.');
-      else if(/approve|save|submit|upload/i.test(txt)) window.peToast('Action started', txt);
+      if(/logout/i.test(txt)) window.peToast('Signing out', '');
+      else if(/refresh/i.test(txt)) window.peToast('Refreshing', '');
+      else if(/approve|save|submit|upload/i.test(txt)) window.peToast('Processing', '');
     }, true);
   }
   function skeletonOnLoad(){
@@ -282,5 +296,5 @@
       setTimeout(function(){ tb.classList.remove('pe-skeleton'); }, 900);
     });
   }
-  ready(function(){ addOrbs(); addToastSystem(); addThemeToggle(); addBottomNav(); addCommandPalette(); addKpis(); enhanceButtons(); clickFeedback(); skeletonOnLoad(); setInterval(enhanceButtons, 1500); });
+  ready(function(){ addOrbs(); addToastSystem(); addThemeToggle(); addBottomNav(); addCommandPalette(); enhanceButtons(); clickFeedback(); skeletonOnLoad(); setInterval(enhanceButtons, 1500); });
 })();

@@ -1,7 +1,6 @@
 import { Router } from "express";
 import fs from "fs";
 import path from "path";
-import webpush from "web-push";
 import { fileURLToPath } from "url";
 import { requireAuth } from "../middleware/auth.js";
 
@@ -9,9 +8,21 @@ const router = Router();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// Stored in projectRoot/data/push-subs.json
 const SUBS_FILE = path.join(__dirname, "..", "..", "data", "push-subs.json");
+
+let webpush = null;
+let vapidConfigured = false;
+
+async function loadWebPush() {
+  if (webpush) return webpush;
+  try {
+    const mod = await import("web-push");
+    webpush = mod.default || mod;
+    return webpush;
+  } catch {
+    return null;
+  }
+}
 
 function readSubs() {
   try { return JSON.parse(fs.readFileSync(SUBS_FILE, "utf8")); }
@@ -23,63 +34,65 @@ function writeSubs(subs) {
   fs.writeFileSync(SUBS_FILE, JSON.stringify(subs, null, 2));
 }
 
-function ensureVapidConfigured() {
+async function ensureVapidConfigured() {
   const pub = process.env.VAPID_PUBLIC_KEY;
   const priv = process.env.VAPID_PRIVATE_KEY;
-  if (!pub || !priv) return false;
-  webpush.setVapidDetails(
-    process.env.VAPID_SUBJECT || "mailto:admin@example.com",
-    pub,
-    priv
-  );
-  return true;
+  if (!pub || !priv) return { ok: false, reason: "missing_keys" };
+
+  const wp = await loadWebPush();
+  if (!wp) return { ok: false, reason: "missing_package" };
+
+  if (!vapidConfigured) {
+    wp.setVapidDetails(
+      process.env.VAPID_SUBJECT || "mailto:admin@jtslogistics.net",
+      pub,
+      priv
+    );
+    vapidConfigured = true;
+  }
+  return { ok: true, webpush: wp };
 }
 
-// Public key (no auth)
-router.get("/public-key", (req, res) => {
-  if (!ensureVapidConfigured()) {
-    return res.status(500).json({ error: "VAPID keys are not configured on the server" });
-  }
-  res.json({ publicKey: process.env.VAPID_PUBLIC_KEY });
+function disabledResponse(res, status = 200) {
+  return res.status(status).json({
+    ok: false,
+    enabled: false,
+    message: "Push notifications are currently disabled. The application is fully usable without push notifications.",
+    publicKey: null
+  });
+}
+
+router.get("/public-key", async (req, res) => {
+  const vapid = await ensureVapidConfigured();
+  if (!vapid.ok) return disabledResponse(res);
+  res.json({ ok: true, enabled: true, publicKey: process.env.VAPID_PUBLIC_KEY });
 });
 
-// Subscribe (auth required) - store one active subscription per user
-router.post("/subscribe", requireAuth, (req, res) => {
-  if (!ensureVapidConfigured()) {
-    return res.status(500).json({ ok: false, error: "VAPID keys are not configured on the server" });
-  }
+router.post("/subscribe", requireAuth, async (req, res) => {
+  const vapid = await ensureVapidConfigured();
+  if (!vapid.ok) return disabledResponse(res);
+
   const sub = req.body;
   if (!sub?.endpoint || !sub?.keys?.p256dh || !sub?.keys?.auth) {
     return res.status(400).json({ ok: false, error: "Invalid subscription" });
   }
 
-  // Your JWT payload uses { sub: user.id, role, companyId, name }
   const userKey = req.user?.sub;
   if (!userKey) return res.status(400).json({ ok: false, error: "Token missing sub" });
 
   const subs = readSubs();
-
-  // Remove duplicates (same endpoint or same user)
   const filtered = subs.filter(s => s.endpoint !== sub.endpoint && s.userKey !== userKey);
-
-  filtered.push({
-    userKey,
-    endpoint: sub.endpoint,
-    keys: sub.keys,
-    createdAt: new Date().toISOString()
-  });
-
+  filtered.push({ userKey, endpoint: sub.endpoint, keys: sub.keys, createdAt: new Date().toISOString() });
   writeSubs(filtered);
-  res.json({ ok: true });
+  res.json({ ok: true, enabled: true });
 });
 
-// Optional: Unsubscribe
-// Debug: subscription status for current user (auth required)
-router.get("/status", requireAuth, (req, res) => {
+router.get("/status", requireAuth, async (req, res) => {
+  const vapid = await ensureVapidConfigured();
   const userKey = req.user?.sub;
   const subs = readSubs();
   const mine = subs.filter(s => s.userKey === userKey);
-  res.json({ ok: true, userKey, subscriptions: mine.length });
+  res.json({ ok: true, enabled: vapid.ok, userKey, subscriptions: mine.length });
 });
 
 router.post("/unsubscribe", requireAuth, (req, res) => {
@@ -89,16 +102,14 @@ router.post("/unsubscribe", requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
-// Test push to current user (auth required)
 router.post("/test", requireAuth, async (req, res) => {
-  if (!ensureVapidConfigured()) {
-    return res.status(500).json({ ok: false, error: "VAPID keys are not configured on the server" });
-  }
-  const userKey = req.user?.sub;
+  const vapid = await ensureVapidConfigured();
+  if (!vapid.ok) return disabledResponse(res);
 
+  const userKey = req.user?.sub;
   const payload = JSON.stringify({
     title: "JTS Notification",
-    body: req.body?.body || "This is a test push notification for the logged-in user ✅",
+    body: req.body?.body || "Test push notification",
     url: req.body?.url || "/"
   });
 
@@ -107,18 +118,16 @@ router.post("/test", requireAuth, async (req, res) => {
 
   for (const s of subs) {
     if (s.userKey !== userKey) { alive.push(s); continue; }
-
     try {
-      await webpush.sendNotification({ endpoint: s.endpoint, keys: s.keys }, payload);
+      await vapid.webpush.sendNotification({ endpoint: s.endpoint, keys: s.keys }, payload);
       alive.push(s);
     } catch (err) {
-      // 404/410 = gone
       if (![404, 410].includes(err?.statusCode)) alive.push(s);
     }
   }
 
   writeSubs(alive);
-  res.json({ ok: true });
+  res.json({ ok: true, enabled: true });
 });
 
 export default router;

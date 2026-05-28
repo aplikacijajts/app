@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="/assets/theme.css">
   <link rel="stylesheet" href="/assets/friendly.css">
   <link rel="stylesheet" href="/assets/premium-enterprise.css">
+  <link rel="stylesheet" href="/assets/enterprise-live.css">
+  <link rel="stylesheet" href="/assets/final-professional.css">
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#0b1220">
   <link rel="icon" href="/icons/icon-192.png">
@@ -16,6 +18,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="JTS Portal">
 
+  <link rel="stylesheet" href="/assets/jts-2026-clean-ui.css">
 </head>
 <body class="min-h-screen bg-gray-50">
   <header class="bg-white border-b">
@@ -219,7 +222,7 @@
 
         if (!filtered.length) {
           els.loadsTbody.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-gray-500">No loads found.</td></tr>`;
-          els.listMsg.textContent = "Done";
+          els.listMsg.textContent = "Ready";
           return;
         }
 
@@ -261,7 +264,7 @@
           };
         });
 
-        els.listMsg.textContent = "Done";
+        els.listMsg.textContent = "Ready";
       } catch (e) {
         els.listMsg.textContent = "Error: " + e.message;
         els.loadsTbody.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-red-600">${e.message}</td></tr>`;
@@ -292,7 +295,7 @@
         els.driverId.value = "";
 
         await loadAllLoads();
-        setStatus("Done");
+        setStatus("Ready");
       } catch (e) {
         els.msg.innerHTML = `<span class="text-red-600">❌ ${e.message}</span>`;
         setStatus("Error");
@@ -303,7 +306,7 @@
       setStatus("Refreshing...");
       await loadDrivers();
       await loadAllLoads();
-      setStatus("Done");
+      setStatus("Ready");
     };
 
     els.filterStatus.onchange = loadAllLoads;
@@ -327,7 +330,7 @@ if (els.viewFinished) els.viewFinished.onclick = () => setView("finished");
       setStatus("Loading...");
       await loadDrivers();
       await loadAllLoads();
-      setStatus("Done");
+      setStatus("Ready");
     })();
   </script>
 
@@ -335,5 +338,9 @@ if (els.viewFinished) els.viewFinished.onclick = () => setView("finished");
 
   <script type="module" src="/assets/loader.js"></script>
   <script src="/assets/app-motion.js"></script>
+  <script type="module" src="/assets/enterprise-live.js"></script>
+  <script src="/assets/role-ui.js"></script>
+  <script src="/assets/final-professional.js"></script>
+  <script src="/assets/jts-2026-clean-ui.js"></script>
 </body>
 </html>
