@@ -142,5 +142,14 @@
       "role": "admin"
     },
     "at": "2026-05-28T19:52:39.151Z"
+  },
+  {
+    "id": "log_fxwdeikfsn_1779999191919",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-05-28T20:13:11.919Z"
   }
 ]
