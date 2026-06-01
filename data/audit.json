@@ -169,5 +169,41 @@
       "role": "admin"
     },
     "at": "2026-05-28T21:53:54.156Z"
+  },
+  {
+    "id": "log_e39wp0ueyg_1780335834583",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-06-01T17:43:54.583Z"
+  },
+  {
+    "id": "log_jlp1i2ntcq_1780336662836",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-06-01T17:57:42.836Z"
+  },
+  {
+    "id": "log_mstp5amviv_1780337416101",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-06-01T18:10:16.101Z"
+  },
+  {
+    "id": "log_xiyd2jpy7b_1780337498030",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-06-01T18:11:38.030Z"
   }
 ]

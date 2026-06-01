@@ -20,7 +20,11 @@ function removeClient(userId, res) {
 async function emitToUser(userId, payload) {
   const set = clients.get(userId);
   if (!set) return;
-  const data = `data: ${JSON.stringify(payload)}\n\n`;
+  const eventName = payload?.event || 'notification';
+  const data = `event: ${eventName}
+data: ${JSON.stringify(payload)}
+
+`;
   for (const res of set) {
     try { res.write(data); } catch { /* ignore */ }
   }
