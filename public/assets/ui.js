@@ -102,7 +102,8 @@ export function initNotifications() {
     const es = new EventSource(`/api/notifications/stream?token=${encodeURIComponent(token)}`);
     es.addEventListener("notification", (ev) => {
       try {
-        const n = JSON.parse(ev.data || "{}") || {};
+        const payload = JSON.parse(ev.data || "{}") || {};
+        const n = payload.notification || payload;
         toast(n.title, n.message);
       } catch {
         toast("Notification", ev.data);

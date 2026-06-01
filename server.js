@@ -18,6 +18,7 @@ import realtimeRoutes from "./src/routes/realtime.routes.js";
 import settingsRoutes from "./src/routes/settings.routes.js";
 import aiRoutes from "./src/routes/ai.routes.js";
 import mapRoutes from "./src/routes/map.routes.js";
+import chatRoutes from "./src/routes/chat.routes.js";
 
 import { errorHandler } from "./src/middleware/error.js";
 import { securityHeaders, apiLimiter, authLimiter } from "./src/middleware/security.js";
@@ -53,6 +54,7 @@ app.use("/api/realtime", realtimeRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/map", mapRoutes);
+app.use("/api/chat", chatRoutes);
 app.use("/gps", gpsRoutes);
 app.use("/api/gps", gpsRoutes);
 app.use("/api/push", pushRoutes);
