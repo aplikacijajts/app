@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>JTS Logistics - Users</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/theme.css">
+  <link rel="stylesheet" href="/assets/friendly.css">
+  <link rel="stylesheet" href="/assets/premium-enterprise.css">
+  <link rel="stylesheet" href="/assets/enterprise-live.css">
+  <link rel="stylesheet" href="/assets/final-professional.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="JTS Portal">
+  <link rel="stylesheet" href="/assets/jts-2026-clean-ui.css">
+  <link rel="stylesheet" href="/assets/jts-production-10.css">
+  <link rel="stylesheet" href="/assets/jts-elite-10-ui.css">
+  <link rel="stylesheet" href="/assets/jts-redesign-v4.css">
+  <link rel="stylesheet" href="/assets/jts-final-production-ui.css">
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+  <header class="bg-white/90 backdrop-blur border-b sticky top-0 z-20">
+    <div class="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
+      <div class="font-bold text-lg flex items-center gap-3"><img src="/assets/jts-logo.png" class="h-9" alt="JTS"><span>JTS Logistics</span></div>
+      <nav class="hidden md:flex items-center gap-3 text-sm">
+        <a href="/home.html" class="underline">Dashboard</a>
+        <a href="/admin.html" class="underline">Approvals</a>
+        <a href="/admin-loads.html" class="underline">Loads</a>
+      </nav>
+      <button id="logout" class="px-4 py-2 rounded-xl jts-btn text-sm font-semibold">Sign out</button>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-5 py-8">
+    <section class="rounded-3xl bg-slate-950 text-white p-6 lg:p-8 shadow-sm relative overflow-hidden">
+      <div class="absolute -right-20 -top-24 h-60 w-60 rounded-full bg-blue-500/20"></div>
+      <div class="relative flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-[0.25em] text-cyan-200 font-semibold">User Administration</p>
+          <h1 class="text-3xl font-extrabold mt-2">Team and carrier accounts</h1>
+          <p class="text-slate-300 mt-2">Create, review and maintain accounts with required logistics profile data.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="refresh" class="px-4 py-2 rounded-xl bg-white text-slate-900 text-sm font-semibold">Refresh</button>
+          <span id="status" class="text-sm text-slate-300"></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid xl:grid-cols-[0.9fr_1.35fr] gap-6 mt-6">
+      <section class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
+        <div class="border-b pb-4">
+          <h2 class="font-bold text-xl">Create approved user</h2>
+          <p class="text-sm text-slate-500 mt-1">Admin-created users are approved immediately.</p>
+        </div>
+
+        <form id="createForm" class="mt-5 grid md:grid-cols-2 gap-4" novalidate>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">First name *</label>
+            <input id="firstName" required class="border rounded-xl p-3 w-full mt-1" placeholder="First name">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Last name *</label>
+            <input id="lastName" required class="border rounded-xl p-3 w-full mt-1" placeholder="Last name">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Email *</label>
+            <input id="email" type="email" required class="border rounded-xl p-3 w-full mt-1" placeholder="email@company.com">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Phone *</label>
+            <input id="phone" required class="border rounded-xl p-3 w-full mt-1" placeholder="Phone number">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Role *</label>
+            <select id="role" required class="border rounded-xl p-3 w-full mt-1 bg-white">
+              <option value="driver" selected>Driver</option>
+              <option value="dispatcher">Dispatcher</option>
+              <option value="broker">Broker</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="driver-only-create">
+            <label class="text-sm font-semibold text-slate-700">Assigned dispatcher</label>
+            <select id="dispatcherId" class="border rounded-xl p-3 w-full mt-1 bg-white">
+              <option value="">— No dispatcher assigned —</option>
+            </select>
+            <p class="text-xs text-slate-500 mt-1">Driver will see this dispatcher in chat after login.</p>
+          </div>
+          <div class="driver-only-create">
+            <label class="text-sm font-semibold text-slate-700">Owner/operator? *</label>
+            <select id="isOwner" required class="border rounded-xl p-3 w-full mt-1 bg-white">
+              <option value="">Select...</option>
+              <option value="true">Yes, owner/operator</option>
+              <option value="false">No, company driver</option>
+            </select>
+          </div>
+          <div class="driver-only-create">
+            <label class="text-sm font-semibold text-slate-700">Trailer type *</label>
+            <select id="trailerType" required class="border rounded-xl p-3 w-full mt-1 bg-white">
+              <option value="">Select...</option>
+              <option value="dry-van">Dry Van</option>
+              <option value="reefer">Reefer</option>
+              <option value="flatbed">Flatbed</option>
+              <option value="step-deck">Step Deck</option>
+              <option value="conestoga">Conestoga</option>
+              <option value="box-truck">Box Truck</option>
+              <option value="power-only">Power Only</option>
+              <option value="container">Container</option>
+              <option value="tanker">Tanker</option>
+              <option value="other">Other / Not applicable</option>
+            </select>
+          </div>
+          <div class="driver-only-create">
+            <label class="text-sm font-semibold text-slate-700">Company name</label>
+            <input id="companyName" class="border rounded-xl p-3 w-full mt-1" placeholder="Company">
+          </div>
+          <div class="driver-only-create">
+            <label class="text-sm font-semibold text-slate-700">Company ID</label>
+            <input id="companyId" class="border rounded-xl p-3 w-full mt-1" placeholder="jts-logistics">
+          </div>
+          <div class="driver-only-create">
+            <label class="text-sm font-semibold text-slate-700">Truck/unit</label>
+            <input id="truckNumber" class="border rounded-xl p-3 w-full mt-1" placeholder="Truck/unit number">
+          </div>
+          <div class="driver-only-create">
+            <label class="text-sm font-semibold text-slate-700">Trailer number</label>
+            <input id="trailerNumber" class="border rounded-xl p-3 w-full mt-1" placeholder="Trailer number">
+          </div>
+          <div class="driver-only-create">
+            <label class="text-sm font-semibold text-slate-700">MC number</label>
+            <input id="mcNumber" class="border rounded-xl p-3 w-full mt-1" placeholder="MC">
+          </div>
+          <div class="driver-only-create">
+            <label class="text-sm font-semibold text-slate-700">DOT number</label>
+            <input id="dotNumber" class="border rounded-xl p-3 w-full mt-1" placeholder="DOT">
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-sm font-semibold text-slate-700">Address</label>
+            <input id="address" class="border rounded-xl p-3 w-full mt-1" placeholder="Address">
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-sm font-semibold text-slate-700">Password *</label>
+            <input id="password" type="password" minlength="6" required class="border rounded-xl p-3 w-full mt-1" placeholder="Minimum 6 characters">
+          </div>
+          <button id="create" class="md:col-span-2 w-full px-4 py-3 rounded-xl jts-btn font-bold" type="submit">Create user</button>
+          <div id="msg" class="md:col-span-2 text-sm"></div>
+        </form>
+      </section>
+
+      <section class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-4">
+          <div>
+            <h2 class="font-bold text-xl">Team</h2>
+            <p class="text-sm text-slate-500 mt-1">Approved users and carrier profile details.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <label class="text-sm text-slate-700 font-semibold">Role</label>
+            <select id="filterRole" class="border rounded-xl p-2 text-sm bg-white">
+              <option value="">All roles</option>
+              <option value="driver">Driver</option>
+              <option value="dispatcher">Dispatcher</option>
+              <option value="broker">Broker</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-auto mt-5 rounded-2xl border">
+          <table class="min-w-full text-sm">
+            <thead class="bg-slate-100 text-slate-700">
+              <tr>
+                <th class="text-left p-3 border-b">Name</th>
+                <th class="text-left p-3 border-b">Contact</th>
+                <th class="text-left p-3 border-b">Role</th>
+                <th class="text-left p-3 border-b">Owner</th>
+                <th class="text-left p-3 border-b">Trailer</th>
+                <th class="text-left p-3 border-b">Equipment</th>
+                <th class="text-left p-3 border-b">Company</th>
+                <th class="text-right p-3 border-b">Manage</th>
+              </tr>
+            </thead>
+            <tbody id="usersTbody"></tbody>
+          </table>
+        </div>
+        <div id="listMsg" class="text-xs text-slate-500 mt-3"></div>
+      </section>
+    </div>
+
+
+    <section class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm mt-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-4">
+        <div>
+          <h2 class="font-bold text-xl">Dispatcher → Driver assignments</h2>
+          <p class="text-sm text-slate-500 mt-1">Assign drivers to dispatchers. Drivers will see only their dispatcher in chat, and dispatchers will see their assigned drivers.</p>
+        </div>
+        <button id="refreshAssignments" class="px-4 py-2 rounded-xl border bg-white text-sm font-semibold">Refresh assignments</button>
+      </div>
+      <div id="assignmentsList" class="mt-5 grid lg:grid-cols-2 gap-4"></div>
+      <div id="assignmentsMsg" class="text-xs text-slate-500 mt-3"></div>
+    </section>
+
+    <div id="editModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-3xl max-w-3xl w-full p-5 shadow-2xl max-h-[90vh] overflow-auto">
+        <div class="flex items-start justify-between gap-4 border-b pb-4">
+          <div>
+            <h3 class="text-xl font-bold">Edit user</h3>
+            <p id="editSubtitle" class="text-sm text-slate-500 mt-1"></p>
+          </div>
+          <button id="editClose" class="text-sm underline">Close</button>
+        </div>
+        <form id="editForm" class="mt-5 grid md:grid-cols-2 gap-4" novalidate>
+          <input id="editId" type="hidden">
+          <div>
+            <label class="text-sm font-semibold text-slate-700">First name</label>
+            <input id="editFirstName" class="border rounded-xl p-3 w-full mt-1">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Last name</label>
+            <input id="editLastName" class="border rounded-xl p-3 w-full mt-1">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Phone</label>
+            <input id="editPhone" class="border rounded-xl p-3 w-full mt-1">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Role</label>
+            <select id="editRole" class="border rounded-xl p-3 w-full mt-1 bg-white">
+              <option value="driver">Driver</option>
+              <option value="dispatcher">Dispatcher</option>
+              <option value="broker">Broker</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="driver-only-edit">
+            <label class="text-sm font-semibold text-slate-700">Assigned dispatcher</label>
+            <select id="editDispatcherId" class="border rounded-xl p-3 w-full mt-1 bg-white">
+              <option value="">— No dispatcher assigned —</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Status</label>
+            <select id="editStatus" class="border rounded-xl p-3 w-full mt-1 bg-white">
+              <option value="approved">Approved</option>
+              <option value="disabled">Disabled</option>
+              <option value="suspended">Suspended</option>
+            </select>
+          </div>
+          <div class="driver-only-edit">
+            <label class="text-sm font-semibold text-slate-700">Owner/operator?</label>
+            <select id="editIsOwner" class="border rounded-xl p-3 w-full mt-1 bg-white">
+              <option value="true">Yes, owner/operator</option>
+              <option value="false">No, company driver</option>
+            </select>
+          </div>
+          <div class="driver-only-edit">
+            <label class="text-sm font-semibold text-slate-700">Trailer type</label>
+            <select id="editTrailerType" class="border rounded-xl p-3 w-full mt-1 bg-white">
+              <option value="dry-van">Dry Van</option>
+              <option value="reefer">Reefer</option>
+              <option value="flatbed">Flatbed</option>
+              <option value="step-deck">Step Deck</option>
+              <option value="conestoga">Conestoga</option>
+              <option value="box-truck">Box Truck</option>
+              <option value="power-only">Power Only</option>
+              <option value="container">Container</option>
+              <option value="tanker">Tanker</option>
+              <option value="other">Other / Not applicable</option>
+            </select>
+          </div>
+          <div class="driver-only-edit">
+            <label class="text-sm font-semibold text-slate-700">Company name</label>
+            <input id="editCompanyName" class="border rounded-xl p-3 w-full mt-1">
+          </div>
+          <div class="driver-only-edit">
+            <label class="text-sm font-semibold text-slate-700">Truck/unit</label>
+            <input id="editTruckNumber" class="border rounded-xl p-3 w-full mt-1">
+          </div>
+          <div class="driver-only-edit">
+            <label class="text-sm font-semibold text-slate-700">Trailer number</label>
+            <input id="editTrailerNumber" class="border rounded-xl p-3 w-full mt-1">
+          </div>
+          <div class="driver-only-edit">
+            <label class="text-sm font-semibold text-slate-700">MC number</label>
+            <input id="editMcNumber" class="border rounded-xl p-3 w-full mt-1">
+          </div>
+          <div class="driver-only-edit">
+            <label class="text-sm font-semibold text-slate-700">DOT number</label>
+            <input id="editDotNumber" class="border rounded-xl p-3 w-full mt-1">
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-sm font-semibold text-slate-700">Address</label>
+            <input id="editAddress" class="border rounded-xl p-3 w-full mt-1">
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-sm font-semibold text-slate-700">Notes</label>
+            <textarea id="editNotes" rows="3" class="border rounded-xl p-3 w-full mt-1"></textarea>
+          </div>
+          <div class="md:col-span-2 flex flex-wrap justify-end gap-2 pt-2">
+            <button id="editCancel" type="button" class="px-4 py-2 rounded-xl border">Cancel</button>
+            <button id="editSave" type="submit" class="px-4 py-2 rounded-xl jts-btn font-bold">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { api, getToken } from "./assets/api.js";
+
+    if (!getToken()) location.href = "/index.html";
+
+    const els = {
+      logout: document.getElementById("logout"), refresh: document.getElementById("refresh"), status: document.getElementById("status"),
+      form: document.getElementById("createForm"), firstName: document.getElementById("firstName"), lastName: document.getElementById("lastName"), email: document.getElementById("email"), phone: document.getElementById("phone"),
+      companyId: document.getElementById("companyId"), companyName: document.getElementById("companyName"), role: document.getElementById("role"), dispatcherId: document.getElementById("dispatcherId"), isOwner: document.getElementById("isOwner"), trailerType: document.getElementById("trailerType"),
+      truckNumber: document.getElementById("truckNumber"), trailerNumber: document.getElementById("trailerNumber"), mcNumber: document.getElementById("mcNumber"), dotNumber: document.getElementById("dotNumber"), address: document.getElementById("address"), password: document.getElementById("password"),
+      msg: document.getElementById("msg"), filterRole: document.getElementById("filterRole"), usersTbody: document.getElementById("usersTbody"), listMsg: document.getElementById("listMsg"),
+      refreshAssignments: document.getElementById("refreshAssignments"), assignmentsList: document.getElementById("assignmentsList"), assignmentsMsg: document.getElementById("assignmentsMsg"),
+      editModal: document.getElementById("editModal"), editForm: document.getElementById("editForm"), editClose: document.getElementById("editClose"), editCancel: document.getElementById("editCancel"), editSubtitle: document.getElementById("editSubtitle")
+    };
+
+    const h = (v) => String(v ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
+    const val = (id) => document.getElementById(id).value.trim();
+    const setVal = (id, value) => { document.getElementById(id).value = value ?? ""; };
+    const setStatus = (t) => { els.status.textContent = t || ""; };
+    const ownerText = (v) => v === true ? "Owner" : v === false ? "Company driver" : "Not specified";
+    let cachedUsers = [];
+    let cachedDispatchers = [];
+
+    const createDriverOnlyFields = Array.from(document.querySelectorAll(".driver-only-create"));
+    const editDriverOnlyFields = Array.from(document.querySelectorAll(".driver-only-edit"));
+    const createDriverRequired = [els.isOwner, els.trailerType];
+    const createDriverOptional = [els.companyId, els.companyName, els.truckNumber, els.trailerNumber, els.mcNumber, els.dotNumber, els.dispatcherId];
+    const editDriverRequired = [document.getElementById("editIsOwner"), document.getElementById("editTrailerType")];
+    const editDriverOptional = ["editCompanyName", "editTruckNumber", "editTrailerNumber", "editMcNumber", "editDotNumber"].map(id => document.getElementById(id));
+
+    function syncCreateDriverFields() {
+      const isDriver = els.role.value === "driver";
+      createDriverOnlyFields.forEach(el => {
+        el.classList.toggle("hidden", !isDriver);
+        el.setAttribute("aria-hidden", String(!isDriver));
+      });
+      createDriverRequired.forEach(input => {
+        input.required = isDriver;
+        if (!isDriver) input.value = "";
+      });
+      createDriverOptional.forEach(input => { if (!isDriver) input.value = ""; });
+    }
+
+    function syncEditDriverFields() {
+      const roleInput = document.getElementById("editRole");
+      const isDriver = roleInput.value === "driver";
+      editDriverOnlyFields.forEach(el => {
+        el.classList.toggle("hidden", !isDriver);
+        el.setAttribute("aria-hidden", String(!isDriver));
+      });
+      editDriverRequired.forEach(input => {
+        input.required = isDriver;
+        if (!isDriver) input.value = "";
+      });
+      editDriverOptional.forEach(input => { if (!isDriver) input.value = ""; });
+      const editDispatcher = document.getElementById("editDispatcherId");
+      if (editDispatcher && !isDriver) editDispatcher.value = "";
+    }
+
+    function dispatcherOptions(selectedId = "") {
+      return `<option value="">— No dispatcher assigned —</option>` + cachedDispatchers.map(d => `<option value="${h(d.id)}" ${d.id === selectedId ? "selected" : ""}>${h(d.name || d.email || d.id)}</option>`).join("");
+    }
+
+    async function loadDispatchers() {
+      try {
+        cachedDispatchers = await api("/api/admin/users?role=dispatcher");
+        if (els.dispatcherId) els.dispatcherId.innerHTML = dispatcherOptions(els.dispatcherId.value);
+        const editDispatcher = document.getElementById("editDispatcherId");
+        if (editDispatcher) editDispatcher.innerHTML = dispatcherOptions(editDispatcher.value);
+      } catch (e) {
+        cachedDispatchers = [];
+      }
+    }
+
+    els.role.addEventListener("change", syncCreateDriverFields);
+    document.getElementById("editRole").addEventListener("change", syncEditDriverFields);
+    syncCreateDriverFields();
+
+    els.logout.onclick = () => { localStorage.removeItem("token"); localStorage.removeItem("user"); location.href = "/index.html"; };
+
+    async function loadUsers() {
+      els.listMsg.textContent = "Loading...";
+      els.usersTbody.innerHTML = "";
+      try {
+        const role = els.filterRole.value;
+        const qs = role ? `?role=${encodeURIComponent(role)}` : "";
+        const users = await api(`/api/admin/users${qs}`);
+        cachedUsers = users;
+        if (!users.length) {
+          els.usersTbody.innerHTML = `<tr><td colspan="8" class="p-5 text-center text-slate-500">No users found.</td></tr>`;
+          els.listMsg.textContent = "";
+          return;
+        }
+        els.usersTbody.innerHTML = users.map(u => {
+          const equipment = [u.truckNumber && `Truck: ${u.truckNumber}`, u.trailerNumber && `Trailer: ${u.trailerNumber}`].filter(Boolean).join("<br>") || "-";
+          const contact = [u.email, u.phone].filter(Boolean).map(h).join("<br>") || "-";
+          const canDelete = u.role !== "admin";
+          return `
+            <tr class="hover:bg-slate-50 align-top">
+              <td class="p-3 border-b"><b>${h(u.name || "-")}</b><div class="text-xs text-slate-500 mt-1">${h(u.status || "approved")}</div></td>
+              <td class="p-3 border-b">${contact}</td>
+              <td class="p-3 border-b capitalize">${h(u.role || "-")}</td>
+              <td class="p-3 border-b">${h(ownerText(u.isOwner))}</td>
+              <td class="p-3 border-b">${h(u.trailerType || "-")}</td>
+              <td class="p-3 border-b">${equipment}</td>
+              <td class="p-3 border-b">${h(u.companyName || u.companyId || "-")}</td>
+              <td class="p-3 border-b text-right whitespace-nowrap">
+                <button data-edit-user="${h(u.id)}" class="px-3 py-1 rounded-lg border bg-white text-xs font-semibold">Edit</button>
+                <button data-del-user="${h(u.id)}" ${canDelete ? "" : "disabled"} class="px-3 py-1 rounded-lg border bg-white text-xs ${canDelete ? "" : "opacity-40 cursor-not-allowed"}">Delete</button>
+              </td>
+            </tr>`;
+        }).join("");
+
+        els.usersTbody.querySelectorAll("button[data-edit-user]").forEach(btn => btn.onclick = () => openEdit(btn.dataset.editUser));
+        els.usersTbody.querySelectorAll("button[data-del-user]").forEach(btn => {
+          btn.onclick = async () => {
+            const id = btn.dataset.delUser;
+            if (!id || btn.disabled || !confirm("Delete this user?")) return;
+            btn.disabled = true;
+            try { await api(`/api/admin/users/${encodeURIComponent(id)}`, { method: "DELETE" }); await loadUsers(); }
+            catch (e) { btn.disabled = false; els.listMsg.textContent = "Error: " + e.message; }
+          };
+        });
+        els.listMsg.textContent = `${users.length} users`;
+      } catch (e) {
+        els.listMsg.textContent = "Error: " + e.message;
+        els.usersTbody.innerHTML = `<tr><td colspan="8" class="p-5 text-center text-red-700">${h(e.message)}</td></tr>`;
+      }
+    }
+
+    async function loadAssignments() {
+      if (!els.assignmentsList) return;
+      els.assignmentsMsg.textContent = "Loading assignments...";
+      els.assignmentsList.innerHTML = "";
+      try {
+        const data = await api("/api/admin/assignments");
+        const drivers = data.drivers || [];
+        const rows = data.assignments || [];
+        if (!rows.length) {
+          els.assignmentsList.innerHTML = `<div class="lg:col-span-2 rounded-2xl border bg-slate-50 p-4 text-sm text-slate-500">Create at least one dispatcher to assign drivers.</div>`;
+          els.assignmentsMsg.textContent = "Ready";
+          return;
+        }
+        els.assignmentsList.innerHTML = rows.map(row => {
+          const d = row.dispatcher || {};
+          const selected = new Set(row.driverIds || []);
+          const driverOptions = drivers.map(driver => {
+            const label = `${driver.name || driver.email || driver.id}${driver.truckNumber ? " • Truck " + driver.truckNumber : ""}${driver.trailerNumber ? " • Trailer " + driver.trailerNumber : ""}`;
+            return `<label class="flex items-start gap-2 rounded-xl border bg-white p-3 text-sm">
+              <input type="checkbox" class="mt-1" data-assign-driver="${h(driver.id)}" ${selected.has(driver.id) ? "checked" : ""}>
+              <span><b>${h(label)}</b><span class="block text-xs text-slate-500">${h(driver.phone || driver.email || "")}</span></span>
+            </label>`;
+          }).join("") || `<div class="text-sm text-slate-500">No approved drivers available.</div>`;
+          return `<div class="rounded-2xl border bg-slate-50 p-4" data-assignment-card="${h(d.id)}">
+            <div class="flex items-start justify-between gap-3">
+              <div><div class="font-bold">${h(d.name || d.email || "Dispatcher")}</div><div class="text-xs text-slate-500 mt-1">${h(d.email || "")} ${d.phone ? " • " + h(d.phone) : ""}</div></div>
+              <button data-save-assignment="${h(d.id)}" class="px-3 py-2 rounded-xl jts-btn text-xs font-bold">Save</button>
+            </div>
+            <div class="mt-4 grid gap-2 max-h-72 overflow-auto">${driverOptions}</div>
+          </div>`;
+        }).join("");
+        els.assignmentsList.querySelectorAll("button[data-save-assignment]").forEach(btn => {
+          btn.onclick = async () => {
+            const dispatcherId = btn.dataset.saveAssignment;
+            const card = els.assignmentsList.querySelector(`[data-assignment-card="${CSS.escape(dispatcherId)}"]`);
+            const driverIds = Array.from(card.querySelectorAll("input[data-assign-driver]:checked")).map(input => input.dataset.assignDriver);
+            btn.disabled = true;
+            els.assignmentsMsg.textContent = "Saving assignment...";
+            try {
+              await api(`/api/admin/assignments/${encodeURIComponent(dispatcherId)}`, { method: "PUT", body: { driverIds } });
+              els.assignmentsMsg.textContent = "Saved. Driver chat contacts were updated.";
+              await loadAssignments();
+            } catch (e) {
+              els.assignmentsMsg.textContent = "Error: " + e.message;
+            } finally {
+              btn.disabled = false;
+            }
+          };
+        });
+        els.assignmentsMsg.textContent = "Ready";
+      } catch (e) {
+        els.assignmentsMsg.textContent = "Error: " + e.message;
+        els.assignmentsList.innerHTML = `<div class="lg:col-span-2 rounded-2xl border bg-red-50 p-4 text-sm text-red-700">${h(e.message)}</div>`;
+      }
+    }
+
+    function openEdit(id) {
+      const u = cachedUsers.find(x => x.id === id);
+      if (!u) return;
+      setVal("editId", u.id);
+      setVal("editFirstName", u.firstName || (u.name || "").split(" ")[0] || "");
+      setVal("editLastName", u.lastName || (u.name || "").split(" ").slice(1).join(" ") || "");
+      setVal("editPhone", u.phone || "");
+      setVal("editRole", u.role || "driver");
+      setVal("editStatus", u.status || "approved");
+      setVal("editDispatcherId", u.assignedDispatcherId || "");
+      setVal("editIsOwner", String(u.isOwner === true));
+      setVal("editTrailerType", u.trailerType || "other");
+      setVal("editCompanyName", u.companyName || "");
+      setVal("editTruckNumber", u.truckNumber || "");
+      setVal("editTrailerNumber", u.trailerNumber || "");
+      setVal("editMcNumber", u.mcNumber || "");
+      setVal("editDotNumber", u.dotNumber || "");
+      syncEditDriverFields();
+      setVal("editAddress", u.address || "");
+      setVal("editNotes", u.notes || "");
+      els.editSubtitle.textContent = `${u.name || "User"} • ${u.email || ""}`;
+      els.editModal.classList.remove("hidden");
+      els.editModal.classList.add("flex");
+    }
+
+    function closeEdit() {
+      els.editModal.classList.add("hidden");
+      els.editModal.classList.remove("flex");
+    }
+
+    els.editClose.onclick = closeEdit;
+    els.editCancel.onclick = closeEdit;
+
+    els.editForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const id = val("editId");
+      if (!id) return;
+      const editRoleValue = val("editRole");
+      const body = {
+        firstName: val("editFirstName"), lastName: val("editLastName"), phone: val("editPhone"), role: editRoleValue, status: val("editStatus"),
+        address: val("editAddress"), notes: val("editNotes")
+      };
+      if (editRoleValue === "driver") {
+        Object.assign(body, {
+          dispatcherId: val("editDispatcherId"), isOwner: val("editIsOwner"), trailerType: val("editTrailerType"), companyName: val("editCompanyName"), truckNumber: val("editTruckNumber"), trailerNumber: val("editTrailerNumber"),
+          mcNumber: val("editMcNumber"), dotNumber: val("editDotNumber")
+        });
+      } else {
+        Object.assign(body, { isOwner: null, trailerType: null, companyName: null, truckNumber: null, trailerNumber: null, mcNumber: null, dotNumber: null });
+      }
+      try {
+        await api(`/api/admin/users/${encodeURIComponent(id)}`, { method: "PATCH", body });
+        closeEdit();
+        await loadUsers();
+        await loadAssignments();
+      } catch (e) {
+        alert(e.message || "Could not save user");
+      }
+    });
+
+    els.filterRole.onchange = loadUsers;
+    if (els.refreshAssignments) els.refreshAssignments.onclick = loadAssignments;
+    els.refresh.onclick = async () => { setStatus("Refreshing..."); await loadUsers(); await loadAssignments(); setStatus("Ready"); };
+
+    els.form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      els.msg.textContent = "";
+      if (!els.form.reportValidity()) return;
+      const body = {
+        firstName: els.firstName.value.trim(), lastName: els.lastName.value.trim(), email: els.email.value.trim().toLowerCase(), phone: els.phone.value.trim(),
+        companyId: els.companyId.value.trim(), companyName: els.companyName.value.trim(), role: els.role.value, dispatcherId: els.role.value === "driver" ? els.dispatcherId.value : "", isOwner: els.isOwner.value, trailerType: els.trailerType.value,
+        truckNumber: els.truckNumber.value.trim(), trailerNumber: els.trailerNumber.value.trim(), mcNumber: els.mcNumber.value.trim(), dotNumber: els.dotNumber.value.trim(), address: els.address.value.trim(),
+        password: els.password.value
+      };
+      try {
+        setStatus("Creating user...");
+        const r = await api("/api/admin/users", { method: "POST", body });
+        els.msg.innerHTML = `<span class="text-green-700">✅ Created ${h(r.user.role)}: ${h(r.user.email)}</span>`;
+        els.form.reset();
+        syncCreateDriverFields();
+        setStatus("Ready");
+        await loadUsers();
+      } catch (e) {
+        setStatus("Error");
+        els.msg.innerHTML = `<span class="text-red-700">❌ ${h(e.message)}</span>`;
+      }
+    });
+
+    (async function init() { setStatus("Loading..."); await loadDispatchers(); await loadUsers(); await loadAssignments(); setStatus("Ready"); })();
+  </script>
+
+  <script type="module" src="/assets/install.js"></script>
+  <script type="module" src="/assets/loader.js"></script>
+  <script src="/assets/app-motion.js"></script>
+  <script type="module" src="/assets/enterprise-live.js"></script>
+  <script src="/assets/role-ui.js"></script>
+  <script src="/assets/final-professional.js"></script>
+  <script src="/assets/jts-2026-clean-ui.js"></script>
+  <script src="/assets/jts-elite-10-ui.js"></script>
+  <script src="/assets/jts-redesign-v4.js"></script>
+  <script src="/assets/jts-final-production-ui.js"></script>
+  <script src="/assets/auth-guard-final.js"></script>
+  <script src="/assets/jts-auth-ui-hotfix.js"></script>
+  <script src="/assets/gps-access-final.js"></script>
+  <script src="/assets/gps-live-share-final.js"></script>
+  <script src="/assets/jts-final-mobile-gps-fix.js"></script>
+</body>
+</html>

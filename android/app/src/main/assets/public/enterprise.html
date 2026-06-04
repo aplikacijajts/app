@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Enterprise Center - JTS Logistics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/theme.css">
+  <link rel="stylesheet" href="/assets/friendly.css">
+  <link rel="stylesheet" href="/assets/final-professional.css">
+  <link rel="stylesheet" href="/assets/jts-2026-clean-ui.css">
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+  <header class="bg-white/90 backdrop-blur border-b sticky top-0 z-20">
+    <div class="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
+      <div class="font-bold text-lg flex items-center gap-3"><img src="/assets/jts-logo.png" class="h-9" alt="JTS"><span>Enterprise Center</span></div>
+      <nav class="hidden md:flex items-center gap-3 text-sm">
+        <a href="/home.html" class="underline">Home</a>
+        <a href="/admin.html" class="underline">Admin</a>
+        <a href="/admin-loads.html" class="underline">Loads</a>
+        <a href="/chat.html" class="underline">Chat</a>
+      </nav>
+      <button id="logout" class="px-4 py-2 rounded-xl jts-btn text-sm font-semibold">Logout</button>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-5 py-8">
+    <section class="rounded-3xl bg-slate-950 text-white p-6 lg:p-8 shadow-sm relative overflow-hidden">
+      <div class="relative flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-[0.25em] text-cyan-200 font-semibold">Professional logistics operations</p>
+          <h1 class="text-3xl font-extrabold mt-2">Fleet, compliance, invoices, payments and reports</h1>
+          <p class="text-slate-300 mt-2">A single workspace for admin and dispatcher management.</p>
+        </div>
+        <button id="refreshAll" class="px-4 py-2 rounded-xl bg-white text-slate-900 font-semibold text-sm">Refresh all</button>
+      </div>
+      <div id="metrics" class="grid sm:grid-cols-2 lg:grid-cols-6 gap-3 mt-6"></div>
+    </section>
+
+    <section class="bg-white border rounded-3xl p-5 mt-6 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div><h2 class="font-bold text-xl">Global Search</h2><p class="text-sm text-slate-500">Search users, loads, bids, fleet units, invoices, MC/DOT, phones and emails.</p></div>
+        <div class="flex gap-2 w-full md:w-auto"><input id="searchQ" class="border rounded-xl p-2 flex-1 md:w-96" placeholder="Search..."><button id="searchBtn" class="px-4 py-2 rounded-xl border bg-white">Search</button></div>
+      </div>
+      <div id="searchResults" class="mt-4 grid md:grid-cols-2 gap-3"></div>
+    </section>
+
+    <div class="grid lg:grid-cols-2 gap-6 mt-6">
+      <section class="bg-white border rounded-3xl p-5 shadow-sm">
+        <div class="flex items-center justify-between gap-3"><div><h2 class="font-bold text-xl">Fleet Management</h2><p class="text-sm text-slate-500">Trucks, trailers, VIN, plates, insurance, registration and inspection dates.</p></div><a href="/api/enterprise/export/fleet.csv" class="text-sm underline">CSV</a></div>
+        <div class="grid md:grid-cols-2 gap-3 mt-4">
+          <input id="fleetUnit" class="border rounded-xl p-2" placeholder="Truck/unit number *">
+          <select id="fleetType" class="border rounded-xl p-2"><option value="truck">Truck</option><option value="trailer">Trailer</option></select>
+          <input id="fleetVin" class="border rounded-xl p-2" placeholder="VIN">
+          <input id="fleetPlate" class="border rounded-xl p-2" placeholder="Plate number">
+          <input id="fleetReg" type="date" class="border rounded-xl p-2" title="Registration expiry">
+          <input id="fleetIns" type="date" class="border rounded-xl p-2" title="Insurance expiry">
+          <input id="fleetInsp" type="date" class="border rounded-xl p-2" title="Inspection expiry">
+          <select id="fleetStatus" class="border rounded-xl p-2"><option>active</option><option>inactive</option><option>maintenance</option><option>out_of_service</option></select>
+        </div>
+        <button id="addFleet" class="mt-3 px-4 py-2 rounded-xl jts-btn">Add fleet unit</button>
+        <div id="fleetList" class="mt-4 space-y-2 max-h-80 overflow-auto"></div>
+      </section>
+
+      <section class="bg-white border rounded-3xl p-5 shadow-sm">
+        <div class="flex items-center justify-between gap-3"><div><h2 class="font-bold text-xl">Maintenance & Expiration Reminders</h2><p class="text-sm text-slate-500">Registration, insurance, DOT inspection, oil change and service reminders.</p></div><a href="/api/enterprise/export/maintenance.csv" class="text-sm underline">CSV</a></div>
+        <div class="grid md:grid-cols-2 gap-3 mt-4">
+          <input id="mntTitle" class="border rounded-xl p-2" placeholder="Reminder title *">
+          <input id="mntDue" type="date" class="border rounded-xl p-2">
+          <select id="mntCategory" class="border rounded-xl p-2"><option>maintenance</option><option>registration</option><option>insurance</option><option>inspection</option><option>oil_change</option><option>tires</option></select>
+          <select id="mntStatus" class="border rounded-xl p-2"><option>open</option><option>scheduled</option><option>done</option></select>
+        </div>
+        <button id="addMaintenance" class="mt-3 px-4 py-2 rounded-xl jts-btn">Add reminder</button>
+        <div id="maintenanceList" class="mt-4 space-y-2 max-h-80 overflow-auto"></div>
+      </section>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6 mt-6">
+      <section class="bg-white border rounded-3xl p-5 shadow-sm">
+        <div class="flex items-center justify-between gap-3"><div><h2 class="font-bold text-xl">Broker / Customer Profiles</h2><p class="text-sm text-slate-500">Company contacts, MC numbers, ratings and payment terms.</p></div><a href="/api/enterprise/export/customers.csv" class="text-sm underline">CSV</a></div>
+        <div class="grid md:grid-cols-2 gap-3 mt-4">
+          <input id="custCompany" class="border rounded-xl p-2" placeholder="Company name *">
+          <input id="custContact" class="border rounded-xl p-2" placeholder="Contact person">
+          <input id="custEmail" class="border rounded-xl p-2" placeholder="Email">
+          <input id="custPhone" class="border rounded-xl p-2" placeholder="Phone">
+          <input id="custMc" class="border rounded-xl p-2" placeholder="MC number">
+          <input id="custTerms" class="border rounded-xl p-2" placeholder="Payment terms">
+        </div>
+        <button id="addCustomer" class="mt-3 px-4 py-2 rounded-xl jts-btn">Add profile</button>
+        <div id="customerList" class="mt-4 space-y-2 max-h-80 overflow-auto"></div>
+      </section>
+
+      <section class="bg-white border rounded-3xl p-5 shadow-sm">
+        <div class="flex items-center justify-between gap-3"><div><h2 class="font-bold text-xl">Invoices & Payments</h2><p class="text-sm text-slate-500">Generate invoices and track unpaid, paid, pending and overdue payments.</p></div><div class="flex gap-2"><a href="/api/enterprise/export/invoices.csv" class="text-sm underline">Invoices CSV</a><a href="/api/enterprise/export/payments.csv" class="text-sm underline">Payments CSV</a></div></div>
+        <div class="grid md:grid-cols-2 gap-3 mt-4">
+          <input id="invCustomer" class="border rounded-xl p-2" placeholder="Customer / broker">
+          <input id="invAmount" type="number" step="0.01" class="border rounded-xl p-2" placeholder="Amount *">
+          <input id="invDue" type="date" class="border rounded-xl p-2">
+          <select id="invStatus" class="border rounded-xl p-2"><option>unpaid</option><option>pending</option><option>paid</option><option>overdue</option></select>
+        </div>
+        <button id="addInvoice" class="mt-3 px-4 py-2 rounded-xl jts-btn">Create invoice</button>
+        <div id="invoiceList" class="mt-4 space-y-2 max-h-80 overflow-auto"></div>
+      </section>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6 mt-6">
+      <section class="bg-white border rounded-3xl p-5 shadow-sm">
+        <div class="flex items-center justify-between gap-3"><div><h2 class="font-bold text-xl">Driver Availability Calendar</h2><p class="text-sm text-slate-500">Available, busy, off duty, vacation, sick leave, out of service.</p></div><a href="/api/enterprise/export/availability.csv" class="text-sm underline">CSV</a></div>
+        <div class="grid md:grid-cols-2 gap-3 mt-4">
+          <select id="avDriver" class="border rounded-xl p-2"><option value="">Select driver</option></select>
+          <select id="avStatus" class="border rounded-xl p-2"><option>available</option><option>busy</option><option>off_duty</option><option>vacation</option><option>sick_leave</option><option>out_of_service</option></select>
+          <input id="avFrom" type="date" class="border rounded-xl p-2">
+          <input id="avTo" type="date" class="border rounded-xl p-2">
+        </div>
+        <button id="addAvailability" class="mt-3 px-4 py-2 rounded-xl jts-btn">Update availability</button>
+        <div id="availabilityList" class="mt-4 space-y-2 max-h-80 overflow-auto"></div>
+      </section>
+
+      <section class="bg-white border rounded-3xl p-5 shadow-sm">
+        <div class="flex items-center justify-between gap-3"><div><h2 class="font-bold text-xl">Compliance Documents</h2><p class="text-sm text-slate-500">CDL, insurance, W9, carrier agreement, medical card, registration, inspection.</p></div><a href="/api/enterprise/export/complianceDocs.csv" class="text-sm underline">CSV</a></div>
+        <div class="grid md:grid-cols-2 gap-3 mt-4">
+          <select id="docDriver" class="border rounded-xl p-2"><option value="">Select driver</option></select>
+          <select id="docCategory" class="border rounded-xl p-2"><option>CDL</option><option>INSURANCE</option><option>W9</option><option>CARRIER_AGREEMENT</option><option>MEDICAL_CARD</option><option>REGISTRATION</option><option>INSPECTION</option></select>
+          <input id="docExpiry" type="date" class="border rounded-xl p-2">
+          <select id="docStatus" class="border rounded-xl p-2"><option>active</option><option>expired</option><option>missing</option><option>pending</option></select>
+        </div>
+        <button id="addCompliance" class="mt-3 px-4 py-2 rounded-xl jts-btn">Add compliance record</button>
+        <div id="complianceList" class="mt-4 space-y-2 max-h-80 overflow-auto"></div>
+      </section>
+    </div>
+
+    <section class="bg-white border rounded-3xl p-5 mt-6 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div><h2 class="font-bold text-xl">Rate Confirmations, Backup & Exports</h2><p class="text-sm text-slate-500">Generate rate confirmation pages and export all JSON data for backup.</p></div>
+        <a href="/api/enterprise/backup" class="px-4 py-2 rounded-xl border bg-white text-sm font-semibold">Download full JSON backup</a>
+      </div>
+      <div class="grid md:grid-cols-4 gap-3 mt-4">
+        <input id="rcBroker" class="border rounded-xl p-2" placeholder="Broker / customer">
+        <input id="rcOrigin" class="border rounded-xl p-2" placeholder="Origin">
+        <input id="rcDestination" class="border rounded-xl p-2" placeholder="Destination">
+        <input id="rcRate" type="number" step="0.01" class="border rounded-xl p-2" placeholder="Rate">
+      </div>
+      <button id="createRate" class="mt-3 px-4 py-2 rounded-xl jts-btn">Create rate confirmation</button>
+      <div id="rateList" class="mt-4 space-y-2"></div>
+    </section>
+
+
+
+    <section class="bg-white border rounded-3xl p-5 mt-6 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div><h2 class="font-bold text-xl">Smart Driver Matching</h2><p class="text-sm text-slate-500">Automatically rank drivers by availability, trailer type, active loads, compliance and optional pickup distance.</p></div>
+      </div>
+      <div class="grid md:grid-cols-4 gap-3 mt-4">
+        <select id="matchTrailer" class="border rounded-xl p-2"><option value="">Any trailer</option><option value="dry-van">Dry Van</option><option value="reefer">Reefer</option><option value="flatbed">Flatbed</option><option value="step-deck">Step Deck</option><option value="power-only">Power Only</option><option value="other">Other</option></select>
+        <input id="matchLat" class="border rounded-xl p-2" placeholder="Pickup latitude optional">
+        <input id="matchLng" class="border rounded-xl p-2" placeholder="Pickup longitude optional">
+        <button id="runMatch" class="px-4 py-2 rounded-xl jts-btn">Find best drivers</button>
+      </div>
+      <div id="matchResults" class="mt-4 grid md:grid-cols-2 gap-3"></div>
+    </section>
+
+    <div class="grid lg:grid-cols-2 gap-6 mt-6">
+      <section class="bg-white border rounded-3xl p-5 shadow-sm">
+        <div class="flex items-center justify-between gap-3"><div><h2 class="font-bold text-xl">Fuel / Profit Calculator</h2><p class="text-sm text-slate-500">Estimate fuel cost, total cost, profit and margin for each route.</p></div><a href="/api/enterprise/export/profitCalculations.csv" class="text-sm underline">CSV</a></div>
+        <div class="grid md:grid-cols-2 gap-3 mt-4">
+          <input id="profitOrigin" class="border rounded-xl p-2" placeholder="Origin">
+          <input id="profitDestination" class="border rounded-xl p-2" placeholder="Destination">
+          <input id="profitMiles" type="number" step="0.1" class="border rounded-xl p-2" placeholder="Miles">
+          <input id="profitRate" type="number" step="0.01" class="border rounded-xl p-2" placeholder="Rate / revenue *">
+          <input id="profitFuel" type="number" step="0.01" class="border rounded-xl p-2" placeholder="Fuel price / gallon">
+          <input id="profitMpg" type="number" step="0.1" class="border rounded-xl p-2" placeholder="MPG" value="6.5">
+          <input id="profitTolls" type="number" step="0.01" class="border rounded-xl p-2" placeholder="Tolls">
+          <input id="profitDriverPay" type="number" step="0.01" class="border rounded-xl p-2" placeholder="Driver pay">
+          <input id="profitOther" type="number" step="0.01" class="border rounded-xl p-2" placeholder="Other costs">
+        </div>
+        <button id="addProfit" class="mt-3 px-4 py-2 rounded-xl jts-btn">Calculate profit</button>
+        <div id="profitList" class="mt-4 space-y-2 max-h-80 overflow-auto"></div>
+      </section>
+
+      <section class="bg-white border rounded-3xl p-5 shadow-sm">
+        <div class="flex items-center justify-between gap-3"><div><h2 class="font-bold text-xl">Driver Settlements</h2><p class="text-sm text-slate-500">Create printable driver settlement sheets after completed loads.</p></div><a href="/api/enterprise/export/settlements.csv" class="text-sm underline">CSV</a></div>
+        <div class="grid md:grid-cols-2 gap-3 mt-4">
+          <select id="settleDriver" class="border rounded-xl p-2"><option value="">Select driver *</option></select>
+          <input id="settleLoad" class="border rounded-xl p-2" placeholder="Load ID / number">
+          <input id="settleGross" type="number" step="0.01" class="border rounded-xl p-2" placeholder="Gross rate *">
+          <input id="settlePercent" type="number" step="0.01" class="border rounded-xl p-2" placeholder="Driver percent, e.g. 30">
+          <input id="settleFlat" type="number" step="0.01" class="border rounded-xl p-2" placeholder="Flat pay">
+          <input id="settleBonus" type="number" step="0.01" class="border rounded-xl p-2" placeholder="Bonuses">
+          <input id="settleDeduct" type="number" step="0.01" class="border rounded-xl p-2" placeholder="Deductions">
+          <select id="settleStatus" class="border rounded-xl p-2"><option>pending</option><option>approved</option><option>paid</option><option>void</option></select>
+        </div>
+        <button id="addSettlement" class="mt-3 px-4 py-2 rounded-xl jts-btn">Create settlement</button>
+        <div id="settlementList" class="mt-4 space-y-2 max-h-80 overflow-auto"></div>
+      </section>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6 mt-6">
+      <section class="bg-white border rounded-3xl p-5 shadow-sm">
+        <div class="flex items-center justify-between gap-3"><div><h2 class="font-bold text-xl">Broker Rating</h2><p class="text-sm text-slate-500">Track broker payment speed, communication, reliability and rate quality.</p></div><a href="/api/enterprise/export/brokerRatings.csv" class="text-sm underline">CSV</a></div>
+        <div class="grid md:grid-cols-2 gap-3 mt-4">
+          <input id="rateCompany" class="border rounded-xl p-2" placeholder="Broker / company name *">
+          <input id="rateContact" class="border rounded-xl p-2" placeholder="Contact name">
+          <input id="rateEmail" class="border rounded-xl p-2" placeholder="Email">
+          <input id="ratePhone" class="border rounded-xl p-2" placeholder="Phone">
+          <input id="rateMc" class="border rounded-xl p-2" placeholder="MC number">
+          <input id="ratePayment" type="number" min="1" max="5" class="border rounded-xl p-2" placeholder="Payment 1-5" value="3">
+          <input id="rateComm" type="number" min="1" max="5" class="border rounded-xl p-2" placeholder="Communication 1-5" value="3">
+          <input id="rateReliability" type="number" min="1" max="5" class="border rounded-xl p-2" placeholder="Reliability 1-5" value="3">
+          <input id="rateQuality" type="number" min="1" max="5" class="border rounded-xl p-2" placeholder="Rate quality 1-5" value="3">
+        </div>
+        <button id="addBrokerRating" class="mt-3 px-4 py-2 rounded-xl jts-btn">Save broker rating</button>
+        <div id="brokerRatingList" class="mt-4 space-y-2 max-h-80 overflow-auto"></div>
+      </section>
+
+      <section class="bg-white border rounded-3xl p-5 shadow-sm">
+        <div class="flex items-center justify-between gap-3"><div><h2 class="font-bold text-xl">Super Admin / Multi-company</h2><p class="text-sm text-slate-500">Manage companies, plans and white-label company profiles.</p></div><a href="/api/enterprise/export/companies.csv" class="text-sm underline">CSV</a></div>
+        <div class="grid md:grid-cols-2 gap-3 mt-4">
+          <input id="coName" class="border rounded-xl p-2" placeholder="Company name *">
+          <input id="coId" class="border rounded-xl p-2" placeholder="Company ID optional">
+          <input id="coEmail" class="border rounded-xl p-2" placeholder="Email">
+          <input id="coPhone" class="border rounded-xl p-2" placeholder="Phone">
+          <select id="coPlan" class="border rounded-xl p-2"><option>starter</option><option>professional</option><option selected>enterprise</option></select>
+          <select id="coStatus" class="border rounded-xl p-2"><option>active</option><option>trial</option><option>suspended</option></select>
+        </div>
+        <button id="addCompany" class="mt-3 px-4 py-2 rounded-xl jts-btn">Add company</button>
+        <div id="companyList" class="mt-4 space-y-2 max-h-80 overflow-auto"></div>
+      </section>
+    </div>
+
+    <div id="msg" class="text-sm mt-5"></div>
+  </main>
+
+<script type="module">
+import { api, getToken } from './assets/api.js';
+if (!getToken()) location.href = '/index.html';
+const $ = id => document.getElementById(id);
+const h = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const msg = (t, bad=false) => { $('msg').textContent = t || ''; $('msg').className = 'text-sm mt-5 ' + (bad ? 'text-red-700' : 'text-emerald-700'); };
+$('logout').onclick = () => { localStorage.removeItem('token'); localStorage.removeItem('user'); location.href='/index.html'; };
+function card(title, value){ return `<div class="rounded-2xl bg-white/10 border border-white/10 p-4"><div class="text-xs uppercase text-cyan-100">${h(title)}</div><div class="text-2xl font-extrabold mt-1">${h(value)}</div></div>`; }
+function small(item){ return `<div class="rounded-2xl border bg-slate-50 p-3 text-sm"><pre class="whitespace-pre-wrap font-sans">${h(JSON.stringify(item, null, 2))}</pre></div>`; }
+async function loadDashboard(){ const d = await api('/api/enterprise/dashboard'); $('metrics').innerHTML = Object.entries(d.metrics).map(([k,v])=>card(k.replace(/([A-Z])/g,' $1'), v)).join(''); }
+async function loadDrivers(){ const users = await api('/api/users?role=driver'); for (const id of ['avDriver','docDriver','settleDriver']) $(id).innerHTML = '<option value="">Select driver</option>' + users.map(u=>`<option value="${h(u.id)}">${h(u.name || u.email)} ${u.truckNumber ? '('+h(u.truckNumber)+')' : ''}</option>`).join(''); }
+async function list(path, el){ const rows = await api(path); $(el).innerHTML = rows.length ? rows.slice(0,25).map(small).join('') : '<div class="text-sm text-slate-500">No records yet.</div>'; }
+async function refreshAll(){ try { await Promise.all([loadDashboard(), loadDrivers(), list('/api/enterprise/fleet','fleetList'), list('/api/enterprise/maintenance','maintenanceList'), list('/api/enterprise/customers','customerList'), list('/api/enterprise/invoices','invoiceList'), list('/api/enterprise/availability','availabilityList'), list('/api/enterprise/compliance-docs','complianceList'), list('/api/enterprise/rate-confirmations','rateList'), list('/api/enterprise/profit-calculations','profitList'), list('/api/enterprise/settlements','settlementList'), list('/api/enterprise/broker-ratings','brokerRatingList'), list('/api/enterprise/companies','companyList')]); msg('Ready'); } catch(e){ msg(e.message, true); } }
+$('refreshAll').onclick = refreshAll;
+$('searchBtn').onclick = async()=>{ try{ const r=await api('/api/enterprise/search?q='+encodeURIComponent($('searchQ').value)); $('searchResults').innerHTML = r.results.length ? r.results.map(x=>`<div class="rounded-2xl border p-3 bg-slate-50"><b>${h(x.type)}</b><div>${h(x.label)}</div></div>`).join('') : '<div class="text-sm text-slate-500">No results.</div>'; }catch(e){msg(e.message,true)} };
+$('addFleet').onclick = async()=>{ try{ await api('/api/enterprise/fleet',{method:'POST',body:{unitNumber:$('fleetUnit').value,type:$('fleetType').value,vin:$('fleetVin').value,plateNumber:$('fleetPlate').value,registrationExpiry:$('fleetReg').value,insuranceExpiry:$('fleetIns').value,inspectionExpiry:$('fleetInsp').value,status:$('fleetStatus').value}}); msg('Fleet unit added'); await refreshAll(); }catch(e){msg(e.message,true)} };
+$('addMaintenance').onclick = async()=>{ try{ await api('/api/enterprise/maintenance',{method:'POST',body:{title:$('mntTitle').value,dueDate:$('mntDue').value,category:$('mntCategory').value,status:$('mntStatus').value}}); msg('Reminder added'); await refreshAll(); }catch(e){msg(e.message,true)} };
+$('addCustomer').onclick = async()=>{ try{ await api('/api/enterprise/customers',{method:'POST',body:{companyName:$('custCompany').value,contactName:$('custContact').value,email:$('custEmail').value,phone:$('custPhone').value,mcNumber:$('custMc').value,paymentTerms:$('custTerms').value}}); msg('Customer profile added'); await refreshAll(); }catch(e){msg(e.message,true)} };
+$('addInvoice').onclick = async()=>{ try{ await api('/api/enterprise/invoices',{method:'POST',body:{customerName:$('invCustomer').value,amount:$('invAmount').value,dueDate:$('invDue').value,status:$('invStatus').value}}); msg('Invoice created'); await refreshAll(); }catch(e){msg(e.message,true)} };
+$('addAvailability').onclick = async()=>{ try{ await api('/api/enterprise/availability',{method:'POST',body:{driverId:$('avDriver').value,status:$('avStatus').value,fromDate:$('avFrom').value,toDate:$('avTo').value}}); msg('Availability updated'); await refreshAll(); }catch(e){msg(e.message,true)} };
+$('addCompliance').onclick = async()=>{ try{ await api('/api/enterprise/compliance-docs',{method:'POST',body:{driverId:$('docDriver').value,category:$('docCategory').value,expiryDate:$('docExpiry').value,status:$('docStatus').value}}); msg('Compliance document added'); await refreshAll(); }catch(e){msg(e.message,true)} };
+$('createRate').onclick = async()=>{ try{ const r=await api('/api/enterprise/rate-confirmations',{method:'POST',body:{brokerName:$('rcBroker').value,origin:$('rcOrigin').value,destination:$('rcDestination').value,rate:$('rcRate').value}}); msg('Rate confirmation created'); window.open(r.downloadUrl, '_blank'); await refreshAll(); }catch(e){msg(e.message,true)} };
+
+$('runMatch').onclick = async()=>{ try{ const q=new URLSearchParams({trailerType:$('matchTrailer').value,pickupLat:$('matchLat').value,pickupLng:$('matchLng').value}); const r=await api('/api/enterprise/driver-matching?'+q.toString()); $('matchResults').innerHTML = r.results.length ? r.results.slice(0,12).map(x=>`<div class="rounded-2xl border bg-slate-50 p-4"><div class="flex items-center justify-between"><b>${h(x.name)}</b><span class="text-lg font-extrabold">${h(x.score)}/100</span></div><div class="text-sm text-slate-600">${h(x.trailerType || 'No trailer')} • ${h(x.availability)} • ${h(x.activeLoads)} active</div><div class="text-xs text-slate-500 mt-2">${h((x.reasons||[]).join(', '))}</div></div>`).join('') : '<div class="text-sm text-slate-500">No matching drivers.</div>'; msg('Driver matching completed'); }catch(e){msg(e.message,true)} };
+$('addProfit').onclick = async()=>{ try{ await api('/api/enterprise/profit-calculations',{method:'POST',body:{origin:$('profitOrigin').value,destination:$('profitDestination').value,miles:$('profitMiles').value,rate:$('profitRate').value,fuelPrice:$('profitFuel').value,mpg:$('profitMpg').value,tolls:$('profitTolls').value,driverPay:$('profitDriverPay').value,otherCosts:$('profitOther').value}}); msg('Profit calculation saved'); await refreshAll(); }catch(e){msg(e.message,true)} };
+$('addSettlement').onclick = async()=>{ try{ const r=await api('/api/enterprise/settlements',{method:'POST',body:{driverId:$('settleDriver').value,loadNumber:$('settleLoad').value,grossRate:$('settleGross').value,driverPercent:$('settlePercent').value,flatPay:$('settleFlat').value,bonuses:$('settleBonus').value,deductions:$('settleDeduct').value,status:$('settleStatus').value}}); msg('Settlement created'); if(r.downloadUrl) window.open(r.downloadUrl,'_blank'); await refreshAll(); }catch(e){msg(e.message,true)} };
+$('addBrokerRating').onclick = async()=>{ try{ await api('/api/enterprise/broker-ratings',{method:'POST',body:{companyName:$('rateCompany').value,contactName:$('rateContact').value,email:$('rateEmail').value,phone:$('ratePhone').value,mcNumber:$('rateMc').value,paymentSpeed:$('ratePayment').value,communication:$('rateComm').value,reliability:$('rateReliability').value,rateQuality:$('rateQuality').value}}); msg('Broker rating saved'); await refreshAll(); }catch(e){msg(e.message,true)} };
+$('addCompany').onclick = async()=>{ try{ await api('/api/enterprise/companies',{method:'POST',body:{id:$('coId').value,name:$('coName').value,email:$('coEmail').value,phone:$('coPhone').value,plan:$('coPlan').value,status:$('coStatus').value}}); msg('Company added'); await refreshAll(); }catch(e){msg(e.message,true)} };
+
+refreshAll();
+</script>
+</body>
+</html>

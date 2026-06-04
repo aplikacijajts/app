@@ -1,0 +1,423 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Dispatcher - JTS Logistics Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/theme.css">
+  <link rel="stylesheet" href="/assets/friendly.css">
+  <link rel="stylesheet" href="/assets/premium-enterprise.css">
+  <link rel="stylesheet" href="/assets/enterprise-live.css">
+  <link rel="stylesheet" href="/assets/final-professional.css">
+  <link rel="stylesheet" href="/assets/jts-2026-clean-ui.css">
+  <link rel="stylesheet" href="/assets/jts-production-10.css">
+  <link rel="stylesheet" href="/assets/jts-elite-10-ui.css">
+  <link rel="stylesheet" href="/assets/jts-redesign-v4.css">
+  <link rel="stylesheet" href="/assets/jts-final-production-ui.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="icon" href="/icons/icon-192.png">
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+  <header class="bg-white/90 backdrop-blur border-b sticky top-0 z-20">
+    <div class="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
+      <div class="font-bold text-lg flex items-center gap-3"><img src="/assets/jts-logo.png" class="h-9" alt="JTS"><span>Dispatcher Panel</span></div>
+      <nav class="hidden md:flex items-center gap-3 text-sm">
+        <a href="/home.html" class="underline">Home</a>
+        <a href="/enterprise.html" class="underline">Enterprise</a>
+        <a href="/gps.html" class="underline">GPS</a>
+        <a href="/chat.html" class="underline">Chat</a>
+        <a href="/enterprise.html" class="underline">Enterprise</a>
+        <a href="/notifications.html" class="underline">Notifications</a>
+      </nav>
+      <button id="logout" class="px-4 py-2 rounded-xl jts-btn text-sm font-semibold">Logout</button>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-5 py-8 space-y-6">
+    <section class="rounded-3xl bg-slate-950 text-white p-6 lg:p-8 shadow-sm relative overflow-hidden">
+      <div class="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-blue-500/20"></div>
+      <div class="relative flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-[0.25em] text-cyan-200 font-semibold">Dispatch Workspace</p>
+          <h1 class="text-3xl font-extrabold mt-2">Loads, documents and broker offers</h1>
+          <p class="text-slate-300 mt-2">Monitor assigned drivers, approve documents and review route offers from brokers.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="refresh" class="px-4 py-2 rounded-xl bg-white text-slate-900 text-sm font-semibold">Refresh</button>
+          <span id="status" class="text-sm text-slate-300"></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <button id="tabLoads" class="px-4 py-2 rounded-xl jts-btn font-semibold">Loads</button>
+      <button id="tabDocs" class="px-4 py-2 rounded-xl border bg-white font-semibold">Documents Inbox</button>
+      <button id="tabBids" class="px-4 py-2 rounded-xl border bg-white font-semibold">Bids <span id="bidsBadge" class="hidden ml-2 px-2 py-0.5 rounded-full bg-red-600 text-white text-xs">0</span></button>
+      <div class="ml-auto flex flex-wrap items-center gap-2">
+        <label class="flex items-center gap-2 text-sm"><input id="onlyMissing" type="checkbox" class="border"> Show only loads with missing docs</label>
+        <button id="viewActive" class="px-4 py-2 rounded-xl jts-btn text-sm">Active</button>
+        <button id="viewFinished" class="px-4 py-2 rounded-xl border bg-white text-sm">Finished</button>
+      </div>
+    </div>
+
+    <section id="loadsSection" class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-4">
+        <div>
+          <h2 class="font-bold text-xl">Assigned loads</h2>
+          <p class="text-sm text-slate-500 mt-1">Missing docs check: POD + BOL.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-slate-700 font-semibold">Status</label>
+          <select id="filterStatus" class="border rounded-xl p-2 text-sm bg-white">
+            <option value="">All</option>
+            <option value="in_progress">In progress</option>
+            <option value="picked_up">Picked up</option>
+            <option value="in_transit">In transit</option>
+            <option value="delayed">Delayed</option>
+            <option value="delivered">Delivered</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-5 rounded-2xl border bg-slate-50 p-3">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <div>
+            <h3 class="font-bold text-base">Market / News iframe</h3>
+            <p class="text-xs text-slate-500 mt-1">Live embedded view from www.time.mk.</p>
+          </div>
+          <a href="https://www.time.mk" target="_blank" rel="noopener" class="text-sm underline">Open in new tab</a>
+        </div>
+        <iframe title="time.mk" src="https://www.time.mk" class="w-full rounded-xl border bg-white" style="height:360px" loading="lazy" referrerpolicy="no-referrer"></iframe>
+      </div>
+
+      <section class="mt-5 rounded-2xl border bg-white p-4 shadow-sm">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h3 class="font-bold text-lg">Create Load</h3>
+            <p class="text-sm text-slate-500 mt-1">Create and assign a load to one of your assigned drivers.</p>
+          </div>
+          <span id="createLoadMsg" class="text-sm"></span>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Load Number *</label>
+            <input id="newLoadNumber" class="border rounded-xl p-2 w-full mt-1" placeholder="12345">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Customer</label>
+            <input id="newCustomer" class="border rounded-xl p-2 w-full mt-1" placeholder="Customer">
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-sm font-semibold text-slate-700">Assign Driver *</label>
+            <select id="newDriverId" class="border rounded-xl p-2 w-full mt-1">
+              <option value="">Loading assigned drivers...</option>
+            </select>
+            <p id="driverSelectHelp" class="text-xs text-slate-500 mt-1">Only drivers assigned to your dispatcher account are shown here.</p>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Pickup / From</label>
+            <input id="newPickup" class="border rounded-xl p-2 w-full mt-1" placeholder="Pickup city/state">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Delivery / To</label>
+            <input id="newDelivery" class="border rounded-xl p-2 w-full mt-1" placeholder="Delivery city/state">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Rate</label>
+            <input id="newRate" class="border rounded-xl p-2 w-full mt-1" placeholder="2500">
+          </div>
+          <div class="flex items-end">
+            <button id="createLoadBtn" class="w-full px-4 py-2 rounded-xl jts-btn font-semibold">Create Load</button>
+          </div>
+          <div class="md:col-span-2 lg:col-span-4">
+            <label class="text-sm font-semibold text-slate-700">Notes</label>
+            <textarea id="newNotes" class="border rounded-xl p-2 w-full mt-1" rows="2" placeholder="Optional dispatch notes"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <div class="overflow-auto mt-5 rounded-2xl border">
+        <table class="min-w-full text-sm">
+          <thead class="bg-slate-100 text-slate-700"><tr>
+            <th class="text-left p-3 border-b">Created</th><th class="text-left p-3 border-b">Load #</th><th class="text-left p-3 border-b">Customer</th><th class="text-left p-3 border-b">Driver</th><th class="text-left p-3 border-b">Docs</th><th class="text-left p-3 border-b">Status</th><th class="text-left p-3 border-b">Actions</th>
+          </tr></thead>
+          <tbody id="loadsTbody"></tbody>
+        </table>
+      </div>
+      <div id="loadsMsg" class="text-xs text-slate-500 mt-3"></div>
+    </section>
+
+    <section id="docsSection" class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm hidden">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-4">
+        <div><h2 class="font-bold text-xl">Documents Inbox</h2><p class="text-sm text-slate-500 mt-1">Review, approve or request fixes.</p></div>
+        <div class="flex items-center gap-2"><label class="text-sm text-slate-700 font-semibold">Status</label><select id="docStatus" class="border rounded-xl p-2 text-sm bg-white"><option value="submitted">Submitted</option><option value="needs_fix">Needs Fix</option><option value="">All</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div>
+      </div>
+      <div class="overflow-auto mt-5 rounded-2xl border">
+        <table class="min-w-full text-sm"><thead class="bg-slate-100 text-slate-700"><tr><th class="text-left p-3 border-b">Created</th><th class="text-left p-3 border-b">Driver</th><th class="text-left p-3 border-b">Load</th><th class="text-left p-3 border-b">Category</th><th class="text-left p-3 border-b">Status</th><th class="text-left p-3 border-b">File</th><th class="text-left p-3 border-b">Actions</th></tr></thead><tbody id="docsTbody"></tbody></table>
+      </div>
+      <div id="docsMsg" class="text-xs text-slate-500 mt-3"></div>
+    </section>
+
+    <section id="bidsSection" class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm hidden">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-4">
+        <div><h2 class="font-bold text-xl">Bids</h2><p class="text-sm text-slate-500 mt-1">Broker bids submitted by brokers and visible to all admins and dispatchers.</p></div>
+        <button id="refreshBids" class="px-4 py-2 rounded-xl border bg-white text-sm font-semibold">Refresh</button>
+      </div>
+      <div class="overflow-auto mt-5 rounded-2xl border">
+        <table class="min-w-full text-sm">
+          <thead class="bg-slate-100 text-slate-700"><tr>
+            <th class="text-left p-3 border-b">Created</th><th class="text-left p-3 border-b">Broker</th><th class="text-left p-3 border-b">Contact</th><th class="text-left p-3 border-b">Truck / Driver</th><th class="text-left p-3 border-b">Route</th><th class="text-left p-3 border-b">Price</th><th class="text-left p-3 border-b">Status</th>
+          </tr></thead>
+          <tbody id="bidsTbody"></tbody>
+        </table>
+      </div>
+      <div id="bidsMsg" class="text-xs text-slate-500 mt-3"></div>
+    </section>
+
+    <div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-3xl max-w-lg w-full p-5 shadow-2xl">
+        <div class="flex justify-between items-start gap-3"><h3 id="modalTitle" class="font-bold text-xl">Action</h3><button id="modalClose" class="text-sm underline">Close</button></div>
+        <div class="mt-3"><p id="modalText" class="text-sm text-slate-700"></p><textarea id="modalTextarea" class="mt-3 w-full border rounded-xl p-3 text-sm" rows="4" placeholder="Enter a comment"></textarea></div>
+        <div class="mt-4 flex justify-end gap-2"><button id="modalCancel" class="px-4 py-2 rounded-xl border">Cancel</button><button id="modalConfirm" class="px-4 py-2 rounded-xl jts-btn">Confirm</button></div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { api, getToken } from "./assets/api.js";
+    import { openPreview, initNotifications } from "./assets/ui.js";
+
+    if (!getToken()) location.href = "/index.html";
+    initNotifications();
+
+    const $ = (id) => document.getElementById(id);
+    const h = (v) => String(v ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
+    const fmtDate = (s) => { if (!s) return "-"; try { return new Date(s).toLocaleString(); } catch { return s; } };
+    const money = (v) => Number(v || 0).toLocaleString(undefined, { style:"currency", currency:"USD" });
+
+    const els = {
+      tabLoads: $("tabLoads"), tabDocs: $("tabDocs"), tabBids: $("tabBids"), loadsSection: $("loadsSection"), docsSection: $("docsSection"), bidsSection: $("bidsSection"),
+      logout: $("logout"), refresh: $("refresh"), viewActive: $("viewActive"), viewFinished: $("viewFinished"), status: $("status"), filterStatus: $("filterStatus"), onlyMissing: $("onlyMissing"),
+      loadsTbody: $("loadsTbody"), loadsMsg: $("loadsMsg"), docStatus: $("docStatus"), docsTbody: $("docsTbody"), docsMsg: $("docsMsg"), refreshBids: $("refreshBids"), bidsTbody: $("bidsTbody"), bidsMsg: $("bidsMsg"), bidsBadge: $("bidsBadge"),
+      newLoadNumber: $("newLoadNumber"), newCustomer: $("newCustomer"), newDriverId: $("newDriverId"), newPickup: $("newPickup"), newDelivery: $("newDelivery"), newRate: $("newRate"), newNotes: $("newNotes"), createLoadBtn: $("createLoadBtn"), createLoadMsg: $("createLoadMsg"), driverSelectHelp: $("driverSelectHelp"),
+      modal: $("modal"), modalTitle: $("modalTitle"), modalText: $("modalText"), modalTextarea: $("modalTextarea"), modalClose: $("modalClose"), modalCancel: $("modalCancel"), modalConfirm: $("modalConfirm")
+    };
+
+    let driversIndex = new Map();
+    let assignedDrivers = [];
+    let currentUser = null;
+    let currentView = "active";
+    let activeTab = "loads";
+
+    const setStatus = (msg) => { els.status.textContent = msg || ""; };
+    els.logout.onclick = () => { localStorage.removeItem("token"); localStorage.removeItem("user"); location.href = "/index.html"; };
+
+    function showModal({ title, text, requireText = false, onConfirm }) {
+      els.modalTitle.textContent = title;
+      els.modalText.textContent = text || "";
+      els.modalTextarea.value = "";
+      els.modalTextarea.classList.toggle("hidden", !requireText);
+      els.modal.classList.remove("hidden"); els.modal.classList.add("flex");
+      const close = () => { els.modal.classList.add("hidden"); els.modal.classList.remove("flex"); els.modalConfirm.onclick = null; };
+      els.modalClose.onclick = close; els.modalCancel.onclick = close;
+      els.modalConfirm.onclick = async () => {
+        const comment = els.modalTextarea.value.trim();
+        if (requireText && !comment) return alert("Please enter a comment.");
+        els.modalConfirm.disabled = true;
+        try { await onConfirm(comment); close(); } finally { els.modalConfirm.disabled = false; }
+      };
+    }
+
+    function activate(tab) {
+      activeTab = tab;
+      const on = "px-4 py-2 rounded-xl jts-btn font-semibold";
+      const off = "px-4 py-2 rounded-xl border bg-white font-semibold";
+      els.tabLoads.className = tab === "loads" ? on : off;
+      els.tabDocs.className = tab === "docs" ? on : off;
+      els.tabBids.className = tab === "bids" ? on : off;
+      els.loadsSection.classList.toggle("hidden", tab !== "loads");
+      els.docsSection.classList.toggle("hidden", tab !== "docs");
+      els.bidsSection.classList.toggle("hidden", tab !== "bids");
+    }
+
+    async function showLoads() { activate("loads"); await loadAllLoads(); }
+    async function showDocs() { activate("docs"); await loadDocs(); }
+    async function showBids() { activate("bids"); await loadBids(); }
+    els.tabLoads.onclick = showLoads; els.tabDocs.onclick = showDocs; els.tabBids.onclick = showBids;
+
+    async function loadDrivers() {
+      try {
+        currentUser = currentUser || await api("/api/users/me");
+        const drivers = await api("/api/users?role=driver");
+        driversIndex = new Map((drivers || []).map(d => [d.id, d]));
+        assignedDrivers = (drivers || []).filter(d => d.assignedDispatcherId === currentUser.id || d.isAssignedToMe);
+
+        if (els.newDriverId) {
+          if (!assignedDrivers.length) {
+            els.newDriverId.innerHTML = `<option value="">No assigned drivers found</option>`;
+            els.newDriverId.disabled = true;
+            els.createLoadBtn.disabled = true;
+            els.createLoadBtn.classList.add("opacity-60", "cursor-not-allowed");
+            els.driverSelectHelp.textContent = "No drivers are assigned to your dispatcher account. Ask an admin to assign drivers first.";
+          } else {
+            els.newDriverId.disabled = false;
+            els.createLoadBtn.disabled = false;
+            els.createLoadBtn.classList.remove("opacity-60", "cursor-not-allowed");
+            els.driverSelectHelp.textContent = "Only drivers assigned to your dispatcher account are shown here.";
+            els.newDriverId.innerHTML = `<option value="">— Select assigned driver —</option>` + assignedDrivers.map(d => {
+              const unit = [d.truckNumber && `Truck ${d.truckNumber}`, d.trailerNumber && `Trailer ${d.trailerNumber}`].filter(Boolean).join(" • ");
+              return `<option value="${h(d.id)}">${h(d.name || d.email || d.id)}${unit ? ` — ${h(unit)}` : ""}</option>`;
+            }).join("");
+          }
+        }
+      } catch (e) {
+        driversIndex = new Map();
+        assignedDrivers = [];
+        if (els.newDriverId) els.newDriverId.innerHTML = `<option value="">Failed to load drivers</option>`;
+      }
+    }
+
+    function docsBadge(l) {
+      const missing = l.missingDocs || [];
+      const req = l.requiredDocs || [];
+      if (!req.length) return `<span class="text-xs text-slate-500">—</span>`;
+      if (!missing.length) return `<span class="px-2 py-1 rounded-full border bg-green-50 text-xs text-green-800">All docs OK</span>`;
+      const ok = req.length - missing.length;
+      return `<div class="space-y-1"><span class="px-2 py-1 rounded-full border bg-amber-50 text-xs text-amber-800">Missing: <b>${h(missing.join(", "))}</b></span><div class="text-[11px] text-slate-500">Required: ${ok}/${req.length}</div></div>`;
+    }
+
+    function statusSelect(l) {
+      const opts = ["assigned","accepted","rejected","in_progress","picked_up","in_transit","delayed","delivered","closed","cancelled"].map(s => `<option value="${s}" ${l.status === s ? "selected" : ""}>${s.replace("_", " ")}</option>`).join("");
+      return `<select class="border rounded-lg p-2 text-xs bg-white" data-status-select="${h(l.id)}">${opts}</select>`;
+    }
+
+    async function loadAllLoads() {
+      els.loadsMsg.textContent = "Loading..."; els.loadsTbody.innerHTML = "";
+      try {
+        const rows = await api(`/api/loads/all?view=${encodeURIComponent(currentView)}`);
+        const filtered = (els.filterStatus.value ? rows.filter(r => r.status === els.filterStatus.value) : rows).filter(r => !els.onlyMissing.checked || (r.missingCount > 0));
+        if (!filtered.length) { els.loadsTbody.innerHTML = `<tr><td colspan="8" class="p-5 text-center text-slate-500">No loads found.</td></tr>`; els.loadsMsg.textContent = "Ready"; return; }
+        els.loadsTbody.innerHTML = filtered.map(l => {
+          const d = driversIndex.get(l.driverId);
+          const driverLabel = d ? (d.name || d.email || d.id) : (l.driverId || "-");
+          return `<tr class="hover:bg-slate-50 align-top"><td class="p-3 border-b whitespace-nowrap">${h(fmtDate(l.createdAt))}</td><td class="p-3 border-b">${h(l.loadNumber || "-")}</td><td class="p-3 border-b">${h(l.customer || "-")}</td><td class="p-3 border-b">${h(driverLabel)}</td><td class="p-3 border-b">${docsBadge(l)}</td><td class="p-3 border-b">${statusSelect(l)}</td><td class="p-3 border-b space-x-2"><a href="/load-details.html?id=${encodeURIComponent(l.id)}" class="px-3 py-1 rounded-lg border bg-white text-xs inline-block">Details</a><button data-save="${h(l.id)}" class="px-3 py-1 rounded-lg jts-btn text-xs">Save</button></td></tr>`;
+        }).join("");
+        els.loadsTbody.querySelectorAll("button[data-save]").forEach(btn => { btn.onclick = async () => { const id = btn.dataset.save; const sel = els.loadsTbody.querySelector(`[data-status-select="${CSS.escape(id)}"]`); try { setStatus("Saving status..."); await api(`/api/loads/${encodeURIComponent(id)}/status`, { method:"PATCH", body:{ status: sel?.value } }); await loadAllLoads(); setStatus("Saved"); } catch(e) { setStatus("Error"); alert(e.message); } }; });
+        els.loadsMsg.textContent = `Ready (${filtered.length})`;
+      } catch (e) { els.loadsMsg.textContent = "Error: " + e.message; els.loadsTbody.innerHTML = `<tr><td colspan="8" class="p-5 text-center text-red-700">${h(e.message)}</td></tr>`; }
+    }
+
+    async function loadDocs() {
+      els.docsMsg.textContent = "Loading..."; els.docsTbody.innerHTML = "";
+      try {
+        const qs = els.docStatus.value ? `?status=${encodeURIComponent(els.docStatus.value)}` : "";
+        const rows = await api(`/api/documents${qs}`);
+        if (!rows.length) { els.docsTbody.innerHTML = `<tr><td colspan="8" class="p-5 text-center text-slate-500">No documents found.</td></tr>`; els.docsMsg.textContent = "Ready"; return; }
+        els.docsTbody.innerHTML = rows.map(d => {
+          const dr = driversIndex.get(d.driverId); const driverLabel = dr ? (dr.name || dr.email || dr.id) : (d.driverId || "-");
+          const fileLink = d.id ? `<a class="underline text-xs font-semibold" href="#" data-preview="${h(d.id)}">Preview</a>` : `<span class="text-xs text-slate-500">No file</span>`;
+          const canAct = d.status === "submitted" || d.status === "needs_fix";
+          const actions = canAct ? `<button data-docact="approve" data-id="${h(d.id)}" class="px-3 py-1 rounded-lg jts-btn text-xs">Approve</button> <button data-docact="fix" data-id="${h(d.id)}" class="px-3 py-1 rounded-lg border text-xs">Needs Fix</button>` : `<span class="text-xs text-slate-500">-</span>`;
+          return `<tr class="hover:bg-slate-50"><td class="p-3 border-b whitespace-nowrap">${h(fmtDate(d.createdAt))}</td><td class="p-3 border-b">${h(driverLabel)}</td><td class="p-3 border-b">${h(d.loadId || "-")}</td><td class="p-3 border-b">${h(d.category || "-")}</td><td class="p-3 border-b">${h(d.status || "-")}</td><td class="p-3 border-b">${fileLink}</td><td class="p-3 border-b space-x-2">${actions}</td></tr>`;
+        }).join("");
+        els.docsTbody.querySelectorAll("[data-preview]").forEach(a => { a.onclick = (e) => { e.preventDefault(); openPreview({ docId: a.dataset.preview, title: "Document Preview" }); }; });
+        els.docsTbody.querySelectorAll("button[data-docact]").forEach(btn => { btn.onclick = async () => { const id = btn.dataset.id; if (btn.dataset.docact === "approve") showModal({ title:"Approve Document", text:"Approve this document?", onConfirm: async () => { await api(`/api/documents/${encodeURIComponent(id)}/approve`, { method:"POST", body:{} }); await loadDocs(); } }); if (btn.dataset.docact === "fix") showModal({ title:"Request Fix", text:"Write what needs to be fixed:", requireText:true, onConfirm: async (comment) => { await api(`/api/documents/${encodeURIComponent(id)}/needs-fix`, { method:"POST", body:{ comment } }); await loadDocs(); } }); }; });
+        els.docsMsg.textContent = `Ready (${rows.length})`;
+      } catch (e) { els.docsMsg.textContent = "Error: " + e.message; els.docsTbody.innerHTML = `<tr><td colspan="8" class="p-5 text-center text-red-700">${h(e.message)}</td></tr>`; }
+    }
+
+    async function loadBids() {
+      els.bidsMsg.textContent = "Loading..."; els.bidsTbody.innerHTML = "";
+      try {
+        const rows = await api("/api/bids");
+        if (els.bidsBadge) {
+          const count = rows.filter(b => String(b.status || "submitted") === "submitted").length;
+          els.bidsBadge.textContent = String(count);
+          els.bidsBadge.classList.toggle("hidden", count === 0);
+        }
+        if (!rows.length) { els.bidsTbody.innerHTML = `<tr><td colspan="8" class="p-5 text-center text-slate-500">No broker offers yet.</td></tr>`; els.bidsMsg.textContent = "Ready"; return; }
+        els.bidsTbody.innerHTML = rows.map(b => {
+          const route = b.route || `${b.origin || b.pickup || "-"} → ${b.destination || b.delivery || "-"}`;
+          const contact = [b.brokerPhone, b.brokerEmail].filter(Boolean).join(" • ") || "-";
+          const truck = [b.truckNumber && `Truck ${b.truckNumber}`, b.trailerNumber && `Trailer ${b.trailerNumber}`, b.trailerType].filter(Boolean).join(" • ") || "-";
+          return `<tr class="hover:bg-slate-50 align-top"><td class="p-3 border-b whitespace-nowrap">${h(fmtDate(b.createdAt))}</td><td class="p-3 border-b"><b>${h(b.brokerName || "-")}</b><div class="text-xs text-slate-500 mt-1">${h(b.brokerAddress || "")}</div></td><td class="p-3 border-b">${h(contact)}</td><td class="p-3 border-b"><b>${h(b.driverName || b.driverId || "-")}</b><div class="text-xs text-slate-500 mt-1">${h(truck)}</div></td><td class="p-3 border-b">${h(route)}${b.notes ? `<div class="text-xs text-slate-500 mt-1">${h(b.notes)}</div>` : ""}</td><td class="p-3 border-b"><b>${h(money(b.price))}</b></td><td class="p-3 border-b"><select data-bid-status="${h(b.id)}" class="border rounded-lg p-2 text-xs bg-white"><option value="submitted" ${String(b.status||"submitted")==="submitted"?"selected":""}>submitted</option><option value="reviewed" ${b.status==="reviewed"?"selected":""}>reviewed</option><option value="accepted" ${b.status==="accepted"?"selected":""}>accepted</option><option value="rejected" ${b.status==="rejected"?"selected":""}>rejected</option><option value="booked" ${b.status==="booked"?"selected":""}>booked</option><option value="completed" ${b.status==="completed"?"selected":""}>completed</option></select></td><td class="p-3 border-b"><button data-save-bid="${h(b.id)}" class="px-3 py-1 rounded-lg jts-btn text-xs">Save</button></td></tr>`;
+        }).join("");
+        els.bidsTbody.querySelectorAll("[data-save-bid]").forEach(btn => {
+          btn.onclick = async () => {
+            const id = btn.dataset.saveBid;
+            const sel = els.bidsTbody.querySelector(`[data-bid-status="${CSS.escape(id)}"]`);
+            try { await api(`/api/bids/${encodeURIComponent(id)}/status`, { method:"PATCH", body:{ status: sel?.value } }); await loadBids(); }
+            catch (e) { alert(e.message || "Failed to update bid"); }
+          };
+        });
+        els.bidsMsg.textContent = `Ready (${rows.length})`;
+      } catch (e) { els.bidsMsg.textContent = "Error: " + e.message; els.bidsTbody.innerHTML = `<tr><td colspan="8" class="p-5 text-center text-red-700">${h(e.message)}</td></tr>`; }
+    }
+
+
+    async function createDispatcherLoad() {
+      if (!els.createLoadBtn) return;
+      const body = {
+        loadNumber: els.newLoadNumber.value.trim(),
+        customer: els.newCustomer.value.trim() || null,
+        driverId: els.newDriverId.value,
+        pickup: els.newPickup.value.trim() || null,
+        delivery: els.newDelivery.value.trim() || null,
+        rate: els.newRate.value.trim() || null,
+        notes: els.newNotes.value.trim() || null
+      };
+      if (!body.loadNumber || !body.driverId) {
+        els.createLoadMsg.innerHTML = `<span class="text-red-700">Load Number and assigned driver are required.</span>`;
+        return;
+      }
+      try {
+        els.createLoadBtn.disabled = true;
+        setStatus("Creating load...");
+        const r = await api("/api/loads", { method: "POST", body });
+        els.createLoadMsg.innerHTML = `<span class="text-green-700">✅ Load ${h(r.load?.loadNumber || body.loadNumber)} created and assigned.</span>`;
+        els.newLoadNumber.value = ""; els.newCustomer.value = ""; els.newDriverId.value = "";
+        els.newPickup.value = ""; els.newDelivery.value = ""; els.newRate.value = ""; els.newNotes.value = "";
+        await loadAllLoads();
+        setStatus("Ready");
+      } catch (e) {
+        els.createLoadMsg.innerHTML = `<span class="text-red-700">❌ ${h(e.message || "Failed to create load")}</span>`;
+        setStatus("Error");
+      } finally {
+        els.createLoadBtn.disabled = !assignedDrivers.length;
+      }
+    }
+
+    if (els.createLoadBtn) els.createLoadBtn.onclick = createDispatcherLoad;
+
+    els.refresh.onclick = async () => { setStatus("Refreshing..."); await loadDrivers(); if (activeTab === "loads") await loadAllLoads(); if (activeTab === "docs") await loadDocs(); if (activeTab === "bids") await loadBids(); setStatus("Ready"); };
+    els.filterStatus.onchange = loadAllLoads; els.onlyMissing.onchange = loadAllLoads; els.docStatus.onchange = loadDocs; els.refreshBids.onclick = loadBids;
+    function setView(v) { currentView = v; els.viewActive.className = v === "active" ? "px-4 py-2 rounded-xl jts-btn text-sm" : "px-4 py-2 rounded-xl border bg-white text-sm"; els.viewFinished.className = v === "finished" ? "px-4 py-2 rounded-xl jts-btn text-sm" : "px-4 py-2 rounded-xl border bg-white text-sm"; loadAllLoads(); }
+    els.viewActive.onclick = () => setView("active"); els.viewFinished.onclick = () => setView("finished");
+
+    (async function init() { setStatus("Loading..."); await loadDrivers(); const tab = new URLSearchParams(location.search).get("tab"); if (tab === "bids") await showBids(); else await showLoads(); setStatus("Ready"); })();
+  </script>
+
+  <script type="module">
+    import { initPushUI } from "/assets/push.js";
+    initPushUI();
+  </script>
+  <script type="module" src="/assets/install.js"></script>
+  <script type="module" src="/assets/loader.js"></script>
+  <script src="/assets/app-motion.js"></script>
+  <script type="module" src="/assets/enterprise-live.js"></script>
+  <script src="/assets/role-ui.js"></script>
+  <script src="/assets/final-professional.js"></script>
+  <script src="/assets/jts-2026-clean-ui.js"></script>
+  <script src="/assets/jts-elite-10-ui.js"></script>
+  <script src="/assets/jts-redesign-v4.js"></script>
+  <script src="/assets/jts-final-production-ui.js"></script>
+  <script src="/assets/auth-guard-final.js"></script>
+  <script src="/assets/jts-auth-ui-hotfix.js"></script>
+  <script src="/assets/gps-access-final.js"></script>
+  <script src="/assets/gps-live-share-final.js"></script>
+  <script src="/assets/jts-final-mobile-gps-fix.js"></script>
+</body>
+</html>

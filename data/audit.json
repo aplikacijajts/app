@@ -1,0 +1,20 @@
+[
+  {
+    "id": "log_dotaqsxnxo_1780575880946",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-06-04T12:24:40.946Z"
+  },
+  {
+    "id": "log_l09eec9ia8_1780576147511",
+    "event": "login",
+    "meta": {
+      "userId": "u_admin",
+      "role": "admin"
+    },
+    "at": "2026-06-04T12:29:07.511Z"
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "appId": "com.jtslogisticsapp.app",
+  "appName": "JTS Logistics",
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false
+    }
+  }
+}

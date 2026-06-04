@@ -1,0 +1,340 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Load Details - JTS Logistics Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/theme.css">
+  <link rel="stylesheet" href="/assets/friendly.css">
+  <link rel="stylesheet" href="/assets/premium-enterprise.css">
+  <link rel="stylesheet" href="/assets/enterprise-live.css">
+  <link rel="stylesheet" href="/assets/final-professional.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="JTS Portal">
+
+  <link rel="stylesheet" href="/assets/jts-2026-clean-ui.css">
+  <link rel="stylesheet" href="/assets/jts-production-10.css">
+  <link rel="stylesheet" href="/assets/jts-elite-10-ui.css">
+  <link rel="stylesheet" href="/assets/jts-redesign-v4.css">
+  <link rel="stylesheet" href="/assets/jts-final-production-ui.css">
+</head>
+<body class="min-h-screen bg-gray-50">
+  <header class="bg-white border-b">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="font-bold text-lg"><span class="flex items-center gap-3"><img src="/assets/jts-logo.png" class="h-8" alt="JTS"><span>Load Details</span></span></div>
+      <div class="flex items-center gap-3">
+        <a id="backLink" href="/home.html" class="underline text-sm">Back</a>
+        <button id="logout" class="px-4 py-2 rounded jts-btn text-sm">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+    <div class="bg-white border rounded-lg p-4">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 id="title" class="text-2xl font-bold">Load</h1>
+          <div id="meta" class="text-sm text-gray-600 mt-1"></div>
+        </div>
+        <div id="missingBadge"></div>
+      </div>
+
+      <h2 class="font-semibold text-lg mt-6">Load Status Timeline</h2>
+      <div id="timeline" class="mt-3 grid gap-2"></div>
+
+      <h2 class="font-semibold text-lg mt-6">Required Documents Checklist</h2>
+      <p class="text-sm text-gray-600 mt-1">Required: POD + BOL (latest versions).</p>
+
+      <div class="overflow-auto mt-4">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="text-left p-2 border">Category</th>
+              <th class="text-left p-2 border">Status</th>
+              <th class="text-left p-2 border">Version</th>
+              <th class="text-left p-2 border">File</th>
+              <th class="text-left p-2 border">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="checklistTbody"></tbody>
+        </table>
+      </div>
+
+      <h2 class="font-semibold text-lg mt-8">All Documents (History)</h2>
+      <div class="overflow-auto mt-4">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="text-left p-2 border">Created</th>
+              <th class="text-left p-2 border">Category</th>
+              <th class="text-left p-2 border">Status</th>
+              <th class="text-left p-2 border">Version</th>
+              <th class="text-left p-2 border">File</th>
+            </tr>
+          </thead>
+          <tbody id="historyTbody"></tbody>
+        </table>
+      </div>
+
+      <div id="msg" class="text-sm mt-4 text-gray-600"></div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4">
+      <div class="bg-white rounded-lg max-w-lg w-full p-4">
+        <div class="flex justify-between items-start gap-3">
+          <h3 id="modalTitle" class="font-semibold text-lg">Action</h3>
+          <button id="modalClose" class="text-sm underline">Close</button>
+        </div>
+        <div class="mt-3">
+          <p id="modalText" class="text-sm text-gray-700"></p>
+          <textarea id="modalTextarea" class="mt-3 w-full border rounded p-2 text-sm" rows="4"
+            placeholder="Enter a comment (required for Needs Fix)"></textarea>
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+          <button id="modalCancel" class="px-4 py-2 rounded border">Cancel</button>
+          <button id="modalConfirm" class="px-4 py-2 rounded jts-btn">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { api, getToken } from "./assets/api.js";
+    import { openPreview, initNotifications } from "./assets/ui.js";
+
+    const token = getToken();
+    if (!token) location.href = "/index.html";
+    initNotifications();
+
+    function decodeJwt(token) {
+      try {
+        const payload = token.split(".")[1];
+        const json = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+        return JSON.parse(decodeURIComponent(escape(json)));
+      } catch {
+        return {};
+      }
+    }
+    const me = decodeJwt(token);
+    const role = me.role;
+
+    // Back link based on role
+    const back = document.getElementById("backLink");
+    if (role === "admin") back.href = "/admin-loads.html";
+    else if (role === "dispatcher") back.href = "/dispatcher.html";
+    else back.href = "/driver.html";
+
+    document.getElementById("logout").onclick = () => {
+      localStorage.removeItem("token");
+      location.href = "/index.html";
+    };
+
+    const els = {
+      title: document.getElementById("title"),
+      meta: document.getElementById("meta"),
+      missingBadge: document.getElementById("missingBadge"),
+      timeline: document.getElementById("timeline"),
+      checklistTbody: document.getElementById("checklistTbody"),
+      historyTbody: document.getElementById("historyTbody"),
+      msg: document.getElementById("msg"),
+
+      modal: document.getElementById("modal"),
+      modalTitle: document.getElementById("modalTitle"),
+      modalText: document.getElementById("modalText"),
+      modalTextarea: document.getElementById("modalTextarea"),
+      modalClose: document.getElementById("modalClose"),
+      modalCancel: document.getElementById("modalCancel"),
+      modalConfirm: document.getElementById("modalConfirm"),
+    };
+
+    function fmtDate(s) {
+      if (!s) return "-";
+      try { return new Date(s).toLocaleString(); } catch { return s; }
+    }
+
+    function badge(status) {
+      const base = "px-2 py-1 rounded text-xs border";
+      if (status === "approved") return `<span class="${base} bg-green-50">Approved</span>`;
+      if (status === "needs_fix") return `<span class="${base} bg-yellow-50">Needs Fix</span>`;
+      if (status === "rejected") return `<span class="${base} bg-red-50">Rejected</span>`;
+      if (status === "submitted") return `<span class="${base} bg-blue-50">Submitted</span>`;
+      if (status === "none") return `<span class="${base} bg-gray-50">Missing</span>`;
+      return `<span class="${base} bg-gray-50">${status || "-"}</span>`;
+    }
+
+    function showModal({ title, text, requireText = false, onConfirm }) {
+      els.modalTitle.textContent = title;
+      els.modalText.textContent = text || "";
+      els.modalTextarea.value = "";
+      els.modalTextarea.classList.toggle("hidden", !requireText);
+
+      els.modal.classList.remove("hidden");
+      els.modal.classList.add("flex");
+
+      const close = () => {
+        els.modal.classList.add("hidden");
+        els.modal.classList.remove("flex");
+        els.modalConfirm.onclick = null;
+      };
+
+      els.modalClose.onclick = close;
+      els.modalCancel.onclick = close;
+
+      els.modalConfirm.onclick = async () => {
+        const comment = els.modalTextarea.value.trim();
+        if (requireText && !comment) return alert("Please enter a comment.");
+        await onConfirm(comment);
+        close();
+      };
+    }
+
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
+    if (!id) {
+      els.msg.textContent = "Missing load id.";
+      throw new Error("Missing id");
+    }
+
+    async function load() {
+      els.msg.textContent = "Loading...";
+      els.checklistTbody.innerHTML = "";
+      els.historyTbody.innerHTML = "";
+
+      try {
+        const r = await api(`/api/loads/${encodeURIComponent(id)}/details`);
+        const load = r.load;
+
+        els.title.textContent = load.loadNumber ? `Load ${load.loadNumber}` : `Load ${load.id}`;
+        els.meta.textContent = `${load.customer ? "Customer: " + load.customer + " • " : ""}Status: ${load.status} • Created: ${fmtDate(load.createdAt)}`;
+
+        if ((load.missingCount || 0) === 0) {
+          els.missingBadge.innerHTML = `<span class="px-3 py-1 rounded border bg-green-50 text-xs">All required docs OK</span>`;
+        } else {
+          els.missingBadge.innerHTML = `<span class="px-3 py-1 rounded border bg-yellow-50 text-xs">Missing: <b>${(load.missingDocs || []).join(", ")}</b></span>`;
+        }
+
+        const hist = Array.isArray(load.statusHistory) && load.statusHistory.length ? load.statusHistory : [{ status: load.status || "created", at: load.createdAt, note: "Current status" }];
+        els.timeline.innerHTML = hist.map(x => `<div class="rounded-lg border bg-gray-50 p-3"><div class="font-semibold capitalize">${String(x.status || "").replaceAll("_", " ")}</div><div class="text-xs text-gray-500 mt-1">${fmtDate(x.at)}${x.note ? " • " + x.note : ""}</div></div>`).join("");
+
+        const canReview = (role === "dispatcher" || role === "admin");
+
+        els.checklistTbody.innerHTML = r.checklist.map(item => {
+          const file = item.previewUrl
+            ? `<a class="underline text-xs" href="${item.previewUrl}" target="_blank">Preview</a>`
+            : `<span class="text-xs text-gray-500">—</span>`;
+
+          let actions = `<span class="text-xs text-gray-500">—</span>`;
+          if (canReview && item.docId && (item.status === "submitted" || item.status === "needs_fix")) {
+            actions = `
+              <button data-act="approve" data-id="${item.docId}" class="px-3 py-1 rounded jts-btn text-xs">Approve</button>
+              <button data-act="fix" data-id="${item.docId}" class="px-3 py-1 rounded border text-xs">Needs Fix</button>
+            `;
+          }
+
+          return `
+            <tr class="hover:bg-gray-50">
+              <td class="p-2 border">${item.category}</td>
+              <td class="p-2 border">${badge(item.status)}</td>
+              <td class="p-2 border">${item.version ?? "-"}</td>
+              <td class="p-2 border">${file}</td>
+              <td class="p-2 border space-x-2">${actions}</td>
+            </tr>
+          `;
+        }).join("");
+
+        // bind actions
+        if (canReview) {
+          els.checklistTbody.querySelectorAll("button[data-act]").forEach(btn => {
+            btn.onclick = async () => {
+              const docId = btn.dataset.id;
+              const act = btn.dataset.act;
+
+              if (act === "approve") {
+                showModal({
+                  title: "Approve Document",
+                  text: "Approve this document?",
+                  requireText: false,
+                  onConfirm: async () => {
+                    await api(`/api/documents/${docId}/approve`, { method:"POST", body:{} });
+                    await load();
+                  }
+                });
+              }
+
+              if (act === "fix") {
+                showModal({
+                  title: "Request Fix",
+                  text: "Write what needs to be fixed:",
+                  requireText: true,
+                  onConfirm: async (comment) => {
+                    await api(`/api/documents/${docId}/needs-fix`, { method:"POST", body:{ comment } });
+                    await load();
+                  }
+                });
+              }
+            };
+          });
+        }
+
+        // history
+        const all = r.allDocs || [];
+        if (!all.length) {
+          els.historyTbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-500">No documents for this load yet.</td></tr>`;
+        } else {
+          els.historyTbody.innerHTML = all.map(d => {
+            const file = d.id ? `<a class="underline text-xs" href="#" data-preview="${d.id}" class="underline text-xs">Preview</a>` : "-";
+            return `
+              <tr class="hover:bg-gray-50">
+                <td class="p-2 border whitespace-nowrap">${fmtDate(d.createdAt)}</td>
+                <td class="p-2 border">${d.category || "-"}</td>
+                <td class="p-2 border">${badge(d.status)}</td>
+                <td class="p-2 border">${d.version || 1}</td>
+                <td class="p-2 border">${file}</td>
+              </tr>
+            `;
+          }).join("");
+        }
+
+        // Bind Preview links in history
+        els.historyTbody.querySelectorAll("[data-preview]").forEach(a => {
+          a.onclick = (e) => {
+            e.preventDefault();
+            openPreview({ docId: a.getAttribute("data-preview"), title: "Document Preview" });
+          };
+        });
+
+        els.msg.textContent = "Ready";
+      } catch (e) {
+        els.msg.textContent = "Error: " + e.message;
+      }
+    }
+
+    load();
+  </script>
+
+  <script type="module" src="/assets/install.js"></script>
+
+  <script type="module" src="/assets/loader.js"></script>
+  <script src="/assets/app-motion.js"></script>
+  <script type="module" src="/assets/enterprise-live.js"></script>
+  <script src="/assets/role-ui.js"></script>
+  <script src="/assets/final-professional.js"></script>
+  <script src="/assets/jts-2026-clean-ui.js"></script>
+  <script src="/assets/jts-elite-10-ui.js"></script>
+  <script src="/assets/jts-redesign-v4.js"></script>
+  <script src="/assets/jts-final-production-ui.js"></script>
+  <script src="/assets/auth-guard-final.js"></script>
+  <script src="/assets/jts-auth-ui-hotfix.js"></script>
+  <script src="/assets/gps-access-final.js"></script>
+  <script src="/assets/gps-live-share-final.js"></script>
+  <script src="/assets/jts-final-mobile-gps-fix.js"></script>
+</body>
+</html>

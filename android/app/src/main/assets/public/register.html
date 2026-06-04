@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Create Account - JTS Logistics Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/theme.css">
+  <link rel="stylesheet" href="/assets/friendly.css">
+  <link rel="stylesheet" href="/assets/premium-enterprise.css">
+  <link rel="stylesheet" href="/assets/enterprise-live.css">
+  <link rel="stylesheet" href="/assets/final-professional.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="JTS Portal">
+  <link rel="stylesheet" href="/assets/jts-2026-clean-ui.css">
+  <link rel="stylesheet" href="/assets/jts-production-10.css">
+  <link rel="stylesheet" href="/assets/jts-elite-10-ui.css">
+  <link rel="stylesheet" href="/assets/jts-redesign-v4.css">
+  <link rel="stylesheet" href="/assets/jts-final-production-ui.css">
+
+  <style>
+    .driver-only.hidden { display: none !important; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+  <header class="bg-white/90 backdrop-blur border-b sticky top-0 z-20">
+    <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
+      <a href="/index.html" class="font-bold text-lg flex items-center gap-3">
+        <img src="/assets/jts-logo.png" class="h-9" alt="JTS Logistics">
+        <span>JTS Logistics Portal</span>
+      </a>
+      <a href="/index.html" class="px-4 py-2 rounded-lg border bg-white text-sm font-semibold hover:bg-slate-50">Back to login</a>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-5 py-8 lg:py-12">
+    <section class="grid lg:grid-cols-[0.9fr_1.35fr] gap-6 items-start">
+      <aside class="rounded-3xl bg-slate-950 text-white p-7 lg:p-8 shadow-xl overflow-hidden relative">
+        <div class="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-blue-500/20"></div>
+        <div class="absolute -left-20 bottom-0 h-52 w-52 rounded-full bg-cyan-400/10"></div>
+        <div class="relative">
+          <p class="text-xs uppercase tracking-[0.25em] text-cyan-200 font-semibold">Carrier Access</p>
+          <h1 class="text-3xl lg:text-4xl font-extrabold mt-3 leading-tight">Create your professional JTS account</h1>
+          <p class="mt-4 text-slate-300 leading-7">Submit your required profile information. The account will stay pending until a JTS administrator reviews and approves it.</p>
+          <div class="mt-8 grid gap-3 text-sm">
+            <div class="rounded-2xl bg-white/10 border border-white/10 p-4">
+              <b>Required details</b>
+              <p class="text-slate-300 mt-1">First name, last name, phone and email. Driver requests also require owner/operator status, trailer type and equipment details.</p>
+            </div>
+            <div class="rounded-2xl bg-white/10 border border-white/10 p-4">
+              <b>Admin approval</b>
+              <p class="text-slate-300 mt-1">You can login only after approval from the admin panel.</p>
+            </div>
+            <div class="rounded-2xl bg-white/10 border border-white/10 p-4">
+              <b>Secure login</b>
+              <p class="text-slate-300 mt-1">Passwords are stored hashed and never shown in the admin screen.</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="bg-white border border-slate-200 rounded-3xl p-5 lg:p-7 shadow-sm">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b pb-5">
+          <div>
+            <h2 class="text-2xl font-bold">Account request</h2>
+            <p class="text-sm text-slate-500 mt-1">Fields marked with * are mandatory.</p>
+          </div>
+          <span class="text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full bg-amber-100 text-amber-800">Pending approval</span>
+        </div>
+
+        <form id="registerForm" class="mt-6 grid md:grid-cols-2 gap-4" novalidate>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">First name *</label>
+            <input id="firstName" autocomplete="given-name" required class="mt-1 border border-slate-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Martin">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Last name *</label>
+            <input id="lastName" autocomplete="family-name" required class="mt-1 border border-slate-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nikolov">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Email *</label>
+            <input id="email" type="email" autocomplete="email" required class="mt-1 border border-slate-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="name@company.com">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Phone *</label>
+            <input id="phone" type="tel" autocomplete="tel" required class="mt-1 border border-slate-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="+1 555 123 4567">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Requested role *</label>
+            <select id="requestedRole" required class="mt-1 border border-slate-300 rounded-xl p-3 w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="driver" selected>Driver</option>
+              <option value="dispatcher">Dispatcher</option>
+              <option value="broker">Broker</option>
+            </select>
+          </div>
+          <div class="driver-only">
+            <label class="text-sm font-semibold text-slate-700">Are you an owner/operator? *</label>
+            <select id="isOwner" required class="mt-1 border border-slate-300 rounded-xl p-3 w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select...</option>
+              <option value="true">Yes, owner/operator</option>
+              <option value="false">No, company driver</option>
+            </select>
+          </div>
+          <div class="driver-only">
+            <label class="text-sm font-semibold text-slate-700">Trailer type *</label>
+            <select id="trailerType" required class="mt-1 border border-slate-300 rounded-xl p-3 w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select trailer type...</option>
+              <option value="dry-van">Dry Van</option>
+              <option value="reefer">Reefer</option>
+              <option value="flatbed">Flatbed</option>
+              <option value="step-deck">Step Deck</option>
+              <option value="conestoga">Conestoga</option>
+              <option value="box-truck">Box Truck</option>
+              <option value="power-only">Power Only</option>
+              <option value="container">Container</option>
+              <option value="tanker">Tanker</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="driver-only">
+            <label class="text-sm font-semibold text-slate-700">Company name</label>
+            <input id="companyName" class="mt-1 border border-slate-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Company / carrier name">
+          </div>
+          <div class="driver-only">
+            <label class="text-sm font-semibold text-slate-700">Truck / unit number</label>
+            <input id="truckNumber" class="mt-1 border border-slate-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Unit number">
+          </div>
+          <div class="driver-only">
+            <label class="text-sm font-semibold text-slate-700">Trailer number</label>
+            <input id="trailerNumber" class="mt-1 border border-slate-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Trailer number">
+          </div>
+          <div class="driver-only">
+            <label class="text-sm font-semibold text-slate-700">MC number</label>
+            <input id="mcNumber" class="mt-1 border border-slate-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MC number">
+          </div>
+          <div class="driver-only">
+            <label class="text-sm font-semibold text-slate-700">DOT number</label>
+            <input id="dotNumber" class="mt-1 border border-slate-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="DOT number">
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-sm font-semibold text-slate-700">Address</label>
+            <input id="address" autocomplete="street-address" class="mt-1 border border-slate-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Street, city, state">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Password *</label>
+            <input id="password" type="password" minlength="6" autocomplete="new-password" required class="mt-1 border border-slate-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Minimum 6 characters">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">Confirm password *</label>
+            <input id="confirmPassword" type="password" minlength="6" autocomplete="new-password" required class="mt-1 border border-slate-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Repeat password">
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-sm font-semibold text-slate-700">Notes</label>
+            <textarea id="notes" rows="3" class="mt-1 border border-slate-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Optional notes for the admin"></textarea>
+          </div>
+
+          <div class="md:col-span-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+            <button id="btn" class="jts-btn px-5 py-3 rounded-xl font-bold w-full sm:w-auto" type="submit">Submit for approval</button>
+            <p id="msg" class="text-sm flex-1"></p>
+          </div>
+        </form>
+      </section>
+    </section>
+  </main>
+
+
+  <script>
+    (function(){
+      function syncPublicDriverFields(){
+        var roleEl = document.getElementById('requestedRole');
+        if (!roleEl) return;
+        var isDriver = String(roleEl.value || '').toLowerCase() === 'driver';
+        document.querySelectorAll('.driver-only').forEach(function(el){
+          el.classList.toggle('hidden', !isDriver);
+          el.style.display = isDriver ? '' : 'none';
+          el.setAttribute('aria-hidden', String(!isDriver));
+        });
+        ['isOwner','trailerType'].forEach(function(id){
+          var input = document.getElementById(id);
+          if (!input) return;
+          input.required = isDriver;
+          if (!isDriver) input.value = '';
+        });
+        ['companyName','truckNumber','trailerNumber','mcNumber','dotNumber'].forEach(function(id){
+          var input = document.getElementById(id);
+          if (input && !isDriver) input.value = '';
+        });
+      }
+      document.addEventListener('DOMContentLoaded', function(){
+        var roleEl = document.getElementById('requestedRole');
+        if (roleEl) roleEl.addEventListener('change', syncPublicDriverFields);
+        syncPublicDriverFields();
+      });
+      window.JTS_syncPublicDriverFields = syncPublicDriverFields;
+    })();
+  </script>
+
+  <script type="module">
+    import { api } from "./assets/api.js";
+
+    const form = document.getElementById("registerForm");
+    const btn = document.getElementById("btn");
+    const msg = document.getElementById("msg");
+    const value = (id) => document.getElementById(id).value.trim();
+    const requestedRole = document.getElementById("requestedRole");
+    const driverOnlyFields = Array.from(document.querySelectorAll(".driver-only"));
+    const requiredDriverInputs = ["isOwner", "trailerType"].map(id => document.getElementById(id));
+    const optionalDriverInputs = ["companyName", "truckNumber", "trailerNumber", "mcNumber", "dotNumber"].map(id => document.getElementById(id));
+
+    function syncDriverFields() {
+      const isDriver = requestedRole.value === "driver";
+      driverOnlyFields.forEach(el => {
+        el.classList.toggle("hidden", !isDriver);
+        el.setAttribute("aria-hidden", String(!isDriver));
+      });
+      requiredDriverInputs.forEach(input => {
+        input.required = isDriver;
+        if (!isDriver) input.value = "";
+      });
+      optionalDriverInputs.forEach(input => { if (!isDriver) input.value = ""; });
+    }
+
+    requestedRole.addEventListener("change", syncDriverFields);
+    syncDriverFields();
+
+    function showMessage(html, isError = false) {
+      msg.className = "text-sm flex-1 " + (isError ? "text-red-700" : "text-green-700");
+      msg.innerHTML = html;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      msg.textContent = "";
+
+      if (!form.reportValidity()) return;
+      if (value("password") !== value("confirmPassword")) {
+        showMessage("❌ Passwords do not match.", true);
+        return;
+      }
+
+      const body = {
+        firstName: value("firstName"),
+        lastName: value("lastName"),
+        email: value("email").toLowerCase(),
+        phone: value("phone"),
+        requestedRole: value("requestedRole"),
+        isOwner: value("isOwner"),
+        trailerType: value("trailerType"),
+        companyName: value("companyName"),
+        truckNumber: value("truckNumber"),
+        trailerNumber: value("trailerNumber"),
+        mcNumber: value("mcNumber"),
+        dotNumber: value("dotNumber"),
+        address: value("address"),
+        notes: value("notes"),
+        password: value("password")
+      };
+
+      btn.disabled = true;
+      btn.textContent = "Submitting...";
+      try {
+        await api("/api/auth/register", { method:"POST", body });
+        form.reset();
+        if (window.JTS_syncPublicDriverFields) window.JTS_syncPublicDriverFields();
+        showMessage("✅ Request submitted successfully. Please wait for admin approval before logging in.");
+      } catch (e) {
+        showMessage("❌ " + (e.message || "Registration failed"), true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Submit for approval";
+      }
+    });
+  </script>
+
+  <script type="module" src="/assets/install.js"></script>
+  <script type="module" src="/assets/loader.js"></script>
+  <script src="/assets/app-motion.js"></script>
+  <script type="module" src="/assets/enterprise-live.js"></script>
+  <script src="/assets/role-ui.js"></script>
+  <script src="/assets/final-professional.js"></script>
+  <script src="/assets/jts-2026-clean-ui.js"></script>
+  <script src="/assets/jts-elite-10-ui.js"></script>
+  <script src="/assets/jts-redesign-v4.js"></script>
+  <script src="/assets/jts-final-production-ui.js"></script>
+  <script src="/assets/auth-guard-final.js"></script>
+  <script src="/assets/jts-auth-ui-hotfix.js"></script>
+  <script src="/assets/gps-access-final.js"></script>
+  <script src="/assets/gps-live-share-final.js"></script>
+  <script src="/assets/jts-final-mobile-gps-fix.js"></script>
+</body>
+</html>
