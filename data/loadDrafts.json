@@ -1,0 +1,34 @@
+[
+  {
+    "id": "ldraft_ej7f9tha5t_1781005012176",
+    "userId": "u_admin",
+    "context": "admin-loads.html",
+    "createdAt": "2026-06-09T11:36:52.172Z",
+    "draft": {
+      "loadNumber": "",
+      "customer": "",
+      "driverId": "",
+      "pickup": "",
+      "delivery": "",
+      "rate": "",
+      "notes": ""
+    },
+    "updatedAt": "2026-06-09T11:36:52.172Z"
+  },
+  {
+    "id": "ldraft_5mohm842nu_1781005028686",
+    "userId": "u_admin",
+    "context": "dispatcher.html",
+    "createdAt": "2026-06-09T11:37:08.680Z",
+    "draft": {
+      "loadNumber": "",
+      "customer": "",
+      "driverId": "",
+      "pickup": "",
+      "delivery": "",
+      "rate": "",
+      "notes": ""
+    },
+    "updatedAt": "2026-06-09T11:37:08.680Z"
+  }
+]

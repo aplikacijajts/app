@@ -1,0 +1,31 @@
+[
+  {
+    "id": "conf_7ocmh24rpp_1781005237571",
+    "confirmationNumber": "JTS-05118457",
+    "confirmationDate": "2026-06-09",
+    "loadNumber": "231114",
+    "customer": "Transcom LLC",
+    "brokerName": "Kristijan Josifov",
+    "contactName": "Angel Ivanovski",
+    "contactPhone": "078395246",
+    "contactEmail": "angel@geljo.com",
+    "pickup": "NY, 4567 Street No1",
+    "delivery": "CO, 2167 Street No56",
+    "driverName": "Aleksandar Vasilevski",
+    "truckNumber": "2111",
+    "trailerNumber": "1331411",
+    "rate": "1842",
+    "commodity": "42",
+    "weight": "46llb",
+    "pickupDate": "06-09-2026",
+    "deliveryDate": "06-10-2026",
+    "notes": "Pallet",
+    "instructions": null,
+    "createdBy": "u_admin",
+    "dispatcherId": null,
+    "role": "admin",
+    "companyId": "jts-logistics",
+    "createdAt": "2026-06-09T11:40:37.571Z",
+    "updatedAt": "2026-06-09T11:40:37.571Z"
+  }
+]
