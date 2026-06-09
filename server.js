@@ -20,6 +20,7 @@ import aiRoutes from "./src/routes/ai.routes.js";
 import mapRoutes from "./src/routes/map.routes.js";
 import chatRoutes from "./src/routes/chat.routes.js";
 import enterpriseRoutes from "./src/routes/enterprise.routes.js";
+import confirmationsRoutes from "./src/routes/confirmations.routes.js";
 
 import { errorHandler } from "./src/middleware/error.js";
 import { securityHeaders, apiLimiter, authLimiter } from "./src/middleware/security.js";
@@ -61,6 +62,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/map", mapRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/enterprise", enterpriseRoutes);
+app.use("/api/confirmations", confirmationsRoutes);
 app.use("/gps", gpsRoutes);
 app.use("/api/gps", gpsRoutes);
 app.use("/api/push", pushRoutes);
