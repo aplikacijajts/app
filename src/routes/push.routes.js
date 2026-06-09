@@ -56,7 +56,13 @@ async function ensureVapidConfigured() {
 
   const sig = `${subject}|${publicKey}|${privateKey}`;
   if (!vapidConfigured || lastVapidSignature !== sig) {
-    wp.setVapidDetails(subject, publicKey, privateKey);
+    try {
+      wp.setVapidDetails(subject, publicKey, privateKey);
+    } catch (err) {
+      vapidConfigured = false;
+      lastVapidSignature = "";
+      return { ok: false, reason: "invalid_keys", error: err?.message || "Invalid VAPID keys" };
+    }
     vapidConfigured = true;
     lastVapidSignature = sig;
   }
@@ -70,7 +76,9 @@ function disabledResponse(res, reason, status = 200) {
     reason,
     message: reason === "missing_package"
       ? "Server is missing the web-push package. Redeploy after npm install."
-      : "Push notifications are currently disabled. Set VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY.",
+      : reason === "invalid_keys"
+        ? "Push notifications are disabled because the configured VAPID keys are invalid. Regenerate them and redeploy."
+        : "Push notifications are currently disabled. Set VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY.",
     publicKey: null
   });
 }
