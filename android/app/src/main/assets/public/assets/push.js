@@ -73,7 +73,7 @@ function ensureBanner() {
   el.className = "fixed bottom-4 left-4 right-4 md:left-auto md:right-4 bg-white border shadow-lg rounded-lg p-4 md:w-[360px] z-50";
   el.innerHTML = `
     <div class="font-semibold mb-1">Enable notifications</div>
-    <div class="text-sm text-gray-600 mb-3">Get alerts for new loads, bids and updates.</div>
+    <div class="text-sm text-gray-600 mb-3">Get alerts for new loads, bids and updates. On iPhone, install the app to Home Screen first, then enable.</div>
     <div class="flex gap-2">
       <button id="pushEnableBtn" class="jts-btn px-3 py-2 rounded text-sm flex-1">Enable</button>
       <button id="pushLaterBtn" class="px-3 py-2 rounded text-sm border flex-1">Later</button>
@@ -123,6 +123,8 @@ function explainReason(reason) {
     case "missing_keys":
     case "missing_vapid":
       return "Server is missing VAPID keys. Set VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY in Render Environment Variables, then redeploy.";
+    case "invalid_keys":
+      return "The server VAPID keys are invalid. Regenerate VAPID keys with npm run generate-vapid or node generate-vapid.js and redeploy.";
     default:
       return "Failed to enable notifications. Please check your browser settings and try again.";
   }
@@ -133,7 +135,7 @@ export async function initPushUI() {
   if (!token) return;
 
   // If already granted, auto-subscribe silently (best effort)
-  if (Notification?.permission === "granted") {
+  if (("Notification" in window) && Notification.permission === "granted") {
     try { await subscribeIfPossible({ forcePrompt:false }); } catch {}
     return;
   }
