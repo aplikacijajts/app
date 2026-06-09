@@ -7,7 +7,7 @@
     '/admin.html':['admin'], '/admin-users.html':['admin'], '/admin-loads.html':['admin'], '/settings-center.html':['admin'], '/onboarding.html':['admin'],
     '/command-center.html':['admin','dispatcher'], '/dispatcher.html':['admin','dispatcher'], '/driver.html':['admin','driver'], '/broker.html':['admin','broker'],
     '/gps.html':['admin','dispatcher','broker'], '/live-map.html':['admin','dispatcher','broker'], '/load-details.html':['admin','dispatcher','driver','broker'],
-    '/chat.html':['admin','dispatcher','driver','broker'], '/notifications.html':['admin','dispatcher','driver','broker'], '/home.html':['admin','dispatcher','driver','broker']
+    '/chat.html':['admin','dispatcher','driver','broker'], '/notifications.html':['admin','dispatcher','driver','broker'], '/fuel.html':['admin','dispatcher','driver','broker'], '/confirmation.html':['admin','dispatcher'], '/home.html':['admin','dispatcher','driver','broker']
   };
   function norm(path){ if(!path || path === '/') return '/'; return path.endsWith('/') ? path.slice(0,-1) : path; }
   function decode(token){

@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Fuel - JTS Logistics</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0ba5a2">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="stylesheet" href="/assets/jts-apex-production-ui.css">
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+  <header class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
+      <div class="font-bold text-lg flex items-center gap-3"><img src="/assets/jts-logo.png" class="h-9" alt="JTS"><span>Fuel</span></div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-5 py-8 space-y-6">
+    <section class="rounded-3xl bg-slate-950 text-white p-6 lg:p-8 shadow-sm relative overflow-hidden">
+      <div class="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-blue-500/20"></div>
+      <div class="relative flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-[0.25em] text-cyan-200 font-semibold">Fuel</p>
+          <h1 class="text-3xl font-extrabold mt-2">Nearest Fuel Stations for the Driver</h1>
+          <p class="text-slate-300 mt-2">Select a fuel station, allow current location access, and the map will show the closest matching stations around the driver.</p>
+        </div>
+        <span id="fuelUser" class="jts-page-badge">Loading user</span>
+      </div>
+    </section>
+
+    <section class="jts-surface p-6">
+      <div class="grid lg:grid-cols-3 gap-5 items-end">
+        <div>
+          <label class="text-sm font-semibold text-slate-700">Fuel Station</label>
+          <select id="stationSelect" class="border rounded-xl p-2 w-full mt-1"></select>
+        </div>
+        <div class="lg:col-span-2 flex flex-wrap gap-2">
+          <button id="locateDriver" type="button" class="jts-btn">Use Current Location</button>
+          <button id="watchLocation" type="button" class="border bg-white">Live Location</button>
+          <a id="openFuelMap" class="border bg-white px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center" href="https://www.google.com/maps" target="_blank" rel="noopener">Open in Google Maps</a>
+        </div>
+      </div>
+      <div class="jts-info-strip mt-5">
+        <div id="driverPosition">Location is not enabled yet.</div>
+        <div><b>Search:</b> <span id="fuelQuery">fuel station near me</span></div>
+        <div id="fuelStatus" data-state="">Ready</div>
+      </div>
+    </section>
+
+    <section class="jts-surface p-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div>
+          <h2 class="font-bold text-xl">Google Maps Fuel Search</h2>
+          <p class="text-sm text-slate-500 mt-1">The map uses the selected fuel station and the driver’s current browser/GPS location.</p>
+        </div>
+      </div>
+      <iframe id="fuelMapFrame" title="Fuel stations map" class="jts-map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="geolocation"></iframe>
+    </section>
+  </main>
+
+  <script type="module" src="/assets/fuel.js"></script>
+  <script src="/assets/role-ui.js"></script>
+  <script src="/assets/auth-guard-final.js"></script>
+  <script src="/assets/jts-apex-production-ui.js"></script>
+</body>
+</html>

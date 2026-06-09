@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>JTS Logistics - Users</title>
 <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#0b1220">
+  <meta name="theme-color" content="#0ba5a2">
   <link rel="icon" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,8 +15,9 @@
   
   
   
-    
-
+  
+  
+  
   <link rel="stylesheet" href="/assets/jts-apex-production-ui.css">
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-900">
@@ -28,7 +29,6 @@
         <a href="/admin.html" class="underline">Approvals</a>
         <a href="/admin-loads.html" class="underline">Loads</a>
       </nav>
-      <button id="logout" class="px-4 py-2 rounded-xl jts-btn text-sm font-semibold">Sign out</button>
     </div>
   </header>
 
@@ -384,7 +384,7 @@
     document.getElementById("editRole").addEventListener("change", syncEditDriverFields);
     syncCreateDriverFields();
 
-    els.logout.onclick = () => { localStorage.removeItem("token"); localStorage.removeItem("user"); location.href = "/index.html"; };
+    if (els.logout) els.logout.onclick = () => { localStorage.removeItem("token"); localStorage.removeItem("user"); location.href = "/index.html"; };
 
     async function loadUsers() {
       els.listMsg.textContent = "Loading...";

@@ -16,7 +16,6 @@
         <a href="/admin-loads.html" class="underline">Loads</a>
         <a href="/chat.html" class="underline">Chat</a>
       </nav>
-      <button id="logout" class="px-4 py-2 rounded-xl jts-btn text-sm font-semibold">Logout</button>
     </div>
   </header>
 
@@ -232,7 +231,7 @@ if (!getToken()) location.href = '/index.html';
 const $ = id => document.getElementById(id);
 const h = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const msg = (t, bad=false) => { $('msg').textContent = t || ''; $('msg').className = 'text-sm mt-5 ' + (bad ? 'text-red-700' : 'text-emerald-700'); };
-$('logout').onclick = () => { localStorage.removeItem('token'); localStorage.removeItem('user'); location.href='/index.html'; };
+const headerLogout = $('logout'); if (headerLogout) headerLogout.onclick = () => { localStorage.removeItem('token'); localStorage.removeItem('user'); location.href='/index.html'; };
 function card(title, value){ return `<div class="rounded-2xl bg-white/10 border border-white/10 p-4"><div class="text-xs uppercase text-cyan-100">${h(title)}</div><div class="text-2xl font-extrabold mt-1">${h(value)}</div></div>`; }
 function small(item){ return `<div class="rounded-2xl border bg-slate-50 p-3 text-sm"><pre class="whitespace-pre-wrap font-sans">${h(JSON.stringify(item, null, 2))}</pre></div>`; }
 async function loadDashboard(){ const d = await api('/api/enterprise/dashboard'); $('metrics').innerHTML = Object.entries(d.metrics).map(([k,v])=>card(k.replace(/([A-Z])/g,' $1'), v)).join(''); }

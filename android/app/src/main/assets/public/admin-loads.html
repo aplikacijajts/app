@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Admin - Load Management</title>
 <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#0b1220">
+  <meta name="theme-color" content="#0ba5a2">
   <link rel="icon" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,8 +16,9 @@
   
   
   
-    
-
+  
+  
+  
   <link rel="stylesheet" href="/assets/jts-apex-production-ui.css">
 </head>
 <body class="min-h-screen bg-gray-50">
@@ -28,7 +29,6 @@
         <a href="/home.html" class="underline text-sm">Home</a>
         <a href="/admin.html" class="underline text-sm">Approvals & Inbox</a>
         <a href="/admin-users.html" class="underline text-sm">Users</a>
-        <button id="logout" class="px-4 py-2 rounded jts-btn text-sm">Logout</button>
       </div>
     </div>
   </header>
@@ -56,6 +56,30 @@
       <iframe title="time.mk" src="https://www.time.mk" class="w-full rounded-lg border bg-white" style="height:420px" loading="lazy" referrerpolicy="no-referrer"></iframe>
     </section>
 
+
+    <section class="jts-load-draft-panel mt-5 bg-white border rounded-lg p-4 shadow-sm">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 class="font-semibold text-lg">Load data capture under iframe</h2>
+          <p class="text-sm text-gray-600 mt-1">Type the load information here and it will be remembered and mirrored into the Create Load form below.</p>
+        </div>
+        <label class="jts-inline-check"><input type="checkbox" data-load-draft-auto checked> Auto sync to Create Load</label>
+      </div>
+      <div class="jts-form-grid mt-4">
+        <div><label>Load Number</label><input data-load-draft="loadNumber" placeholder="Load number"></div>
+        <div><label>Customer</label><input data-load-draft="customer" placeholder="Customer"></div>
+        <div><label>Pickup / From</label><input data-load-draft="pickup" placeholder="Pickup city/state"></div>
+        <div><label>Delivery / To</label><input data-load-draft="delivery" placeholder="Delivery city/state"></div>
+        <div><label>Rate</label><input data-load-draft="rate" placeholder="Rate"></div>
+        <div class="jts-col-span-2"><label>Notes</label><textarea data-load-draft="notes" placeholder="Dispatch notes"></textarea></div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 mt-4">
+        <button type="button" data-load-draft-copy class="jts-btn">Copy to Create Load</button>
+        <button type="button" data-load-draft-clear class="border bg-white">Clear draft</button>
+        <span data-load-draft-status class="text-sm text-gray-600">Draft ready</span>
+      </div>
+    </section>
+
     <div class="grid lg:grid-cols-2 gap-6 mt-6">
       <!-- Create Load -->
       <section class="bg-white border rounded-lg p-4">
@@ -71,6 +95,26 @@
           <div>
             <label class="text-sm text-gray-700">Customer (optional)</label>
             <input id="customer" class="border rounded p-2 w-full mt-1" placeholder="e.g., Amazon / Walmart">
+          </div>
+
+          <div>
+            <label class="text-sm text-gray-700">Pickup / From</label>
+            <input id="pickup" class="border rounded p-2 w-full mt-1" placeholder="Pickup city/state">
+          </div>
+
+          <div>
+            <label class="text-sm text-gray-700">Delivery / To</label>
+            <input id="delivery" class="border rounded p-2 w-full mt-1" placeholder="Delivery city/state">
+          </div>
+
+          <div>
+            <label class="text-sm text-gray-700">Rate</label>
+            <input id="rate" class="border rounded p-2 w-full mt-1" placeholder="2500">
+          </div>
+
+          <div>
+            <label class="text-sm text-gray-700">Notes</label>
+            <textarea id="notes" class="border rounded p-2 w-full mt-1" rows="2" placeholder="Optional dispatch notes"></textarea>
           </div>
 
           <div>
@@ -149,6 +193,10 @@
 
       loadNumber: document.getElementById("loadNumber"),
       customer: document.getElementById("customer"),
+      pickup: document.getElementById("pickup"),
+      delivery: document.getElementById("delivery"),
+      rate: document.getElementById("rate"),
+      notes: document.getElementById("notes"),
       driverId: document.getElementById("driverId"),
       create: document.getElementById("create"),
       msg: document.getElementById("msg"),
@@ -169,7 +217,7 @@
 
     function setStatus(t) { els.status.textContent = t || ""; }
 
-    els.logout.onclick = () => {
+    if (els.logout) els.logout.onclick = () => {
       localStorage.removeItem("token");
       location.href = "/index.html";
     };
@@ -287,6 +335,10 @@
       els.msg.textContent = "";
       const loadNumber = els.loadNumber.value.trim();
       const customer = els.customer.value.trim();
+      const pickup = els.pickup.value.trim();
+      const delivery = els.delivery.value.trim();
+      const rate = els.rate.value.trim();
+      const notes = els.notes.value.trim();
       const driverId = els.driverId.value;
 
       if (!loadNumber || !driverId) {
@@ -298,13 +350,18 @@
         setStatus("Creating load...");
         const r = await api("/api/loads", {
           method: "POST",
-          body: { loadNumber, customer: customer || null, driverId }
+          body: { loadNumber, customer: customer || null, driverId, pickup: pickup || null, delivery: delivery || null, rate: rate || null, notes: notes || null }
         });
 
         els.msg.innerHTML = `<span class="text-green-700">✅ Load created: ${r.load.loadNumber}</span>`;
         els.loadNumber.value = "";
         els.customer.value = "";
+        els.pickup.value = "";
+        els.delivery.value = "";
+        els.rate.value = "";
+        els.notes.value = "";
         els.driverId.value = "";
+        try { localStorage.removeItem("jts-load-intake-draft-v1"); } catch {}
 
         await loadAllLoads();
         setStatus("Ready");
@@ -349,6 +406,7 @@ if (els.viewFinished) els.viewFinished.onclick = () => setView("finished");
   <script type="module" src="/assets/install.js"></script>
 
   <script type="module" src="/assets/loader.js"></script>
+  <script type="module" src="/assets/load-draft-sync.js"></script>
   
   <script type="module" src="/assets/enterprise-live.js"></script>
   <script src="/assets/role-ui.js"></script>

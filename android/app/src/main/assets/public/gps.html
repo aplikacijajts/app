@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>GPS - JTS Logistics Portal</title>
 <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#0b1220">
+  <meta name="theme-color" content="#0ba5a2">
   <link rel="icon" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,8 +16,9 @@
   
   
   
-    
-
+  
+  
+  
   <link rel="stylesheet" href="/assets/jts-apex-production-ui.css">
 </head>
 <body class="min-h-screen bg-gray-50">
@@ -31,7 +32,6 @@
       </div>
       <div class="flex items-center gap-3">
         <a id="back" href="/home.html" class="underline text-sm">Back</a>
-        <button id="logout" class="px-4 py-2 rounded jts-btn text-sm">Logout</button>
       </div>
     </div>
   </header>
@@ -80,7 +80,7 @@
     else if (role === "broker") back.href = "/broker.html";
     else back.href = "/driver.html";
 
-    document.getElementById("logout").onclick = () => {
+    const headerLogout = document.getElementById("logout"); if (headerLogout) headerLogout.onclick = () => {
       localStorage.removeItem("token");
       location.href = "/index.html";
     };
