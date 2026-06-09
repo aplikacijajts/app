@@ -25,7 +25,6 @@
         <a href="/chat.html" class="underline">Chat</a>
         <a href="/notifications.html" class="underline">Notifications</a>
       </nav>
-      <button id="logout" class="px-4 py-2 rounded-xl jts-btn text-sm font-semibold">Logout</button>
     </div>
   </header>
 
@@ -186,7 +185,7 @@
 
     function setStatus(text) { els.status.textContent = text || ""; }
 
-    els.logout.onclick = () => {
+    if (els.logout) els.logout.onclick = () => {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       location.href = "/index.html";

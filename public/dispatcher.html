@@ -23,7 +23,6 @@
         <a href="/enterprise.html" class="underline">Enterprise</a>
         <a href="/notifications.html" class="underline">Notifications</a>
       </nav>
-      <button id="logout" class="px-4 py-2 rounded-xl jts-btn text-sm font-semibold">Logout</button>
     </div>
   </header>
 
@@ -84,6 +83,31 @@
         </div>
         <iframe title="time.mk" src="https://www.time.mk" class="w-full rounded-xl border bg-white" style="height:360px" loading="lazy" referrerpolicy="no-referrer"></iframe>
       </div>
+
+
+    <section class="jts-load-draft-panel mt-5 bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 class="font-bold text-lg">Load data capture under iframe</h2>
+          <p class="text-sm text-slate-500 mt-1">Type the load information here and it will be remembered and mirrored into the Create Load form below.</p>
+        </div>
+        <label class="jts-inline-check"><input type="checkbox" data-load-draft-auto checked> Auto sync to Create Load</label>
+      </div>
+      <div class="jts-form-grid mt-4">
+        <div><label>Load Number</label><input data-load-draft="loadNumber" placeholder="Load number"></div>
+        <div><label>Customer</label><input data-load-draft="customer" placeholder="Customer"></div>
+        <div><label>Pickup / From</label><input data-load-draft="pickup" placeholder="Pickup city/state"></div>
+        <div><label>Delivery / To</label><input data-load-draft="delivery" placeholder="Delivery city/state"></div>
+        <div><label>Rate</label><input data-load-draft="rate" placeholder="Rate"></div>
+        <div class="jts-col-span-2"><label>Notes</label><textarea data-load-draft="notes" placeholder="Dispatch notes"></textarea></div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 mt-4">
+        <button type="button" data-load-draft-copy class="jts-btn">Copy to Create Load</button>
+        <button type="button" data-load-draft-clear class="border bg-white">Clear draft</button>
+        <span data-load-draft-status class="text-sm text-slate-500">Draft ready</span>
+      </div>
+    </section>
+
 
       <section class="mt-5 rounded-2xl border bg-white p-4 shadow-sm">
         <div class="flex flex-wrap items-start justify-between gap-3">
@@ -205,7 +229,7 @@
     let activeTab = "loads";
 
     const setStatus = (msg) => { els.status.textContent = msg || ""; };
-    els.logout.onclick = () => { localStorage.removeItem("token"); localStorage.removeItem("user"); location.href = "/index.html"; };
+    if (els.logout) els.logout.onclick = () => { localStorage.removeItem("token"); localStorage.removeItem("user"); location.href = "/index.html"; };
 
     function showModal({ title, text, requireText = false, onConfirm }) {
       els.modalTitle.textContent = title;
@@ -398,6 +422,7 @@
   </script>
   <script type="module" src="/assets/install.js"></script>
   <script type="module" src="/assets/loader.js"></script>
+  <script type="module" src="/assets/load-draft-sync.js"></script>
   
   <script type="module" src="/assets/enterprise-live.js"></script>
   <script src="/assets/role-ui.js"></script>

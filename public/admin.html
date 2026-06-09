@@ -34,7 +34,6 @@
         <a href="/settings-center.html" class="underline">Settings</a>
         <a href="/enterprise.html" class="underline">Enterprise</a>
       </nav>
-      <button id="logout" class="px-4 py-2 rounded-xl jts-btn text-sm font-semibold">Logout</button>
     </div>
   </header>
 
@@ -326,7 +325,7 @@
     els.tabApprovals.onclick = showApprovals;
     els.tabInbox.onclick = showInbox;
     els.tabBids.onclick = showBids;
-    els.logout.onclick = () => { localStorage.removeItem("token"); localStorage.removeItem("user"); location.href = "/index.html"; };
+    if (els.logout) els.logout.onclick = () => { localStorage.removeItem("token"); localStorage.removeItem("user"); location.href = "/index.html"; };
     els.approvalStatus.onchange = loadApprovals;
     els.docStatus.onchange = loadDocs;
     if (els.refreshBids) els.refreshBids.onclick = loadBids;

@@ -1,24 +1,34 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Live Map</title>
-    
-  
-  
-  
-  
-  
-  
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>GPS Tracking - JTS Logistics</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0ba5a2">
+  <link rel="icon" href="/icons/icon-192.png">
   <link rel="stylesheet" href="/assets/jts-apex-production-ui.css">
-</head><body class="enterprise-shell"><main><section class="enterprise-hero"><h1>Live Fleet Map</h1><p>Vehicle markers, dispatch status, ETA and route overview.</p><a class="enterprise-btn" href="/command-center.html">Back to Command Center</a></section><section class="enterprise-panel"><div id="live-map"></div></section></main><script type="module" src="/assets/enterprise-live.js"></script>  <script src="/assets/role-ui.js"></script>
-  
-  
-  
-  
-  
+</head>
+<body class="min-h-screen bg-gray-50">
+  <main class="max-w-6xl mx-auto px-6 py-8">
+    <section class="enterprise-hero">
+      <h1>GPS Tracking</h1>
+      <p>Live Map is now consolidated into one clean GPS module to avoid duplicate navigation.</p>
+      <div class="enterprise-actions">
+        <a class="enterprise-btn" href="/gps.html">Open GPS</a>
+        <a class="enterprise-btn ghost" href="/command-center.html">Command Center</a>
+      </div>
+    </section>
+  </main>
+  <script>
+    setTimeout(function(){ location.replace('/gps.html'); }, 450);
+  </script>
+  <script src="/assets/role-ui.js"></script>
   <script src="/assets/auth-guard-final.js"></script>
   <script src="/assets/jts-auth-ui-hotfix.js"></script>
   <script src="/assets/gps-access-final.js"></script>
   <script src="/assets/gps-live-share-final.js"></script>
   <script src="/assets/jts-final-mobile-gps-fix.js"></script>
-  
-
   <script src="/assets/jts-apex-production-ui.js"></script>
-</body></html>
+</body>
+</html>

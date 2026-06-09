@@ -37,12 +37,14 @@
           <div><strong id="meName">User</strong><small id="meRole">role</small></div>
         </div>
         <div class="jts-section-title">Contacts</div>
+        <div class="jts-chat-search"><input id="contactSearch" type="search" placeholder="Search contacts..." autocomplete="off"></div>
         <div id="contactList" class="jts-contact-list"></div>
       </aside>
 
       <section class="jts-chat-panel">
         <div class="jts-chat-header">
-          <div><strong id="activeName">Select conversation</strong><small id="activeMeta">Role-based secure chat</small></div>
+          <div class="jts-chat-heading"><span class="jts-avatar" id="activeAvatar">J</span><div><strong id="activeName">Select conversation</strong><small id="activeMeta">Role-based secure chat</small></div></div>
+          <span id="activeRole" class="jts-role-badge">Secure</span>
         </div>
         <div id="messageList" class="jts-message-list"></div>
         <form id="messageForm" class="jts-message-form">

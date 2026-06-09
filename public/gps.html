@@ -32,7 +32,6 @@
       </div>
       <div class="flex items-center gap-3">
         <a id="back" href="/home.html" class="underline text-sm">Back</a>
-        <button id="logout" class="px-4 py-2 rounded jts-btn text-sm">Logout</button>
       </div>
     </div>
   </header>
@@ -81,7 +80,7 @@
     else if (role === "broker") back.href = "/broker.html";
     else back.href = "/driver.html";
 
-    document.getElementById("logout").onclick = () => {
+    const headerLogout = document.getElementById("logout"); if (headerLogout) headerLogout.onclick = () => {
       localStorage.removeItem("token");
       location.href = "/index.html";
     };

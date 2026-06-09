@@ -27,7 +27,6 @@
       <div class="font-bold text-lg"><span class="flex items-center gap-3"><img src="/assets/jts-logo.png" class="h-8" alt="JTS"><span>Driver Portal</span></span></div>
       <div class="flex items-center gap-3">
         <a href="/home.html" class="underline text-sm">Home</a>
-        <button id="logout" class="px-4 py-2 rounded jts-btn text-sm">Logout</button>
       </div>
     </div>
   </header>
@@ -237,7 +236,7 @@
       availabilityMsg: document.getElementById("availabilityMsg"),
     };
 
-    els.logout.onclick = () => {
+    if (els.logout) els.logout.onclick = () => {
       localStorage.removeItem("token");
       location.href = "/index.html";
     };
