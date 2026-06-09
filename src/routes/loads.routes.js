@@ -61,6 +61,48 @@ router.get("/all", requireRole("dispatcher", "admin", "broker"), async (req, res
   res.json(visible.map(l => enrichLoad(l, docs)).sort((a,b) => String(b.createdAt || "").localeCompare(String(a.createdAt || ""))));
 });
 
+
+const DRAFT_FIELDS = ["loadNumber", "customer", "driverId", "pickup", "delivery", "rate", "notes"];
+function cleanDraft(body = {}) {
+  const draft = {};
+  for (const key of DRAFT_FIELDS) {
+    const max = key === "notes" ? 1000 : 220;
+    const value = String(body[key] ?? "").replace(/\s+/g, " ").trim().slice(0, max);
+    draft[key] = value || "";
+  }
+  return draft;
+}
+function cleanContext(value = "default") {
+  return String(value || "default").replace(/[^a-z0-9_.-]/gi, "_").slice(0, 80) || "default";
+}
+
+router.get("/draft", requireRole("dispatcher", "admin", "broker"), async (req, res) => {
+  const context = cleanContext(req.query.context || "default");
+  const rows = await readJson("loadDrafts.json");
+  const row = rows.find(r => r.userId === req.user.sub && r.context === context);
+  res.json({ ok: true, context, draft: row?.draft || {}, updatedAt: row?.updatedAt || null });
+});
+
+router.put("/draft", requireRole("dispatcher", "admin", "broker"), async (req, res) => {
+  const context = cleanContext(req.body?.context || req.query.context || "default");
+  const draft = cleanDraft(req.body?.draft || req.body || {});
+  const now = new Date().toISOString();
+  let saved = null;
+  await updateJson("loadDrafts.json", arr => {
+    const rows = Array.isArray(arr) ? arr : [];
+    let row = rows.find(r => r.userId === req.user.sub && r.context === context);
+    if (!row) {
+      row = { id: uid("ldraft"), userId: req.user.sub, context, createdAt: now };
+      rows.push(row);
+    }
+    row.draft = draft;
+    row.updatedAt = now;
+    saved = row;
+    return rows;
+  });
+  res.json({ ok: true, draft: saved });
+});
+
 router.post("/", requireRole("dispatcher", "admin", "broker"), async (req, res) => {
   const { loadNumber, customer, driverId, pickup, delivery, rate, notes } = req.body || {};
   if (!loadNumber || !driverId) return res.status(400).json({ error: "Load number and driver are required" });
