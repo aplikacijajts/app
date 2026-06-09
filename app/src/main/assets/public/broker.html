@@ -4,25 +4,16 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Broker Workspace - JTS Logistics Portal</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#0b1220">
+<link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0ba5a2">
   <link rel="icon" href="/icons/icon-192.png">
   <style>
     .broker-map-frame{height:68vh;min-height:520px;border:0;width:100%;background:#07111f}
     .broker-vehicle-dot{width:10px;height:10px;border-radius:999px;background:#16a34a;box-shadow:0 0 0 4px rgba(22,163,74,.12)}
     @media(max-width:1024px){.broker-map-frame{height:48vh;min-height:360px}}
   </style>
+  
+  
   <link rel="stylesheet" href="/assets/jts-apex-production-ui.css">
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-900">
@@ -34,7 +25,6 @@
         <a href="/chat.html" class="underline">Chat</a>
         <a href="/notifications.html" class="underline">Notifications</a>
       </nav>
-      <button id="logout" class="px-4 py-2 rounded-xl jts-btn text-sm font-semibold">Logout</button>
     </div>
   </header>
 
@@ -195,7 +185,7 @@
 
     function setStatus(text) { els.status.textContent = text || ""; }
 
-    els.logout.onclick = () => {
+    if (els.logout) els.logout.onclick = () => {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       location.href = "/index.html";
@@ -368,6 +358,8 @@
   <script src="/assets/gps-access-final.js"></script>
   <script src="/assets/gps-live-share-final.js"></script>
   <script src="/assets/jts-final-mobile-gps-fix.js"></script>
+  
+
   <script src="/assets/jts-apex-production-ui.js"></script>
 </body>
 </html>

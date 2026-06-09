@@ -123,6 +123,8 @@ function explainReason(reason) {
     case "missing_keys":
     case "missing_vapid":
       return "Server is missing VAPID keys. Set VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY in Render Environment Variables, then redeploy.";
+    case "invalid_keys":
+      return "The server VAPID keys are invalid. Regenerate VAPID keys with npm run generate-vapid or node generate-vapid.js and redeploy.";
     default:
       return "Failed to enable notifications. Please check your browser settings and try again.";
   }

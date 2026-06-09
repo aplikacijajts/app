@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Confirmation - JTS Logistics</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0ba5a2">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="stylesheet" href="/assets/jts-apex-production-ui.css">
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+  <header class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
+      <div class="font-bold text-lg flex items-center gap-3"><img src="/assets/jts-logo.png" class="h-9" alt="JTS"><span>Confirmation</span></div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-5 py-8 space-y-6">
+    <section class="rounded-3xl bg-slate-950 text-white p-6 lg:p-8 shadow-sm relative overflow-hidden">
+      <div class="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-blue-500/20"></div>
+      <div class="relative flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-[0.25em] text-cyan-200 font-semibold">Admin / Dispatcher</p>
+          <h1 class="text-3xl font-extrabold mt-2">Professional load confirmation</h1>
+          <p class="text-slate-300 mt-2">Fill the data, generate a branded JTS PDF, preview it in the app and download it.</p>
+        </div>
+        <span id="confirmationStatus" class="jts-page-badge">Ready</span>
+      </div>
+    </section>
+
+    <div class="grid xl:grid-cols-[1.05fr_0.95fr] gap-6">
+      <section class="jts-surface p-6">
+        <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+          <div>
+            <h2 class="font-bold text-xl">Confirmation data</h2>
+            <p class="text-sm text-slate-500 mt-1">All fields are saved locally while typing. Click Generate to save and create the PDF.</p>
+          </div>
+          <div class="flex gap-2">
+            <button id="clearConfirmation" type="button" class="border bg-white">Clear</button>
+            <button id="generateConfirmation" type="button" class="jts-btn">Generate</button>
+          </div>
+        </div>
+
+        <div class="jts-form-grid">
+          <div><label>Confirmation No.</label><input id="confirmationNumber" placeholder="JTS-0001"></div>
+          <div><label>Date</label><input id="confirmationDate" type="date"></div>
+          <div><label>Load Number</label><input id="loadNumber" placeholder="Load number"></div>
+          <div><label>Customer</label><input id="customer" placeholder="Customer / shipper"></div>
+          <div><label>Broker</label><input id="brokerName" placeholder="Broker / company"></div>
+          <div><label>Contact name</label><input id="contactName" placeholder="Contact person"></div>
+          <div><label>Contact phone</label><input id="contactPhone" placeholder="Phone"></div>
+          <div><label>Contact email</label><input id="contactEmail" type="email" placeholder="Email"></div>
+          <div><label>Pickup</label><input id="pickup" placeholder="Pickup address / city"></div>
+          <div><label>Delivery</label><input id="delivery" placeholder="Delivery address / city"></div>
+          <div><label>Driver</label><input id="driverName" placeholder="Driver name"></div>
+          <div><label>Truck number</label><input id="truckNumber" placeholder="Truck"></div>
+          <div><label>Trailer number</label><input id="trailerNumber" placeholder="Trailer"></div>
+          <div><label>Rate</label><input id="rate" placeholder="2500"></div>
+          <div><label>Commodity</label><input id="commodity" placeholder="Commodity"></div>
+          <div><label>Weight</label><input id="weight" placeholder="Weight"></div>
+          <div><label>Pickup date/time</label><input id="pickupDate" placeholder="MM/DD/YYYY HH:MM"></div>
+          <div><label>Delivery date/time</label><input id="deliveryDate" placeholder="MM/DD/YYYY HH:MM"></div>
+          <div class="jts-col-span-2"><label>Special instructions / notes</label><textarea id="notes" placeholder="Notes, appointment details, requirements..."></textarea></div>
+        </div>
+      </section>
+
+      <aside class="space-y-6">
+        <section class="jts-surface p-5">
+          <h2 class="font-bold text-xl">Document preview</h2>
+          <p class="text-sm text-slate-500 mt-1">Live visual preview before PDF generation.</p>
+          <div id="confirmationPreview" class="mt-4"></div>
+        </section>
+        <section class="jts-surface p-5">
+          <h2 class="font-bold text-xl">Recent confirmations</h2>
+          <div id="confirmationsList" class="jts-history-list mt-4"></div>
+        </section>
+      </aside>
+    </div>
+
+    <section id="pdfBox" class="jts-surface p-5 hidden">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div>
+          <h2 class="font-bold text-xl">Generated PDF</h2>
+          <p class="text-sm text-slate-500 mt-1">Preview the final PDF inside the app and download it.</p>
+        </div>
+        <a id="downloadPdf" href="#" class="jts-btn">Download PDF</a>
+      </div>
+      <iframe id="pdfPreview" title="Generated confirmation PDF" class="jts-pdf-frame"></iframe>
+    </section>
+  </main>
+
+  <script type="module" src="/assets/confirmation.js"></script>
+  <script src="/assets/role-ui.js"></script>
+  <script src="/assets/auth-guard-final.js"></script>
+  <script src="/assets/jts-apex-production-ui.js"></script>
+</body>
+</html>

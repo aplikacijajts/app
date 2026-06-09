@@ -1,4 +1,4 @@
-const CACHE_NAME = "jts-cache-v4-final-mobile-notifications";
+const CACHE_NAME = "jts-cache-v8-fuel-english-contrast-final";
 const ASSETS = [
   "/",
   "/index.html",
@@ -7,6 +7,14 @@ const ASSETS = [
   "/manifest.webmanifest",
   "/assets/jts-apex-production-ui.css",
   "/assets/jts-apex-production-ui.js",
+  "/assets/jts-logo-pdf.jpg",
+  "/assets/load-draft-sync.js",
+  "/fuel.html",
+  "/confirmation.html",
+  "/assets/fuel.js",
+  "/assets/confirmation.js",
+  "/assets/chat.js",
+  "/assets/notifications-center.js",
   "/assets/api.js",
   "/assets/role-ui.js",
   "/assets/auth-guard-final.js",

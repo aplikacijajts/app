@@ -20,7 +20,9 @@
     "/live-map.html": ["admin", "dispatcher", "broker"],
     "/load-details.html": ["admin", "dispatcher", "driver", "broker"],
     "/chat.html": ["admin", "dispatcher", "driver", "broker"],
-    "/notifications.html": ["admin", "dispatcher", "driver", "broker"]
+    "/notifications.html": ["admin", "dispatcher", "driver", "broker"],
+    "/fuel.html": ["admin", "dispatcher", "driver", "broker"],
+    "/confirmation.html": ["admin", "dispatcher"]
   };
 
   function normalizePath(pathname) {
