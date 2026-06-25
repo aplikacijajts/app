@@ -1,0 +1,365 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Broker Workspace - JTS Logistics Portal</title>
+<link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0ba5a2">
+  <link rel="icon" href="/icons/icon-192.png">
+  <style>
+    .broker-map-frame{height:68vh;min-height:520px;border:0;width:100%;background:#07111f}
+    .broker-vehicle-dot{width:10px;height:10px;border-radius:999px;background:#16a34a;box-shadow:0 0 0 4px rgba(22,163,74,.12)}
+    @media(max-width:1024px){.broker-map-frame{height:48vh;min-height:360px}}
+  </style>
+  
+  
+  <link rel="stylesheet" href="/assets/jts-apex-production-ui.css">
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+  <header class="bg-white/90 backdrop-blur border-b sticky top-0 z-20">
+    <div class="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
+      <div class="font-bold text-lg flex items-center gap-3"><img src="/assets/jts-logo.png" class="h-9" alt="JTS"><span>Broker Workspace</span></div>
+      <nav class="hidden md:flex items-center gap-3 text-sm">
+        <a href="/home.html" class="underline">Home</a>
+        <a href="/chat.html" class="underline">Chat</a>
+        <a href="/notifications.html" class="underline">Notifications</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-5 py-8 space-y-6">
+    <section class="rounded-3xl bg-slate-950 text-white p-6 lg:p-8 shadow-sm relative overflow-hidden">
+      <div class="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-cyan-500/20"></div>
+      <div class="relative flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-[0.25em] text-cyan-200 font-semibold">JTS Logistics</p>
+          <h1 class="text-3xl font-extrabold mt-2">Fleet map and route offer desk</h1>
+          <p class="text-slate-300 mt-2">Select an available truck/driver, enter origin, destination and price, then submit the offer to admins and dispatchers.</p>
+        </div>
+        <div id="status" class="text-sm text-slate-300">Loading...</div>
+      </div>
+    </section>
+
+    <section class="grid xl:grid-cols-[1.45fr_0.9fr] gap-6 items-start">
+      <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+        <div class="p-5 border-b flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="font-bold text-xl">Live Fleet Map</h2>
+            <p class="text-sm text-slate-500 mt-1">Embedded GPS fleet view with approved trucks in the portal.</p>
+          </div>
+          <button id="refreshFleet" class="px-4 py-2 rounded-xl border bg-white text-sm font-semibold">Refresh fleet</button>
+        </div>
+        <iframe id="gpsFrame" title="JTS Fleet GPS" class="broker-map-frame" referrerpolicy="no-referrer" sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation-by-user-activation"></iframe>
+      </div>
+
+      <aside class="space-y-6">
+        <section class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
+          <div class="border-b pb-4">
+            <h2 class="font-bold text-xl">Create route offer</h2>
+            <p class="text-sm text-slate-500 mt-1">The offer appears immediately in Admin and Dispatcher → Bids.</p>
+          </div>
+
+          <form id="bidForm" class="mt-5 space-y-4" novalidate>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-sm font-semibold text-slate-700">First and last name *</label>
+                <input id="brokerName" required class="border rounded-xl p-3 w-full mt-1" placeholder="Broker contact name">
+              </div>
+              <div>
+                <label class="text-sm font-semibold text-slate-700">Phone *</label>
+                <input id="brokerPhone" required type="tel" class="border rounded-xl p-3 w-full mt-1" placeholder="Contact phone">
+              </div>
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-700">Email *</label>
+              <input id="brokerEmail" required type="email" class="border rounded-xl p-3 w-full mt-1" placeholder="broker@company.com">
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-700">Truck / driver *</label>
+              <select id="driverId" required class="border rounded-xl p-3 w-full mt-1 bg-white">
+                <option value="">Loading trucks...</option>
+              </select>
+              <div id="driverMeta" class="text-xs text-slate-500 mt-2">Select a truck to see equipment details.</div>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-sm font-semibold text-slate-700">From *</label>
+                <input id="origin" required class="border rounded-xl p-3 w-full mt-1" placeholder="City, ST / Pickup">
+              </div>
+              <div>
+                <label class="text-sm font-semibold text-slate-700">To *</label>
+                <input id="destination" required class="border rounded-xl p-3 w-full mt-1" placeholder="City, ST / Delivery">
+              </div>
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-700">Price *</label>
+              <input id="price" required type="number" step="0.01" min="1" class="border rounded-xl p-3 w-full mt-1" placeholder="e.g. 1250">
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-700">Notes</label>
+              <textarea id="notes" rows="3" class="border rounded-xl p-3 w-full mt-1" placeholder="Optional notes, load details, time window..."></textarea>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button id="saveBid" type="submit" class="px-4 py-3 rounded-xl jts-btn font-bold flex-1">Submit offer</button>
+              <button id="clearBid" type="button" class="px-4 py-3 rounded-xl border bg-white font-semibold">Clear</button>
+            </div>
+            <div id="bidMsg" class="text-sm"></div>
+          </form>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
+          <div class="flex items-center justify-between gap-3 border-b pb-4">
+            <div>
+              <h2 class="font-bold text-xl">Trucks in app</h2>
+              <p class="text-sm text-slate-500 mt-1">Approved drivers available for route offers.</p>
+            </div>
+            <span id="fleetCount" class="text-xs px-2 py-1 rounded-full border bg-slate-50">0</span>
+          </div>
+          <div id="fleetList" class="mt-4 space-y-3 max-h-[420px] overflow-auto"></div>
+        </section>
+      </aside>
+    </section>
+
+    <section class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="font-bold text-xl">My recent offers</h2>
+          <p class="text-sm text-slate-500 mt-1">Submitted route offers and prices.</p>
+        </div>
+        <button id="refreshBids" class="px-4 py-2 rounded-xl border bg-white text-sm font-semibold">Refresh</button>
+      </div>
+      <div class="overflow-auto mt-5 rounded-2xl border">
+        <table class="min-w-full text-sm">
+          <thead class="bg-slate-100 text-slate-700">
+            <tr>
+              <th class="text-left p-3 border-b">Created</th>
+              <th class="text-left p-3 border-b">Truck / Driver</th>
+              <th class="text-left p-3 border-b">Route</th>
+              <th class="text-left p-3 border-b">Price</th>
+              <th class="text-left p-3 border-b">Status</th>
+              <th class="text-right p-3 border-b">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="bidsBody"></tbody>
+        </table>
+      </div>
+      <div id="bidsMsg" class="text-xs text-slate-500 mt-3"></div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { api, getToken } from "./assets/api.js";
+
+    const token = getToken();
+    if (!token) location.href = "/index.html";
+
+    function decodeJwt(token) {
+      try {
+        const payload = token.split(".")[1];
+        const json = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+        return JSON.parse(decodeURIComponent(escape(json)));
+      } catch { return {}; }
+    }
+
+    const me = decodeJwt(token);
+    if (me.role !== "broker") location.href = "/home.html";
+
+    const $ = (id) => document.getElementById(id);
+    const h = (v) => String(v ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
+    const fmtDate = (iso) => { if (!iso) return ""; try { return new Date(iso).toLocaleString(); } catch { return iso; } };
+    const money = (v) => Number(v || 0).toLocaleString(undefined, { style:"currency", currency:"USD" });
+
+    const els = {
+      logout: $("logout"), status: $("status"), gpsFrame: $("gpsFrame"), refreshFleet: $("refreshFleet"),
+      brokerName: $("brokerName"), brokerEmail: $("brokerEmail"), brokerPhone: $("brokerPhone"), driverId: $("driverId"), driverMeta: $("driverMeta"), origin: $("origin"), destination: $("destination"), price: $("price"), notes: $("notes"), form: $("bidForm"), saveBid: $("saveBid"), clear: $("clearBid"), msg: $("bidMsg"),
+      fleetList: $("fleetList"), fleetCount: $("fleetCount"), bidsBody: $("bidsBody"), bidsMsg: $("bidsMsg"), refreshBids: $("refreshBids")
+    };
+
+    let drivers = [];
+    let vehicles = [];
+
+    if (els.brokerName) els.brokerName.value = me.name || "";
+    if (els.brokerEmail) els.brokerEmail.value = me.email || "";
+    if (els.brokerPhone) els.brokerPhone.value = me.phone || "";
+
+    function setStatus(text) { els.status.textContent = text || ""; }
+
+    if (els.logout) els.logout.onclick = () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      location.href = "/index.html";
+    };
+
+    async function loadGps() {
+      try {
+        await api("/api/gps/config");
+        els.gpsFrame.src = `/gps/embed?token=${encodeURIComponent(token)}`;
+      } catch {
+        els.gpsFrame.srcdoc = "<div style='font-family:system-ui;padding:24px;color:#0f172a'>GPS is not available for this account.</div>";
+      }
+    }
+
+    function vehicleLabel(v) {
+      return `${v.driver || "Driver"}${v.truckNumber ? " • Truck " + v.truckNumber : ""}${v.trailerNumber ? " • Trailer " + v.trailerNumber : ""}`;
+    }
+
+    function driverLabel(d) {
+      return `${d.name || d.email || "Driver"}${d.truckNumber ? " • Truck " + d.truckNumber : ""}${d.trailerNumber ? " • Trailer " + d.trailerNumber : ""}`;
+    }
+
+    async function loadDrivers() {
+      const rows = await api("/api/users?role=driver");
+      drivers = rows || [];
+      if (!drivers.length) {
+        els.driverId.innerHTML = `<option value="">No approved drivers available</option>`;
+        return;
+      }
+      els.driverId.innerHTML = `<option value="">Select truck / driver</option>` + drivers.map(d => `<option value="${h(d.id)}">${h(driverLabel(d))}</option>`).join("");
+    }
+
+    async function loadFleet() {
+      try {
+        const data = await api("/api/map/vehicles");
+        vehicles = data.vehicles || [];
+        els.fleetCount.textContent = String(vehicles.length);
+        if (!vehicles.length) {
+          els.fleetList.innerHTML = `<div class="text-sm text-slate-500">No approved trucks/drivers yet.</div>`;
+          return;
+        }
+        els.fleetList.innerHTML = vehicles.map(v => `
+          <button type="button" data-pick-driver="${h(v.driverId || v.id)}" class="w-full text-left rounded-2xl border bg-slate-50 hover:bg-white p-3 transition">
+            <div class="flex items-start gap-3">
+              <span class="broker-vehicle-dot mt-1.5"></span>
+              <div class="min-w-0 flex-1">
+                <div class="font-bold text-sm truncate">${h(v.driver)}</div>
+                <div class="text-xs text-slate-500 mt-0.5">${h(v.equipment || "No equipment")}</div>
+                <div class="text-xs text-slate-500 mt-0.5">${h(v.status || "Available")} · ${h(v.eta || "")}</div>
+              </div>
+            </div>
+          </button>`).join("");
+        els.fleetList.querySelectorAll("[data-pick-driver]").forEach(btn => {
+          btn.onclick = () => {
+            els.driverId.value = btn.dataset.pickDriver;
+            updateDriverMeta();
+            els.origin.focus();
+          };
+        });
+      } catch (e) {
+        els.fleetList.innerHTML = `<div class="text-sm text-red-700">${h(e.message || "Failed to load fleet")}</div>`;
+      }
+    }
+
+    function updateDriverMeta() {
+      const d = drivers.find(x => x.id === els.driverId.value);
+      if (!d) { els.driverMeta.textContent = "Select a truck to see equipment details."; return; }
+      const parts = [d.phone, d.trailerType, d.companyName, d.mcNumber && `MC ${d.mcNumber}`, d.dotNumber && `DOT ${d.dotNumber}`].filter(Boolean);
+      els.driverMeta.textContent = parts.join(" • ") || "No additional equipment data entered.";
+    }
+
+    async function loadMyBids() {
+      els.bidsMsg.textContent = "Loading...";
+      els.bidsBody.innerHTML = `<tr><td colspan="6" class="p-5 text-center text-slate-500">Loading...</td></tr>`;
+      try {
+        const bids = await api("/api/bids/my");
+        if (!bids.length) {
+          els.bidsBody.innerHTML = `<tr><td colspan="6" class="p-5 text-center text-slate-500">No offers yet.</td></tr>`;
+          els.bidsMsg.textContent = "Ready";
+          return;
+        }
+        els.bidsBody.innerHTML = bids.map(b => {
+          const route = b.route || `${b.origin || b.pickup || "-"} → ${b.destination || b.delivery || "-"}`;
+          const truck = [b.truckNumber && `Truck ${b.truckNumber}`, b.trailerNumber && `Trailer ${b.trailerNumber}`].filter(Boolean).join(" / ");
+          return `
+            <tr class="hover:bg-slate-50 align-top">
+              <td class="p-3 border-b whitespace-nowrap">${h(fmtDate(b.createdAt))}</td>
+              <td class="p-3 border-b"><b>${h(b.driverName || b.driverId || "-")}</b><div class="text-xs text-slate-500 mt-1">${h(truck || b.trailerType || "-")}</div></td>
+              <td class="p-3 border-b">${h(route)}${b.notes ? `<div class="text-xs text-slate-500 mt-1">${h(b.notes)}</div>` : ""}</td>
+              <td class="p-3 border-b"><b>${h(money(b.price))}</b></td>
+              <td class="p-3 border-b capitalize">${h(b.status || "submitted")}</td>
+              <td class="p-3 border-b text-right"><button data-del="${h(b.id)}" class="px-3 py-1 rounded-lg border bg-white text-xs font-semibold">Delete</button></td>
+            </tr>`;
+        }).join("");
+        els.bidsBody.querySelectorAll("button[data-del]").forEach(btn => {
+          btn.onclick = async () => {
+            if (!confirm("Delete this offer?")) return;
+            btn.disabled = true;
+            try { await api(`/api/bids/${encodeURIComponent(btn.dataset.del)}`, { method:"DELETE" }); await loadMyBids(); }
+            catch (e) { btn.disabled = false; els.bidsMsg.textContent = e.message || "Delete failed"; }
+          };
+        });
+        els.bidsMsg.textContent = `Ready (${bids.length})`;
+      } catch (e) {
+        els.bidsBody.innerHTML = `<tr><td colspan="6" class="p-5 text-center text-red-700">${h(e.message)}</td></tr>`;
+        els.bidsMsg.textContent = "Error";
+      }
+    }
+
+    els.driverId.onchange = updateDriverMeta;
+    els.refreshFleet.onclick = async () => { setStatus("Refreshing fleet..."); await Promise.all([loadDrivers(), loadFleet()]); setStatus("Ready"); };
+    els.refreshBids.onclick = loadMyBids;
+    els.clear.onclick = () => { els.form.reset(); updateDriverMeta(); els.msg.textContent = ""; };
+
+    els.form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      els.msg.textContent = "";
+      if (!els.form.reportValidity()) return;
+      const body = {
+        brokerName: els.brokerName.value.trim(),
+        brokerEmail: els.brokerEmail.value.trim(),
+        brokerPhone: els.brokerPhone.value.trim(),
+        driverId: els.driverId.value,
+        origin: els.origin.value.trim(),
+        destination: els.destination.value.trim(),
+        price: els.price.value,
+        notes: els.notes.value.trim()
+      };
+      try {
+        els.saveBid?.setAttribute("disabled", "disabled");
+        await api("/api/bids", { method:"POST", body });
+        els.msg.innerHTML = `<span class="text-green-700">✅ Offer submitted to admins and dispatchers.</span>`;
+        els.origin.value = "";
+        els.destination.value = "";
+        els.price.value = "";
+        els.notes.value = "";
+        await loadMyBids();
+      } catch (e) {
+        els.msg.innerHTML = `<span class="text-red-700">❌ ${h(e.message)}</span>`;
+      } finally {
+        document.getElementById("saveBid").removeAttribute("disabled");
+      }
+    });
+
+    (async function init() {
+      setStatus("Loading...");
+      await loadGps();
+      await Promise.all([loadDrivers(), loadFleet(), loadMyBids()]);
+      updateDriverMeta();
+      setStatus("Ready");
+    })();
+  </script>
+
+  <script type="module">
+    import { initPushUI } from "/assets/push.js";
+    initPushUI();
+  </script>
+  <script type="module" src="/assets/install.js"></script>
+  <script type="module" src="/assets/loader.js"></script>
+  
+  <script type="module" src="/assets/enterprise-live.js"></script>
+  <script src="/assets/role-ui.js"></script>
+  
+  
+  
+  
+  
+  <script src="/assets/auth-guard-final.js"></script>
+  <script src="/assets/jts-auth-ui-hotfix.js"></script>
+  <script src="/assets/gps-access-final.js"></script>
+  <script src="/assets/gps-live-share-final.js"></script>
+  <script src="/assets/jts-final-mobile-gps-fix.js"></script>
+  
+
+  <script src="/assets/jts-apex-production-ui.js"></script>
+</body>
+</html>

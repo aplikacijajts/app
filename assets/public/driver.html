@@ -1,0 +1,521 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Driver - JTS Logistics Portal</title>
+<link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0ba5a2">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="JTS Portal">
+
+  
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/assets/jts-apex-production-ui.css">
+</head>
+<body class="min-h-screen bg-gray-50">
+  <header class="bg-white border-b">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="font-bold text-lg"><span class="flex items-center gap-3"><img src="/assets/jts-logo.png" class="h-8" alt="JTS"><span>Driver Portal</span></span></div>
+      <div class="flex items-center gap-3">
+        <a href="/home.html" class="underline text-sm">Home</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-8">
+
+    <section class="bg-white border rounded-lg p-4 mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="font-semibold text-lg">My Active Loads</h2>
+          <p class="text-sm text-gray-600 mt-1">Accept/reject assigned loads, update trip status and open details/document checklist.</p>
+        </div>
+        <button id="refreshActiveLoads" class="px-3 py-2 rounded border bg-white text-sm">Refresh</button>
+      </div>
+      <div class="overflow-auto mt-4">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="text-left p-2 border">Load</th>
+              <th class="text-left p-2 border">Customer</th>
+              <th class="text-left p-2 border">Docs</th>
+              <th class="text-left p-2 border">Status</th>
+              <th class="text-left p-2 border">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="activeLoadsTbody"></tbody>
+        </table>
+      </div>
+      <div id="activeLoadDetails" class="mt-4"></div>
+      <div id="activeLoadsMsg" class="text-xs text-gray-500 mt-3"></div>
+    </section>
+
+    <section class="bg-white border rounded-lg p-4 mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="font-semibold text-lg">Chat notifications / dispatcher</h2>
+          <p class="text-sm text-gray-600 mt-1">Your dispatcher/admin chat contacts and unread chat notifications appear here.</p>
+        </div>
+        <a href="/chat.html" class="px-4 py-2 rounded jts-btn text-sm">Open chat</a>
+      </div>
+      <div id="driverChatContacts" class="mt-4 grid sm:grid-cols-2 gap-3"></div>
+      <div id="driverChatMsg" class="text-xs text-gray-500 mt-3"></div>
+    </section>
+
+    <section class="bg-white border rounded-lg p-4 mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="font-semibold text-lg">My Availability</h2>
+          <p class="text-sm text-gray-600 mt-1">Tell dispatch if you are available, busy, off duty, on vacation or out of service.</p>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-4 gap-3 mt-4">
+        <select id="availabilityStatus" class="border rounded p-2"><option>available</option><option>busy</option><option>off_duty</option><option>vacation</option><option>sick_leave</option><option>out_of_service</option></select>
+        <input id="availabilityFrom" type="date" class="border rounded p-2">
+        <input id="availabilityTo" type="date" class="border rounded p-2">
+        <button id="saveAvailability" class="px-4 py-2 rounded jts-btn">Save availability</button>
+      </div>
+      <div id="availabilityMsg" class="text-xs text-gray-500 mt-3"></div>
+    </section>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- Upload Card -->
+      <section class="bg-white border rounded-lg p-4">
+        <h2 class="font-semibold text-lg">Upload Document</h2>
+        <p class="text-sm text-gray-600 mt-1">Upload PDF or a clear photo from your phone.</p>
+
+        <div class="mt-4 space-y-3">
+          <div>
+            <label class="text-sm text-gray-700">Category</label>
+            <select id="category" class="border rounded p-2 w-full mt-1">
+              <option value="POD">POD</option>
+              <option value="BOL">BOL</option>
+              <option value="RATE_CONFIRMATION">Rate Confirmation</option>
+              <option value="RECEIPTS">Receipts</option>
+              <option value="LICENSE">License</option>
+              <option value="MEDICAL">Medical</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-sm text-gray-700">Load (optional)</label>
+            <select id="loadId" class="border rounded p-2 w-full mt-1">
+              <option value="">— No load selected —</option>
+            </select>
+            <p class="text-xs text-gray-500 mt-1">Select a load to auto-link your document.</p>
+          </div>
+
+          <div>
+            <label class="text-sm text-gray-700">Note (optional)</label>
+            <input id="note" class="border rounded p-2 w-full mt-1" placeholder="e.g., Delivered / signed POD">
+          </div>
+
+          <div>
+            <label class="text-sm text-gray-700">File</label>
+            <input id="file" type="file" accept="application/pdf,image/*" class="border rounded p-2 w-full mt-1">
+            <p class="text-xs text-gray-500 mt-1">Allowed: PDF, JPG, PNG, WEBP (max 15MB).</p>
+          </div>
+
+          <button id="upload" class="w-full px-4 py-2 rounded jts-btn">Upload</button>
+
+          <div id="uploadMsg" class="text-sm"></div>
+        </div>
+      </section>
+
+      <!-- My Docs Card -->
+      <section class="bg-white border rounded-lg p-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="font-semibold text-lg">My Documents</h2>
+            <p class="text-sm text-gray-600 mt-1">Track your uploads and approvals.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <label class="text-sm text-gray-700">Status</label>
+            <select id="filterStatus" class="border rounded p-2 text-sm">
+              <option value="">All</option>
+              <option value="submitted">Submitted</option>
+              <option value="needs_fix">Needs Fix</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <button id="refresh" class="px-3 py-2 rounded border bg-white text-sm">Refresh</button>
+          </div>
+        </div>
+
+        <div class="mt-3 flex flex-wrap gap-2" id="counters"></div>
+
+        <div class="overflow-auto mt-4">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="text-left p-2 border">Created</th>
+                <th class="text-left p-2 border">Category</th>
+                <th class="text-left p-2 border">Load</th>
+                <th class="text-left p-2 border">Status</th>
+                <th class="text-left p-2 border">File</th>
+              </tr>
+            </thead>
+            <tbody id="docsTbody"></tbody>
+          </table>
+        </div>
+
+        <div id="listMsg" class="text-xs text-gray-500 mt-3"></div>
+      </section>
+    </div>
+  <!-- Finished Loads -->
+<section class="bg-white border rounded-lg p-4 mt-6">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="font-semibold text-lg">Finished Loads</h2>
+      <p class="text-sm text-gray-600 mt-1">Closed loads are listed here (read-only).</p>
+    </div>
+    <button id="refreshFinished" class="px-3 py-2 rounded border bg-white text-sm">Refresh</button>
+  </div>
+
+  <div class="overflow-auto mt-4">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="text-left p-2 border">Closed At</th>
+          <th class="text-left p-2 border">Load #</th>
+          <th class="text-left p-2 border">Customer</th>
+          <th class="text-left p-2 border">Docs</th>
+        </tr>
+      </thead>
+      <tbody id="finishedTbody"></tbody>
+    </table>
+  </div>
+  <div id="finishedMsg" class="text-xs text-gray-500 mt-3"></div>
+</section>
+
+  <a id="jtsDriverFloatChat" href="/chat.html" class="jts-driver-float-chat">Chat</a>
+
+  </main>
+
+  <script type="module">
+    import { api, getToken } from "./assets/api.js";
+    import { openPreview, initNotifications } from "./assets/ui.js";
+
+    if (!getToken()) location.href = "/index.html";
+    initNotifications();
+
+    const els = {
+      logout: document.getElementById("logout"),
+      upload: document.getElementById("upload"),
+      uploadMsg: document.getElementById("uploadMsg"),
+      driverChatContacts: document.getElementById("driverChatContacts"),
+      driverChatMsg: document.getElementById("driverChatMsg"),
+
+      category: document.getElementById("category"),
+      loadId: document.getElementById("loadId"),
+      note: document.getElementById("note"),
+      file: document.getElementById("file"),
+
+      filterStatus: document.getElementById("filterStatus"),
+      refresh: document.getElementById("refresh"),
+      docsTbody: document.getElementById("docsTbody"),
+      finishedTbody: document.getElementById("finishedTbody"),
+      finishedMsg: document.getElementById("finishedMsg"),
+      refreshFinished: document.getElementById("refreshFinished"),
+      activeLoadsTbody: document.getElementById("activeLoadsTbody"),
+      activeLoadsMsg: document.getElementById("activeLoadsMsg"),
+      refreshActiveLoads: document.getElementById("refreshActiveLoads"),
+      listMsg: document.getElementById("listMsg"),
+      counters: document.getElementById("counters"),
+      availabilityStatus: document.getElementById("availabilityStatus"),
+      availabilityFrom: document.getElementById("availabilityFrom"),
+      availabilityTo: document.getElementById("availabilityTo"),
+      saveAvailability: document.getElementById("saveAvailability"),
+      availabilityMsg: document.getElementById("availabilityMsg"),
+    };
+
+    if (els.logout) els.logout.onclick = () => {
+      localStorage.removeItem("token");
+      location.href = "/index.html";
+    };
+
+    function fmtDate(s) {
+      if (!s) return "-";
+      try { return new Date(s).toLocaleString(); } catch { return s; }
+    }
+
+    function badge(status) {
+      const base = "px-2 py-1 rounded text-xs border";
+      if (status === "approved") return `<span class="${base} bg-green-50">Approved</span>`;
+      if (status === "needs_fix") return `<span class="${base} bg-yellow-50">Needs Fix</span>`;
+      if (status === "rejected") return `<span class="${base} bg-red-50">Rejected</span>`;
+      if (status === "submitted") return `<span class="${base} bg-blue-50">Submitted</span>`;
+      return `<span class="${base} bg-gray-50">${status || "-"}</span>`;
+    }
+
+    function renderCounters(rows) {
+      const counts = rows.reduce((acc, d) => {
+        acc[d.status] = (acc[d.status] || 0) + 1;
+        return acc;
+      }, {});
+      const items = [
+        ["submitted", "Submitted"],
+        ["needs_fix", "Needs Fix"],
+        ["approved", "Approved"],
+        ["rejected", "Rejected"]
+      ];
+
+      els.counters.innerHTML = items.map(([k, label]) => {
+        const n = counts[k] || 0;
+        return `<span class="px-3 py-1 rounded border bg-white text-xs">${label}: <b>${n}</b></span>`;
+      }).join("");
+    }
+
+
+    const h = (v) => String(v ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
+
+    async function loadChatContacts() {
+      if (!els.driverChatContacts) return;
+      els.driverChatMsg.textContent = "Loading chat contacts...";
+      try {
+        const data = await api("/api/chat/contacts");
+        const contacts = data.contacts || [];
+        if (!contacts.length) {
+          els.driverChatContacts.innerHTML = `<div class="sm:col-span-2 rounded-lg border bg-yellow-50 p-3 text-sm text-yellow-800">No dispatcher is assigned yet. Ask admin to assign you to a dispatcher in Admin → Users → Dispatcher assignments.</div>`;
+          els.driverChatMsg.textContent = "Ready";
+          return;
+        }
+        els.driverChatContacts.innerHTML = contacts.map(c => `
+          <a href="/chat.html?user=${encodeURIComponent(c.id)}" class="rounded-lg border bg-gray-50 hover:bg-white p-3 block">
+            <div class="font-semibold">${h(c.name || c.email || "Contact")}</div>
+            <div class="text-xs text-gray-500 mt-1 capitalize">${h(c.role || "")}${c.unread ? ` • ${c.unread} unread` : ""}</div>
+            <div class="text-xs text-gray-500 mt-1">${h(c.phone || c.email || "")}</div>
+          </a>`).join("");
+        els.driverChatMsg.textContent = "Ready";
+      } catch (e) {
+        els.driverChatContacts.innerHTML = `<div class="sm:col-span-2 rounded-lg border bg-red-50 p-3 text-sm text-red-700">${h(e.message)}</div>`;
+        els.driverChatMsg.textContent = "Error";
+      }
+    }
+    function docsBadge(l) {
+      const missing = l.missingDocs || [];
+      if (!missing.length) return `<span class="px-2 py-1 rounded border bg-green-50 text-xs">Docs OK</span>`;
+      return `<span class="px-2 py-1 rounded border bg-yellow-50 text-xs">Missing ${h(missing.join(", "))}</span>`;
+    }
+
+    function tripActions(l) {
+      const st = String(l.status || "");
+      const locked = !!l.deliveryLocked;
+      const update = ["picked_up", "in_transit", "delivered"].map(x => `<option value="${x}" ${st===x?"selected":""}>${x.replace("_", " ")}</option>`).join("");
+      const acceptReject = (st === "assigned" || st === "in_progress") ? `<button data-accept="${h(l.id)}" class="px-3 py-1 rounded jts-btn text-xs">Accept</button><button data-reject="${h(l.id)}" class="px-3 py-1 rounded border text-xs">Reject</button>` : "";
+      const disabled = locked ? "disabled title='BOL must be approved first'" : "";
+      return `<div class="flex flex-wrap gap-2 items-center">${acceptReject}<select data-trip-status="${h(l.id)}" class="border rounded p-1 text-xs" ${disabled}>${update}</select><button data-save-status="${h(l.id)}" class="px-3 py-1 rounded border bg-white text-xs" ${disabled}>Update</button><button data-show-load="${h(l.id)}" class="px-3 py-1 rounded border bg-white text-xs">Show on page</button><a href="/load-details.html?id=${encodeURIComponent(l.id)}" class="px-3 py-1 rounded border bg-white text-xs">JTS Confirmation</a></div>`;
+    }
+
+    function routeText(l){ return `${h(l.pickup || "Pickup not set")} → ${l.deliveryLocked ? "Delivery locked until BOL approval" : h(l.delivery || "Delivery not set")}`; }
+    function renderLoadDetailsPanel(l){
+      const target = document.getElementById("activeLoadDetails"); if(!target || !l) return;
+      target.innerHTML = `<div class="rounded-2xl border bg-gray-50 p-4"><div class="flex flex-wrap items-start justify-between gap-3"><div><h3 class="font-bold text-lg">Load ${h(l.loadNumber || l.id)}</h3><p class="text-sm text-gray-600 mt-1">${routeText(l)}</p></div>${l.deliveryLocked ? `<span class="px-3 py-1 rounded border bg-yellow-50 text-xs">Delivery locked</span>` : `<span class="px-3 py-1 rounded border bg-green-50 text-xs">Delivery unlocked</span>`}</div><div class="grid md:grid-cols-4 gap-3 mt-4 text-sm"><div><b>Customer</b><br>${h(l.customer || "-")}</div><div><b>Rate</b><br>${h(l.rate || "-")}</div><div><b>Status</b><br>${h(String(l.status||"").replaceAll("_"," "))}</div><div><b>Docs</b><br>${docsBadge(l)}</div><div class="md:col-span-2"><b>Pickup</b><br>${h(l.pickup || "-")}</div><div class="md:col-span-2"><b>Delivery</b><br>${l.deliveryLocked ? h(l.deliveryLockReason || "Hidden until BOL approval") : h(l.delivery || "-")}</div><div class="md:col-span-4"><b>Notes / ITS details</b><br>${h(l.notes || "-")}</div></div></div>`;
+    }
+
+    async function loadMyLoads() {
+      try {
+        const loads = await api("/api/loads");
+        const sel = els.loadId;
+        sel.innerHTML = `<option value="">— No load selected —</option>` + loads.map(l => {
+          const label = l.loadNumber ? `Load ${l.loadNumber}` : l.id;
+          return `<option value="${h(l.id)}">${h(label)}${l.customer ? " • " + h(l.customer) : ""}</option>`;
+        }).join("");
+        const active = loads.filter(l => !["closed", "cancelled", "delivered", "rejected"].includes(String(l.status || "").toLowerCase()));
+        if (els.activeLoadsTbody) {
+          if (!active.length) {
+            els.activeLoadsTbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-500">No active loads.</td></tr>`;
+          } else {
+            els.activeLoadsTbody.innerHTML = active.map(l => `<tr class="hover:bg-gray-50 align-top"><td class="p-2 border"><b>${h(l.loadNumber || l.id)}</b><div class="text-xs text-gray-500">${h(fmtDate(l.createdAt))}</div><div class="text-xs text-gray-500 mt-1">${routeText(l)}</div></td><td class="p-2 border">${h(l.customer || "-")}<div class="text-xs text-gray-500">Rate: ${h(l.rate || "-")}</div></td><td class="p-2 border">${docsBadge(l)}</td><td class="p-2 border capitalize">${h(String(l.status || "").replace("_", " "))}${l.deliveryLocked ? `<div class="text-xs text-yellow-800 mt-1">BOL approval required</div>` : ""}</td><td class="p-2 border">${tripActions(l)}</td></tr>`).join("");
+            const wanted = new URLSearchParams(location.search).get("load");
+            renderLoadDetailsPanel(active.find(x=>x.id===wanted) || active[0]);
+            els.activeLoadsTbody.querySelectorAll("[data-show-load]").forEach(btn => btn.onclick = () => renderLoadDetailsPanel(active.find(x=>x.id===btn.dataset.showLoad)));
+            els.activeLoadsTbody.querySelectorAll("[data-accept]").forEach(btn => btn.onclick = async () => { await api(`/api/loads/${encodeURIComponent(btn.dataset.accept)}/accept`, { method:"POST", body:{} }); await loadMyLoads(); });
+            els.activeLoadsTbody.querySelectorAll("[data-reject]").forEach(btn => btn.onclick = async () => { const reason = prompt("Reason for rejecting this load?"); if (!reason) return; await api(`/api/loads/${encodeURIComponent(btn.dataset.reject)}/reject`, { method:"POST", body:{ reason } }); await loadMyLoads(); });
+            els.activeLoadsTbody.querySelectorAll("[data-save-status]").forEach(btn => btn.onclick = async () => { const id = btn.dataset.saveStatus; const sel = els.activeLoadsTbody.querySelector(`[data-trip-status="${CSS.escape(id)}"]`); await api(`/api/loads/${encodeURIComponent(id)}/status`, { method:"PATCH", body:{ status: sel?.value } }); await loadMyLoads(); });
+          }
+          els.activeLoadsMsg.textContent = `Ready (${active.length})`;
+        }
+      } catch (e) {
+        if (els.activeLoadsMsg) els.activeLoadsMsg.textContent = "Error: " + e.message;
+      }
+    }
+
+    async function loadFinishedLoads() {
+  els.finishedMsg.textContent = "Loading...";
+  els.finishedTbody.innerHTML = "";
+  try {
+    const loads = await api("/api/loads?includeClosed=1");
+    const finished = loads.filter(l => (l.status || "") === "closed");
+
+    if (!finished.length) {
+      els.finishedTbody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-gray-500">No finished loads yet.</td></tr>`;
+      els.finishedMsg.textContent = "Ready";
+      return;
+    }
+
+    // Ask backend for missing docs summary (optional) is on /api/loads/all, but driver only has /api/loads.
+    // We'll show basic info; details can be reviewed by dispatch/admin.
+    els.finishedTbody.innerHTML = finished.map(l => {
+      const closedAt = l.closedAt ? fmtDate(l.closedAt) : "-";
+      const loadNo = l.loadNumber ? `Load ${l.loadNumber}` : (l.id || "-");
+      const cust = l.customer || "-";
+      const docs = `<span class="px-2 py-1 rounded border jts-pill text-xs">POD/BOL completed</span>`;
+      return `
+        <tr class="hover:bg-gray-50">
+          <td class="p-2 border whitespace-nowrap">${closedAt}</td>
+          <td class="p-2 border">${loadNo}</td>
+          <td class="p-2 border">${cust}</td>
+          <td class="p-2 border">${docs}</td>
+        </tr>
+      `;
+    }).join("");
+
+    els.finishedMsg.textContent = "Ready";
+  } catch (e) {
+    els.finishedMsg.textContent = "Error: " + e.message;
+    els.finishedTbody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-red-600">${e.message}</td></tr>`;
+  }
+}
+
+    async function loadMyDocs() {
+      els.listMsg.textContent = "Loading...";
+      els.docsTbody.innerHTML = "";
+
+      try {
+        const status = els.filterStatus.value;
+        const qs = status ? `?status=${encodeURIComponent(status)}` : "";
+        const rows = await api(`/api/documents/my${qs}`);
+
+        renderCounters(rows);
+
+        if (!rows.length) {
+          els.docsTbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-500">No documents found.</td></tr>`;
+          els.listMsg.textContent = "Ready";
+          return;
+        }
+
+        els.docsTbody.innerHTML = rows.map(d => {
+          const fileLink = d.id
+            ? `<a class="underline text-xs" href="#" data-preview="${d.id}" class="underline text-xs">Preview</a>`
+            : `<span class="text-xs text-gray-500">-</span>`;
+
+          return `
+            <tr class="hover:bg-gray-50">
+              <td class="p-2 border whitespace-nowrap">${fmtDate(d.createdAt)}</td>
+              <td class="p-2 border">${d.category || "-"}</td>
+              <td class="p-2 border">${d.loadId || "-"}</td>
+              <td class="p-2 border">${badge(d.status)}</td>
+              <td class="p-2 border">${fileLink}</td>
+            </tr>
+          `;
+        }).join("");
+
+        // Bind Preview links
+        els.docsTbody.querySelectorAll("[data-preview]").forEach(a => {
+          a.onclick = (e) => {
+            e.preventDefault();
+            openPreview({ docId: a.getAttribute("data-preview"), title: "Document Preview" });
+          };
+        });
+
+        els.listMsg.textContent = "Ready";
+      } catch (e) {
+        els.listMsg.textContent = "Error: " + e.message;
+        els.docsTbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-red-600">${e.message}</td></tr>`;
+      }
+    }
+
+    els.refresh.onclick = async () => { await loadMyDocs(); await loadChatContacts(); };
+    els.filterStatus.onchange = loadMyDocs;
+    if (els.refreshFinished) els.refreshFinished.onclick = loadFinishedLoads;
+    if (els.refreshActiveLoads) els.refreshActiveLoads.onclick = loadMyLoads;
+
+    els.upload.onclick = async () => {
+      els.uploadMsg.textContent = "";
+      const f = els.file.files[0];
+      if (!f) {
+        els.uploadMsg.innerHTML = `<span class="text-red-600">Please select a file.</span>`;
+        return;
+      }
+
+      const fd = new FormData();
+      fd.append("file", f);
+      fd.append("category", els.category.value);
+      if (els.loadId.value) fd.append("loadId", els.loadId.value);
+      if (els.note.value.trim()) fd.append("note", els.note.value.trim());
+
+      try {
+        els.uploadMsg.innerHTML = `<span class="text-gray-600">Uploading...</span>`;
+        const r = await api("/api/documents/upload", { method:"POST", body: fd, isForm:true });
+
+        els.uploadMsg.innerHTML =
+          `✅ Uploaded. <a class="underline" href="${r.url}" target="_blank">Preview</a>`;
+
+        els.file.value = "";
+        els.note.value = "";
+
+        await loadMyDocs();
+      } catch (e) {
+        els.uploadMsg.innerHTML = `<span class="text-red-600">❌ ${e.message}</span>`;
+      }
+    };
+
+    // init
+
+    if (els.saveAvailability) {
+      els.saveAvailability.onclick = async () => {
+        try {
+          await api("/api/enterprise/availability", { method: "POST", body: { status: els.availabilityStatus.value, fromDate: els.availabilityFrom.value, toDate: els.availabilityTo.value } });
+          els.availabilityMsg.textContent = "Availability saved.";
+          els.availabilityMsg.className = "text-xs text-emerald-700 mt-3";
+        } catch (e) {
+          els.availabilityMsg.textContent = e.message || "Failed to save availability";
+          els.availabilityMsg.className = "text-xs text-red-700 mt-3";
+        }
+      };
+    }
+
+    loadChatContacts();
+    loadMyLoads();
+    loadMyDocs();
+    loadFinishedLoads();
+  </script>
+
+  <script type="module">
+    import { initPushUI } from "/assets/push.js";
+    initPushUI();
+  </script>
+
+
+  <script type="module" src="/assets/install.js"></script>
+
+  <script type="module" src="/assets/loader.js"></script>
+  
+  <script type="module" src="/assets/enterprise-live.js"></script>
+  <script src="/assets/role-ui.js"></script>
+  
+  
+  
+  
+  
+  <script src="/assets/auth-guard-final.js"></script>
+  <script src="/assets/jts-auth-ui-hotfix.js"></script>
+  <script src="/assets/gps-access-final.js"></script>
+  <script src="/assets/gps-live-share-final.js"></script>
+  <script src="/assets/jts-final-mobile-gps-fix.js"></script>
+  
+
+  <script src="/assets/jts-apex-production-ui.js"></script>
+</body>
+</html>

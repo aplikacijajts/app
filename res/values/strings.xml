@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">JTS Logistics</string>
+    <string name="title_activity_main">JTS Logistics</string>
+    <string name="package_name">com.jtslogistics.portal</string>
+    <string name="custom_url_scheme">com.jtslogistics.portal</string>
+</resources>
