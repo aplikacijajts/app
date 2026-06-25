@@ -33,6 +33,18 @@ function mapsQuery() {
   if (position) return `${station} near ${position.lat},${position.lng}`;
   return `${station} near me`;
 }
+function updateNearestStations() {
+  const box = $("nearestStations");
+  if (!box) return;
+  const selected = $("stationSelect")?.value || "fuel station";
+  const base = STATIONS.filter(s => s.value !== "fuel station").slice(0, 6);
+  const items = [{ value: selected, label: $("stationSelect")?.selectedOptions?.[0]?.textContent || selected }, ...base.filter(x => x.value !== selected)].slice(0, 6);
+  box.innerHTML = items.map((s, i) => {
+    const q = position ? `${s.value} near ${position.lat},${position.lng}` : `${s.value} near me`;
+    const approx = position ? (i === 0 ? "nearest" : `alternative ${i}`) : "tap Use Current Location for distance";
+    return `<a class="rounded-xl border bg-white p-3 block" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}"><b>${esc(i === 0 ? "Nearest: " : "")}${esc(s.label)}</b><div class="text-xs text-slate-500 mt-1">${esc(approx)} • Google Maps will show exact miles and navigation.</div></a>`;
+  }).join("");
+}
 function updateMap() {
   const query = mapsQuery();
   const url = `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
@@ -42,6 +54,7 @@ function updateMap() {
   if (open) open.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
   const q = $("fuelQuery");
   if (q) q.textContent = query;
+  updateNearestStations();
 }
 function updatePositionText() {
   const el = $("driverPosition");
@@ -57,6 +70,7 @@ function storePosition(pos) {
   try { localStorage.setItem("jts-driver-position", JSON.stringify(position)); } catch {}
   updatePositionText();
   updateMap();
+  updateNearestStations();
   setStatus("Location is active", "ok");
 }
 function loadStoredPosition() {
@@ -67,6 +81,9 @@ function loadStoredPosition() {
   updatePositionText();
 }
 function requestLocation() {
+  if (!window.isSecureContext && location.hostname !== "localhost") {
+    setStatus("iPhone requires HTTPS or installed Home Screen app for location.", "error");
+  }
   if (!navigator.geolocation) {
     setStatus("This device/browser does not support location services.", "error");
     return;
@@ -75,7 +92,8 @@ function requestLocation() {
   navigator.geolocation.getCurrentPosition(storePosition, (err) => {
     setStatus(err?.message || "Location permission was denied.", "error");
     updateMap();
-  }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 });
+  updateNearestStations();
+  }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
 }
 function watchLocation() {
   if (!navigator.geolocation) return;
@@ -104,12 +122,13 @@ function init() {
   const select = $("stationSelect");
   if (select) {
     select.innerHTML = STATIONS.map(s => `<option value="${esc(s.value)}">${esc(s.label)}</option>`).join("");
-    select.addEventListener("change", updateMap);
+    select.addEventListener("change", () => { updateMap(); updateNearestStations(); });
   }
   $("locateDriver")?.addEventListener("click", requestLocation);
   $("watchLocation")?.addEventListener("click", watchLocation);
   loadStoredPosition();
   updateMap();
+  updateNearestStations();
   loadUser();
 }
 

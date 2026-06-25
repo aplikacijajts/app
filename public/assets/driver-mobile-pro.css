@@ -1,0 +1,87 @@
+/* Clean mobile-first Driver experience - light, simple, professional */
+body.jts-driver-mobile-pro{
+  margin:0;
+  background:#f6f8fb!important;
+  color:#162033;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:34px;
+}
+body.jts-driver-mobile-pro *{box-sizing:border-box}
+.jts-clean-header{
+  position:sticky;top:0;z-index:70;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid #e8edf3;
+}
+.jts-clean-header-inner{max-width:980px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.jts-clean-icon-btn{width:44px;height:44px;border-radius:16px;border:1px solid #e6ebf1;background:#fff;color:#14213d;text-decoration:none;display:flex;align-items:center;justify-content:center;font-weight:900;box-shadow:0 8px 22px rgba(15,23,42,.06)}
+.jts-clean-brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.jts-clean-brand img{width:40px;height:40px;border-radius:14px;object-fit:contain;background:#fff}
+.jts-clean-title{font-size:17px;line-height:1.05;font-weight:950;color:#083978;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jts-clean-subtitle{font-size:12px;color:#64748b;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jts-clean-shell{max-width:980px;margin:0 auto;padding:16px 16px 42px}
+.jts-clean-welcome{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin:4px 0 14px}
+.jts-clean-welcome h1{font-size:26px;line-height:1.04;margin:0;color:#0f172a;letter-spacing:-.04em;font-weight:950}
+.jts-clean-welcome p{margin:5px 0 0;color:#667085;font-size:14px;line-height:1.35}
+.jts-clean-status-pill{display:inline-flex;align-items:center;gap:7px;border-radius:999px;background:#e9fbf6;color:#027a48;border:1px solid #b7ead6;padding:8px 11px;font-size:12px;font-weight:900;white-space:nowrap}
+.jts-clean-dot{width:8px;height:8px;border-radius:999px;background:#12b76a;box-shadow:0 0 0 4px rgba(18,183,106,.14)}
+.jts-clean-card{background:#fff;border:1px solid #e8edf3;border-radius:26px;padding:18px;box-shadow:0 18px 45px rgba(15,23,42,.06);margin-bottom:14px}
+.jts-clean-main-load{border-color:#d2e7ff;box-shadow:0 22px 55px rgba(8,57,120,.10)}
+.jts-clean-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.jts-clean-kicker{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#7b8aa0;font-weight:950}
+.jts-clean-card h2{font-size:20px;margin:4px 0 0;color:#101828;font-weight:950;letter-spacing:-.025em}
+.jts-clean-muted{font-size:13px;color:#667085;line-height:1.4}
+.jts-clean-load-number{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:#f1f7ff;color:#083978;border:1px solid #cfe3ff;padding:8px 11px;font-size:12px;font-weight:950;white-space:nowrap}
+.jts-clean-route{display:grid;grid-template-columns:24px 1fr;gap:10px;margin:15px 0}
+.jts-clean-route-line{width:2px;background:#d9e7f5;border-radius:999px;margin:12px auto}
+.jts-clean-stop{padding:12px;border-radius:18px;background:#f8fafc;border:1px solid #edf1f6;margin-bottom:9px}
+.jts-clean-stop strong{display:block;color:#101828;font-size:14px;margin-bottom:4px}
+.jts-clean-stop span{display:block;color:#475467;font-size:14px;line-height:1.35}
+.jts-clean-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 16px}
+.jts-clean-metric{background:#f8fafc;border:1px solid #edf1f6;border-radius:18px;padding:12px;min-width:0}
+.jts-clean-metric small{display:block;color:#7b8aa0;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.jts-clean-metric b{display:block;color:#101828;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jts-clean-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.jts-clean-btn{border:0;border-radius:17px;min-height:48px;padding:12px 14px;font-weight:950;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-align:center;font-size:14px;transition:transform .15s ease,box-shadow .15s ease;background:#f2f5f9;color:#172033;border:1px solid #e6ebf1}
+.jts-clean-btn:hover{transform:translateY(-1px)}
+.jts-clean-btn.primary{background:#083978;color:#fff;border-color:#083978;box-shadow:0 14px 30px rgba(8,57,120,.20)}
+.jts-clean-btn.success{background:#0b8f70;color:#fff;border-color:#0b8f70;box-shadow:0 14px 30px rgba(11,143,112,.18)}
+.jts-clean-btn.warn{background:#fff7ed;color:#9a3412;border-color:#fed7aa}
+.jts-clean-btn.full{grid-column:1/-1}
+.jts-clean-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+.jts-clean-select,.jts-clean-input,.jts-clean-file{width:100%;min-height:48px;border:1px solid #dfe6ef!important;background:#fff!important;border-radius:16px!important;padding:0 13px!important;font-size:15px!important;color:#101828!important}
+textarea.jts-clean-input{padding:12px 13px!important;min-height:92px;resize:vertical}
+.jts-clean-field{display:grid;gap:6px;margin-bottom:11px}
+.jts-clean-field label{font-size:13px;font-weight:900;color:#344054}
+.jts-clean-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.jts-clean-compact-list{display:grid;gap:10px}
+.jts-clean-load-chip{width:100%;text-align:left;border:1px solid #e8edf3;background:#fff;border-radius:20px;padding:13px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer}
+.jts-clean-load-chip strong{display:block;font-size:14px;color:#101828}
+.jts-clean-load-chip span{display:block;font-size:12px;color:#667085;margin-top:2px}
+.jts-clean-doc-row{border:1px solid #edf1f6;border-radius:18px;padding:12px;display:flex;justify-content:space-between;gap:10px;align-items:center;background:#fbfcfe}
+.jts-clean-badge{display:inline-flex;align-items:center;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;border:1px solid #e6ebf1;background:#f8fafc;color:#344054;white-space:nowrap}
+.jts-clean-badge.ok{background:#ecfdf3;color:#027a48;border-color:#b7ead6}.jts-clean-badge.warn{background:#fffaeb;color:#b54708;border-color:#fedf89}.jts-clean-badge.bad{background:#fef3f2;color:#b42318;border-color:#fecdca}.jts-clean-badge.info{background:#eff8ff;color:#175cd3;border-color:#b2ddff}
+.jts-clean-accordion{padding:0;overflow:hidden}
+.jts-clean-accordion summary{list-style:none;cursor:pointer;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:950;color:#101828}
+.jts-clean-accordion summary::-webkit-details-marker{display:none}
+.jts-clean-accordion summary span{font-size:19px;letter-spacing:-.02em}
+.jts-clean-accordion summary small{font-size:12px;color:#667085;font-weight:700;display:block;margin-top:3px}
+.jts-clean-accordion .jts-clean-accordion-body{padding:0 18px 18px}
+.jts-clean-chevron{font-size:20px;color:#98a2b3;transition:transform .18s ease}
+details[open] .jts-clean-chevron{transform:rotate(180deg)}
+.jts-driver-float-chat{position:fixed!important;right:18px!important;bottom:22px!important;z-index:90!important;width:62px!important;height:62px!important;border-radius:999px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-decoration:none!important;font-size:29px!important;line-height:1!important;background:#083978!important;color:#fff!important;box-shadow:0 18px 40px rgba(8,57,120,.32)!important;border:3px solid #fff!important;cursor:pointer!important}
+.jts-chat-popover{position:fixed;right:16px;bottom:96px;width:min(380px,calc(100vw - 32px));height:min(560px,calc(100vh - 128px));z-index:89;background:#fff;border:1px solid #dfe6ef;border-radius:26px;box-shadow:0 28px 80px rgba(15,23,42,.24);display:none;overflow:hidden}
+.jts-chat-popover.open{display:flex;flex-direction:column}
+.jts-chat-popover-head{padding:14px 15px;border-bottom:1px solid #edf1f6;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fbfcfe}
+.jts-chat-popover-head strong{display:block;color:#101828;font-size:15px}.jts-chat-popover-head small{display:block;color:#667085;font-size:12px;margin-top:2px}
+.jts-chat-close{width:38px;height:38px;border-radius:14px;border:1px solid #e6ebf1;background:#fff;cursor:pointer;font-weight:950}
+.jts-chat-contact-select{margin:10px 12px 0}
+.jts-chat-messages{flex:1;overflow:auto;padding:14px 12px;display:flex;flex-direction:column;gap:10px;background:#f7f9fc}
+.jts-chat-empty{margin:auto;text-align:center;color:#667085;font-size:14px;line-height:1.4;padding:22px}
+.jts-chat-bubble{max-width:82%;padding:10px 12px;border-radius:18px;font-size:14px;line-height:1.35;box-shadow:0 4px 14px rgba(15,23,42,.05);word-break:break-word}
+.jts-chat-bubble.mine{align-self:flex-end;background:#083978;color:#fff;border-bottom-right-radius:6px}.jts-chat-bubble.theirs{align-self:flex-start;background:#fff;color:#101828;border:1px solid #e6ebf1;border-bottom-left-radius:6px}.jts-chat-bubble small{display:block;margin-top:5px;font-size:10px;opacity:.72}
+.jts-chat-form{display:flex;gap:8px;padding:12px;border-top:1px solid #edf1f6;background:#fff}.jts-chat-form textarea{flex:1;min-height:44px;max-height:120px;border-radius:16px;border:1px solid #dfe6ef;padding:10px 12px;font-size:14px;resize:none}.jts-chat-form button{width:48px;border-radius:16px;border:0;background:#083978;color:white;font-weight:950;cursor:pointer}
+@media (max-width:760px){
+  .jts-clean-shell{padding:13px 12px 36px}.jts-clean-header-inner{padding:10px 12px}.jts-clean-icon-btn{width:40px;height:40px;border-radius:14px}.jts-clean-brand img{width:38px;height:38px}.jts-clean-title{font-size:16px}.jts-clean-subtitle{font-size:11px}.jts-clean-welcome{align-items:flex-start}.jts-clean-welcome h1{font-size:24px}.jts-clean-welcome p{font-size:13px}.jts-clean-status-pill{display:none}.jts-clean-card{border-radius:24px;padding:16px;margin-bottom:12px}.jts-clean-card-head{margin-bottom:12px}.jts-clean-metrics{grid-template-columns:1fr 1fr}.jts-clean-metric:nth-child(3){grid-column:1/-1}.jts-clean-actions{grid-template-columns:1fr}.jts-clean-grid{grid-template-columns:1fr}.jts-clean-accordion summary{padding:17px}.jts-clean-accordion .jts-clean-accordion-body{padding:0 17px 17px}.jts-driver-float-chat{right:16px!important;bottom:18px!important;width:60px!important;height:60px!important}.jts-chat-popover{right:10px;bottom:88px;width:calc(100vw - 20px);height:min(550px,calc(100vh - 108px));border-radius:24px}
+}
