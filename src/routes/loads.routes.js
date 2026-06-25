@@ -27,6 +27,28 @@ function addHistory(load, status, byUserId = null, note = null) {
 }
 
 
+function hasApprovedBOL(load, docs) {
+  return docs.some(d => d.loadId === load.id && String(d.category || "").toUpperCase() === "BOL" && d.status === "approved");
+}
+
+function hideSensitiveDelivery(load, docs, user) {
+  if (String(user?.role || "").toLowerCase() !== "driver") return load;
+  if (hasApprovedBOL(load, docs)) return { ...load, deliveryLocked: false };
+  return {
+    ...load,
+    delivery: null,
+    deliveryAddress: null,
+    destination: null,
+    deliveryLocked: true,
+    deliveryLockReason: "Delivery address is hidden until your BOL is uploaded and approved by admin/dispatcher."
+  };
+}
+
+function isBlockingDriverLoad(load, docs) {
+  const st = String(load.status || "").toLowerCase();
+  return ["accepted", "picked_up", "in_transit", "delayed"].includes(st) && !hasApprovedBOL(load, docs);
+}
+
 function enrichLoad(load, docs) {
   const loadDocs = docs.filter(d => d.loadId === load.id);
   const latest = {};
@@ -48,7 +70,7 @@ router.get("/", requireRole("driver", "dispatcher", "admin", "broker"), async (r
   let visible = await filterLoadsForUser(req.user, loads);
   if (!includeClosed && view === "active") visible = visible.filter(l => !["closed", "cancelled"].includes(String(l.status || "").toLowerCase()));
   if (view === "finished") visible = visible.filter(l => ["closed", "delivered"].includes(String(l.status || "").toLowerCase()));
-  visible = visible.map(l => enrichLoad(l, docs)).sort((a,b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+  visible = visible.map(l => enrichLoad(hideSensitiveDelivery(l, docs, req.user), docs)).sort((a,b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
   res.json(visible);
 });
 
@@ -148,7 +170,7 @@ router.get("/:id/details", requireRole("driver", "dispatcher", "admin", "broker"
   if (!visible.length) return res.status(403).json({ error: "Forbidden" });
   const allDocs = docs.filter(d => d.loadId === load.id).sort((a,b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
   const driver = users.find(u => u.id === load.driverId);
-  res.json({ ok: true, load: enrichLoad({ ...load, driverName: driver?.name || null }, docs), checklist: requiredDocs.map(c => ({ category: c, status: enrichLoad(load, docs).docsSummary[c] })), allDocs });
+  res.json({ ok: true, load: enrichLoad(hideSensitiveDelivery({ ...load, driverName: driver?.name || null }, docs, req.user), docs), checklist: requiredDocs.map(c => ({ category: c, status: enrichLoad(load, docs).docsSummary[c] })), allDocs });
 });
 
 router.patch("/:id/status", requireRole("driver", "dispatcher", "admin"), async (req, res) => {
@@ -160,6 +182,12 @@ router.patch("/:id/status", requireRole("driver", "dispatcher", "admin"), async 
   if (!current) return res.status(404).json({ error: "Load not found" });
   const visible = await filterLoadsForUser(req.user, [current]);
   if (!visible.length) return res.status(403).json({ error: "Forbidden" });
+  if (req.user.role === "driver") {
+    const docs = await readJson("documents.json");
+    const activeBlocking = loads.find(l => l.driverId === req.user.sub && l.id !== current.id && isBlockingDriverLoad(l, docs));
+    if (activeBlocking) return res.status(409).json({ error: `You cannot update/accept another load until BOL for load ${activeBlocking.loadNumber || activeBlocking.id} is approved.` });
+    if (["picked_up", "in_transit", "delivered"].includes(status) && !hasApprovedBOL(current, docs)) return res.status(409).json({ error: "BOL must be uploaded and approved before delivery details and next trip steps are unlocked." });
+  }
 
   let updated = null;
   await updateJson("loads.json", arr => {
@@ -184,6 +212,9 @@ router.post("/:id/accept", requireRole("driver"), async (req, res) => {
   const current = loads.find(l => l.id === req.params.id);
   if (!current) return res.status(404).json({ error: "Load not found" });
   if (current.driverId !== req.user.sub) return res.status(403).json({ error: "Forbidden" });
+  const docs = await readJson("documents.json");
+  const activeBlocking = loads.find(l => l.driverId === req.user.sub && l.id !== current.id && isBlockingDriverLoad(l, docs));
+  if (activeBlocking) return res.status(409).json({ error: `You cannot accept another load until BOL for load ${activeBlocking.loadNumber || activeBlocking.id} is approved.` });
   let updated = null;
   await updateJson("loads.json", arr => {
     const l = arr.find(x => x.id === req.params.id);
@@ -197,6 +228,7 @@ router.post("/:id/accept", requireRole("driver"), async (req, res) => {
   });
   await audit("load_accepted", { loadId: updated.id, driverId: req.user.sub });
   await notify.users([updated.dispatcherId, updated.brokerId].filter(Boolean), { type: "load_accepted", title: "Load accepted", message: `Driver accepted load ${updated.loadNumber}.`, data: { loadId: updated.id, url: `/load-details.html?id=${updated.id}` } });
+  await notify.users([updated.driverId], { type: "bol_required", title: "BOL required", message: `Upload BOL for load ${updated.loadNumber}. Delivery address will unlock after approval.`, data: { loadId: updated.id, url: `/driver.html?load=${updated.id}` } });
   await notify.roles(["admin"], { type: "load_accepted", title: "Load accepted", message: `Driver accepted load ${updated.loadNumber}.`, data: { loadId: updated.id, url: `/load-details.html?id=${updated.id}` } });
   res.json({ ok: true, load: updated });
 });

@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": "n_5ge35kug0x_1782403819278",
+    "toUserId": "u_2juqlxcdkl_1782403721110",
+    "type": "chat_message",
+    "title": "New message from Ace Kalaj",
+    "message": "eqwe",
+    "data": {
+      "conversationId": "u_2juqlxcdkl_1782403721110__u_fhikhypkx7_1782403777815",
+      "fromUserId": "u_fhikhypkx7_1782403777815",
+      "url": "/chat.html?user=u_fhikhypkx7_1782403777815"
+    },
+    "createdAt": "2026-06-25T16:10:19.278Z",
+    "readAt": null
+  }
+]

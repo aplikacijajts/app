@@ -168,12 +168,24 @@ router.post("/:id/approve", requireRole("dispatcher", "admin"), async (req, res)
   const docs = await readJson("documents.json");
   const doc = docs.find(d => d.id === id);
   if (doc) {
-    await notify.users([doc.driverId], {
-      type: "document_approved",
-      title: "Document Approved",
-      message: `${doc.category || "Document"} was approved.`,
-      data: { docId: id, loadId: doc.loadId || null }
-    });
+    const isBol = String(doc.category || "").toUpperCase() === "BOL";
+    if (isBol && doc.loadId) {
+      const loads = await readJson("loads.json");
+      const load = loads.find(l => l.id === doc.loadId);
+      await notify.users([doc.driverId], {
+        type: "bol_approved_delivery_unlocked",
+        title: "BOL approved - delivery unlocked",
+        message: `BOL was approved for load ${load?.loadNumber || doc.loadId}. Delivery address is now available.`,
+        data: { docId: id, loadId: doc.loadId, url: `/driver.html?load=${doc.loadId}` }
+      });
+    } else {
+      await notify.users([doc.driverId], {
+        type: "document_approved",
+        title: "Document Approved",
+        message: `${doc.category || "Document"} was approved.`,
+        data: { docId: id, loadId: doc.loadId || null, url: doc.loadId ? `/driver.html?load=${doc.loadId}` : "/driver.html" }
+      });
+    }
   }
   res.json({ ok: true });
 });
@@ -208,9 +220,9 @@ router.post("/:id/needs-fix", requireRole("dispatcher", "admin"), async (req, re
   if (doc) {
     await notify.users([doc.driverId], {
       type: "document_needs_fix",
-      title: "Document Needs Fix",
-      message: `${doc.category || "Document"} needs fixes.`,
-      data: { docId: id, loadId: doc.loadId || null }
+      title: `${doc.category || "Document"} rejected / needs fix`,
+      message: `${doc.category || "Document"} needs fixes: ${comment || "No reason provided"}`,
+      data: { docId: id, loadId: doc.loadId || null, url: doc.loadId ? `/driver.html?load=${doc.loadId}` : "/driver.html", reason: comment || "No reason provided" }
     });
   }
   res.json({ ok: true });
