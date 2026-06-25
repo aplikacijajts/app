@@ -36,8 +36,34 @@
     <section class="bg-white border rounded-lg p-4 mb-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 class="font-semibold text-lg">My dispatcher / chat</h2>
-          <p class="text-sm text-gray-600 mt-1">Your assigned dispatcher appears here. If an admin messages you, the admin will also appear in your chat list.</p>
+          <h2 class="font-semibold text-lg">My Active Loads</h2>
+          <p class="text-sm text-gray-600 mt-1">Accept/reject assigned loads, update trip status and open details/document checklist.</p>
+        </div>
+        <button id="refreshActiveLoads" class="px-3 py-2 rounded border bg-white text-sm">Refresh</button>
+      </div>
+      <div class="overflow-auto mt-4">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="text-left p-2 border">Load</th>
+              <th class="text-left p-2 border">Customer</th>
+              <th class="text-left p-2 border">Docs</th>
+              <th class="text-left p-2 border">Status</th>
+              <th class="text-left p-2 border">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="activeLoadsTbody"></tbody>
+        </table>
+      </div>
+      <div id="activeLoadDetails" class="mt-4"></div>
+      <div id="activeLoadsMsg" class="text-xs text-gray-500 mt-3"></div>
+    </section>
+
+    <section class="bg-white border rounded-lg p-4 mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="font-semibold text-lg">Chat notifications / dispatcher</h2>
+          <p class="text-sm text-gray-600 mt-1">Your dispatcher/admin chat contacts and unread chat notifications appear here.</p>
         </div>
         <a href="/chat.html" class="px-4 py-2 rounded jts-btn text-sm">Open chat</a>
       </div>
@@ -59,31 +85,6 @@
         <button id="saveAvailability" class="px-4 py-2 rounded jts-btn">Save availability</button>
       </div>
       <div id="availabilityMsg" class="text-xs text-gray-500 mt-3"></div>
-    </section>
-
-    <section class="bg-white border rounded-lg p-4 mb-6">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 class="font-semibold text-lg">My Active Loads</h2>
-          <p class="text-sm text-gray-600 mt-1">Accept/reject assigned loads, update trip status and open details/document checklist.</p>
-        </div>
-        <button id="refreshActiveLoads" class="px-3 py-2 rounded border bg-white text-sm">Refresh</button>
-      </div>
-      <div class="overflow-auto mt-4">
-        <table class="min-w-full text-sm">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="text-left p-2 border">Load</th>
-              <th class="text-left p-2 border">Customer</th>
-              <th class="text-left p-2 border">Docs</th>
-              <th class="text-left p-2 border">Status</th>
-              <th class="text-left p-2 border">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="activeLoadsTbody"></tbody>
-        </table>
-      </div>
-      <div id="activeLoadsMsg" class="text-xs text-gray-500 mt-3"></div>
     </section>
 
     <div class="grid md:grid-cols-2 gap-6">
@@ -197,6 +198,8 @@
   <div id="finishedMsg" class="text-xs text-gray-500 mt-3"></div>
 </section>
 
+  <a id="jtsDriverFloatChat" href="/chat.html" class="jts-driver-float-chat">Chat</a>
+
   </main>
 
   <script type="module">
@@ -307,9 +310,17 @@
 
     function tripActions(l) {
       const st = String(l.status || "");
+      const locked = !!l.deliveryLocked;
       const update = ["picked_up", "in_transit", "delivered"].map(x => `<option value="${x}" ${st===x?"selected":""}>${x.replace("_", " ")}</option>`).join("");
       const acceptReject = (st === "assigned" || st === "in_progress") ? `<button data-accept="${h(l.id)}" class="px-3 py-1 rounded jts-btn text-xs">Accept</button><button data-reject="${h(l.id)}" class="px-3 py-1 rounded border text-xs">Reject</button>` : "";
-      return `<div class="flex flex-wrap gap-2 items-center">${acceptReject}<select data-trip-status="${h(l.id)}" class="border rounded p-1 text-xs">${update}</select><button data-save-status="${h(l.id)}" class="px-3 py-1 rounded border bg-white text-xs">Update</button><a href="/load-details.html?id=${encodeURIComponent(l.id)}" class="px-3 py-1 rounded border bg-white text-xs">Details</a></div>`;
+      const disabled = locked ? "disabled title='BOL must be approved first'" : "";
+      return `<div class="flex flex-wrap gap-2 items-center">${acceptReject}<select data-trip-status="${h(l.id)}" class="border rounded p-1 text-xs" ${disabled}>${update}</select><button data-save-status="${h(l.id)}" class="px-3 py-1 rounded border bg-white text-xs" ${disabled}>Update</button><button data-show-load="${h(l.id)}" class="px-3 py-1 rounded border bg-white text-xs">Show on page</button><a href="/load-details.html?id=${encodeURIComponent(l.id)}" class="px-3 py-1 rounded border bg-white text-xs">JTS Confirmation</a></div>`;
+    }
+
+    function routeText(l){ return `${h(l.pickup || "Pickup not set")} → ${l.deliveryLocked ? "Delivery locked until BOL approval" : h(l.delivery || "Delivery not set")}`; }
+    function renderLoadDetailsPanel(l){
+      const target = document.getElementById("activeLoadDetails"); if(!target || !l) return;
+      target.innerHTML = `<div class="rounded-2xl border bg-gray-50 p-4"><div class="flex flex-wrap items-start justify-between gap-3"><div><h3 class="font-bold text-lg">Load ${h(l.loadNumber || l.id)}</h3><p class="text-sm text-gray-600 mt-1">${routeText(l)}</p></div>${l.deliveryLocked ? `<span class="px-3 py-1 rounded border bg-yellow-50 text-xs">Delivery locked</span>` : `<span class="px-3 py-1 rounded border bg-green-50 text-xs">Delivery unlocked</span>`}</div><div class="grid md:grid-cols-4 gap-3 mt-4 text-sm"><div><b>Customer</b><br>${h(l.customer || "-")}</div><div><b>Rate</b><br>${h(l.rate || "-")}</div><div><b>Status</b><br>${h(String(l.status||"").replaceAll("_"," "))}</div><div><b>Docs</b><br>${docsBadge(l)}</div><div class="md:col-span-2"><b>Pickup</b><br>${h(l.pickup || "-")}</div><div class="md:col-span-2"><b>Delivery</b><br>${l.deliveryLocked ? h(l.deliveryLockReason || "Hidden until BOL approval") : h(l.delivery || "-")}</div><div class="md:col-span-4"><b>Notes / ITS details</b><br>${h(l.notes || "-")}</div></div></div>`;
     }
 
     async function loadMyLoads() {
@@ -325,7 +336,10 @@
           if (!active.length) {
             els.activeLoadsTbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-500">No active loads.</td></tr>`;
           } else {
-            els.activeLoadsTbody.innerHTML = active.map(l => `<tr class="hover:bg-gray-50 align-top"><td class="p-2 border"><b>${h(l.loadNumber || l.id)}</b><div class="text-xs text-gray-500">${h(fmtDate(l.createdAt))}</div></td><td class="p-2 border">${h(l.customer || "-")}</td><td class="p-2 border">${docsBadge(l)}</td><td class="p-2 border capitalize">${h(String(l.status || "").replace("_", " "))}</td><td class="p-2 border">${tripActions(l)}</td></tr>`).join("");
+            els.activeLoadsTbody.innerHTML = active.map(l => `<tr class="hover:bg-gray-50 align-top"><td class="p-2 border"><b>${h(l.loadNumber || l.id)}</b><div class="text-xs text-gray-500">${h(fmtDate(l.createdAt))}</div><div class="text-xs text-gray-500 mt-1">${routeText(l)}</div></td><td class="p-2 border">${h(l.customer || "-")}<div class="text-xs text-gray-500">Rate: ${h(l.rate || "-")}</div></td><td class="p-2 border">${docsBadge(l)}</td><td class="p-2 border capitalize">${h(String(l.status || "").replace("_", " "))}${l.deliveryLocked ? `<div class="text-xs text-yellow-800 mt-1">BOL approval required</div>` : ""}</td><td class="p-2 border">${tripActions(l)}</td></tr>`).join("");
+            const wanted = new URLSearchParams(location.search).get("load");
+            renderLoadDetailsPanel(active.find(x=>x.id===wanted) || active[0]);
+            els.activeLoadsTbody.querySelectorAll("[data-show-load]").forEach(btn => btn.onclick = () => renderLoadDetailsPanel(active.find(x=>x.id===btn.dataset.showLoad)));
             els.activeLoadsTbody.querySelectorAll("[data-accept]").forEach(btn => btn.onclick = async () => { await api(`/api/loads/${encodeURIComponent(btn.dataset.accept)}/accept`, { method:"POST", body:{} }); await loadMyLoads(); });
             els.activeLoadsTbody.querySelectorAll("[data-reject]").forEach(btn => btn.onclick = async () => { const reason = prompt("Reason for rejecting this load?"); if (!reason) return; await api(`/api/loads/${encodeURIComponent(btn.dataset.reject)}/reject`, { method:"POST", body:{ reason } }); await loadMyLoads(); });
             els.activeLoadsTbody.querySelectorAll("[data-save-status]").forEach(btn => btn.onclick = async () => { const id = btn.dataset.saveStatus; const sel = els.activeLoadsTbody.querySelector(`[data-trip-status="${CSS.escape(id)}"]`); await api(`/api/loads/${encodeURIComponent(id)}/status`, { method:"PATCH", body:{ status: sel?.value } }); await loadMyLoads(); });

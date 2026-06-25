@@ -32,7 +32,7 @@
     </div>
   </header>
 
-  <main class="enterprise-shell" style="padding-top:24px">
+  <main class="enterprise-shell" style="padding-top:24px"><section id="driverHomeDashboard" style="display:none"></section>
   <section class="enterprise-hero">
     <h1>JTS Logistics Platform</h1>
     <p>Professional workspace for dispatch operations, drivers, documents, approvals, live status, notifications and company control.</p>
@@ -58,6 +58,32 @@
 
   <script>
     document.getElementById("y").textContent = new Date().getFullYear();
+  </script>
+  <script type="module">
+    import { api, getToken } from './assets/api.js';
+    function decode(t){try{return JSON.parse(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')))}catch{return {}}}
+    const token=getToken(); const me=decode(token||'');
+    const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    if(token && me.role==='driver'){
+      const dash=document.getElementById('driverHomeDashboard'); dash.style.display='block';
+      Array.from(document.querySelectorAll('.enterprise-hero,.enterprise-grid-two,#live-dashboard')).forEach(x=>x.style.display='none');
+      async function render(){
+        dash.innerHTML='<div class="jts-surface p-6">Loading current load...</div>';
+        try{
+          const loads=await api('/api/loads');
+          const active=loads.find(l=>['accepted','picked_up','in_transit','assigned'].includes(String(l.status||'')))||loads[0];
+          if(!active){dash.innerHTML='<div class="jts-surface p-6"><h1>No current load</h1><p class="text-slate-500">You do not have an active load assigned.</p></div>';return;}
+          const locked=active.deliveryLocked;
+          dash.innerHTML=`<section class="jts-surface p-6"><h1 class="text-3xl font-extrabold">Current Load ${esc(active.loadNumber||active.id)}</h1><p class="text-slate-500 mt-2">${esc(active.pickup||'Pickup not set')} → ${locked?'Delivery locked until BOL approval':esc(active.delivery||'Delivery not set')}</p><div class="grid md:grid-cols-4 gap-3 mt-4"><input id="homeMiles" class="border rounded-xl p-2" type="number" placeholder="Miles"><input id="homeMpg" class="border rounded-xl p-2" type="number" placeholder="Truck MPG" value="6.5"><input id="homeFuelPrice" class="border rounded-xl p-2" type="number" placeholder="Fuel $/gal" value="4"><input id="homeOtherCost" class="border rounded-xl p-2" type="number" placeholder="Other costs" value="0"></div><button id="calcHomeProfit" class="jts-btn mt-4">Calculate fuel and profit</button><div id="homeCalcOut" class="rounded-xl border bg-white p-4 mt-4 text-sm">Rate: ${esc(active.rate||'-')}</div><div class="grid md:grid-cols-2 gap-3 mt-4 text-sm"><div><b>Customer</b><br>${esc(active.customer||'-')}</div><div><b>Status</b><br>${esc(String(active.status||'-').replaceAll('_',' '))}</div><div><b>Pickup</b><br>${esc(active.pickup||'-')}</div><div><b>Delivery</b><br>${locked?esc(active.deliveryLockReason||'Hidden until BOL approval'):esc(active.delivery||'-')}</div><div class="md:col-span-2"><b>Missing / documents</b><br>${esc((active.missingDocs||[]).join(', ')||'Documents OK')}</div></div></section>`;
+          document.getElementById('calcHomeProfit').onclick=()=>{
+            const miles=Number(document.getElementById('homeMiles').value||0), mpg=Number(document.getElementById('homeMpg').value||0), price=Number(document.getElementById('homeFuelPrice').value||0), other=Number(document.getElementById('homeOtherCost').value||0);
+            const rate=Number(String(active.rate||'').replace(/[^0-9.]/g,''))||0; const gallons=mpg?miles/mpg:0; const fuel=gallons*price; const profit=rate-fuel-other;
+            document.getElementById('homeCalcOut').innerHTML=`Fuel: <b>${gallons.toFixed(1)} gal</b> / <b>$${fuel.toFixed(2)}</b><br>Expected driver profit: <b>$${profit.toFixed(2)}</b>`;
+          };
+        }catch(e){dash.innerHTML=`<div class="jts-surface p-6 text-red-600">${esc(e.message)}</div>`}
+      }
+      render();
+    }
   </script>
 
   <script type="module" src="/assets/install.js"></script>

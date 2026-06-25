@@ -1119,3 +1119,11 @@ html[data-jts-theme="dark"] body.jts-apex .enterprise-btn.ghost {
   color: #f2ffff !important;
   -webkit-text-fill-color: #f2ffff !important;
 }
+
+/* JTS driver-request fixes */
+body.jts-apex .jts-global-back{position:fixed;left:16px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:2600;min-height:56px;padding:0 20px;border-radius:999px;border:2px solid rgba(0,168,168,.32);background:linear-gradient(135deg,var(--jts-teal),var(--jts-aqua));color:#fff!important;font-weight:950;font-size:16px;box-shadow:0 18px 40px rgba(0,168,168,.30)}
+body.jts-apex .jts-menu-root{z-index:5000!important}body.jts-apex .jts-menu-panel{z-index:5002!important}body.jts-apex .jts-menu-backdrop{z-index:5001!important}body.jts-apex #jtsToasts{z-index:2200!important;top:86px!important;bottom:auto!important}.jts-map-frame{min-height:520px;width:100%;border:0;border-radius:22px}.jts-notification-card{cursor:pointer}.jts-notification-card button{cursor:pointer}
+@media(max-width:700px){body.jts-apex .jts-global-back{left:12px;bottom:calc(12px + env(safe-area-inset-bottom));min-height:52px;padding:0 16px}.jts-map-frame{min-height:460px}}
+
+body.jts-apex .jts-driver-float-chat{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:2700;min-height:56px;padding:0 22px;border-radius:999px;background:linear-gradient(135deg,#1f2937,#00a8a8);color:#fff!important;font-weight:950;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 18px 40px rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.22)}
+@media(max-width:700px){body.jts-apex .jts-driver-float-chat{right:12px;bottom:calc(78px + env(safe-area-inset-bottom));min-height:52px}}

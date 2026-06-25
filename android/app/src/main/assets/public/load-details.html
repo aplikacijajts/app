@@ -41,6 +41,7 @@
         <div id="missingBadge"></div>
       </div>
 
+      <section id="confirmationDetails" class="jts-confirm-doc mt-6"></section>
       <h2 class="font-semibold text-lg mt-6">Load Status Timeline</h2>
       <div id="timeline" class="mt-3 grid gap-2"></div>
 
@@ -137,6 +138,7 @@
       title: document.getElementById("title"),
       meta: document.getElementById("meta"),
       missingBadge: document.getElementById("missingBadge"),
+      confirmationDetails: document.getElementById("confirmationDetails"),
       timeline: document.getElementById("timeline"),
       checklistTbody: document.getElementById("checklistTbody"),
       historyTbody: document.getElementById("historyTbody"),
@@ -208,8 +210,10 @@
         const r = await api(`/api/loads/${encodeURIComponent(id)}/details`);
         const load = r.load;
 
-        els.title.textContent = load.loadNumber ? `Load ${load.loadNumber}` : `Load ${load.id}`;
+        els.title.textContent = load.loadNumber ? `JTS Confirmation - Load ${load.loadNumber}` : `JTS Confirmation - Load ${load.id}`;
         els.meta.textContent = `${load.customer ? "Customer: " + load.customer + " • " : ""}Status: ${load.status} • Created: ${fmtDate(load.createdAt)}`;
+        const deliveryText = load.deliveryLocked ? (load.deliveryLockReason || "Delivery address is hidden until BOL approval.") : (load.delivery || "-");
+        els.confirmationDetails.innerHTML = `<div class="jts-confirm-doc-head"><img src="/assets/jts-logo.png" alt="JTS"><div><b>JTS LOGISTICS INC</b><span>Load / ITS Confirmation Details</span></div></div><div class="jts-confirm-rows"><div><b>Load #</b><span>${load.loadNumber || load.id}</span></div><div><b>Customer</b><span>${load.customer || "-"}</span></div><div><b>Driver</b><span>${load.driverName || "-"}</span></div><div><b>Status</b><span>${String(load.status || "-").replaceAll("_", " ")}</span></div><div><b>Pickup</b><span>${load.pickup || "-"}</span></div><div><b>Delivery</b><span>${deliveryText}</span></div><div><b>Rate</b><span>${load.rate || "-"}</span></div><div><b>Created</b><span>${fmtDate(load.createdAt)}</span></div></div><div class="jts-confirm-notes"><b>Tour / ITS details used for PDF/forms</b><br>${load.notes || "-"}</div>`;
 
         if ((load.missingCount || 0) === 0) {
           els.missingBadge.innerHTML = `<span class="px-3 py-1 rounded border bg-green-50 text-xs">All required docs OK</span>`;
