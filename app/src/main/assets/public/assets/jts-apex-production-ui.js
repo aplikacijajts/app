@@ -118,12 +118,12 @@
   }
 
   function pageHead(){
-    if(publicPage) return;
+    if(publicPage || file === 'driver.html') return;
     var main = document.querySelector('main');
     if(!main || main.querySelector('.jts-page-titlebar')) return;
     var bar = document.createElement('section');
     bar.className = 'jts-page-titlebar';
-    bar.innerHTML = '<div><span>JTS Logistics</span><h1>' + esc(titles[file] || 'Dashboard') + '</h1></div><button type="button" class="jts-btn jts-btn-ghost" data-jts-open-menu>Open menu</button>';
+    bar.innerHTML = '<div><span>JTS Logistics</span><h1>' + esc(titles[file] || 'Dashboard') + '</h1></div><button type="button" class="jts-btn jts-btn-ghost" data-jts-open-menu>Menu</button>';
     main.insertBefore(bar, main.firstChild);
   }
 
@@ -215,6 +215,21 @@
     document.querySelectorAll('a[href*="cloud.rockeld.us"]').forEach(function(a){ a.href = GPS_URL; });
   }
 
+  function ensureBackButton(){
+    if(publicPage) return;
+    if(document.getElementById('jtsGlobalBack')) return;
+    var btn = document.createElement('button');
+    btn.id = 'jtsGlobalBack';
+    btn.type = 'button';
+    btn.className = 'jts-global-back';
+    btn.innerHTML = '‹ Back';
+    btn.addEventListener('click', function(){
+      if(history.length > 1) history.back();
+      else location.href = '/home.html';
+    });
+    document.body.appendChild(btn);
+  }
+
   function fixPushBanner(){
     if(document.getElementById('jts-push-visibility-style')) return;
     var s = document.createElement('style');
@@ -252,6 +267,7 @@
     buildMenu();
     ensureTrigger();
     pageHead();
+    ensureBackButton();
     mobileTables();
     observeTables();
     cleanupDuplicates();

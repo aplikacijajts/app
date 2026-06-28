@@ -13,6 +13,7 @@
   <meta name="apple-mobile-web-app-title" content="JTS Portal">
   <link rel="stylesheet" href="/assets/jts-apex-production-ui.css">
   <link rel="stylesheet" href="/assets/driver-mobile-pro.css">
+  <link rel="stylesheet" href="/assets/enterprise-mobile-native-redesign.css">
 </head>
 <body class="jts-driver-mobile-pro">
   <header class="jts-clean-header">
@@ -21,7 +22,7 @@
       <div class="jts-clean-brand">
         <img src="/assets/jts-logo.png" alt="JTS">
         <div>
-          <div class="jts-clean-title">Driver</div>
+          <div class="jts-clean-title">Driver App</div>
           <div class="jts-clean-subtitle" id="driverHeaderSubtitle">Your active trip</div>
         </div>
       </div>
@@ -30,23 +31,34 @@
   </header>
 
   <main class="jts-clean-shell">
-    <section class="jts-clean-welcome">
-      <div>
-        <h1>Today’s drive</h1>
-        <p>Clean view for your current load, documents, fuel and dispatcher messages.</p>
-      </div>
-      <div class="jts-clean-status-pill"><span class="jts-clean-dot"></span><span id="driverOnlineText">Ready</span></div>
+    <section class="jts-driver-quick-actions" aria-label="Driver quick actions">
+      <button type="button" class="jts-driver-quick-action" data-driver-upload-bol>
+        <span>Upload BOL</span>
+        <small>Send document</small>
+      </button>
+      <button type="button" class="jts-driver-quick-action primary" data-open-chat>
+        <span>Chat</span>
+        <small>Message dispatch</small>
+      </button>
+      <a class="jts-driver-quick-action" href="/fuel.html">
+        <span>Fuel</span>
+        <small>Calculator</small>
+      </a>
+      <button type="button" class="jts-driver-quick-action" data-driver-availability>
+        <span>Availability</span>
+        <small>Update status</small>
+      </button>
     </section>
 
     <section class="jts-clean-card jts-clean-main-load" id="currentLoadCard">
       <div class="jts-clean-card-head">
         <div>
           <div class="jts-clean-kicker">Current load</div>
-          <h2 id="currentLoadTitle">Loading...</h2>
+          <h2 id="currentLoadTitle">Loading trip...</h2>
         </div>
         <span class="jts-clean-load-number" id="currentLoadNumber">-</span>
       </div>
-      <div id="currentLoadBody" class="jts-clean-muted">Please wait while we load your active trip.</div>
+      <div id="currentLoadBody" class="jts-clean-muted">Please wait while your active trip is loading.</div>
     </section>
 
     <section class="jts-clean-card" id="otherLoadsCard" style="display:none">
@@ -63,7 +75,7 @@
 
     <details class="jts-clean-card jts-clean-accordion" id="uploadPanel">
       <summary>
-        <span>Upload document<small>BOL, POD, receipts or other trip files</small></span>
+        <span>Upload document<small>BOL, POD, receipts or trip files</small></span>
         <b class="jts-clean-chevron">⌄</b>
       </summary>
       <div class="jts-clean-accordion-body">
@@ -102,7 +114,7 @@
 
     <details class="jts-clean-card jts-clean-accordion">
       <summary>
-        <span>My availability<small>Tell dispatch when you are available</small></span>
+        <span>Availability<small>Tell dispatch when you are available</small></span>
         <b class="jts-clean-chevron">⌄</b>
       </summary>
       <div class="jts-clean-accordion-body">
@@ -129,7 +141,7 @@
 
     <details class="jts-clean-card jts-clean-accordion">
       <summary>
-        <span>My documents<small>Track uploaded files and approvals</small></span>
+        <span>Documents<small>Uploaded files and approvals</small></span>
         <b class="jts-clean-chevron">⌄</b>
       </summary>
       <div class="jts-clean-accordion-body">
@@ -166,7 +178,7 @@
       </div>
     </details>
 
-    <button id="jtsDriverFloatChat" type="button" class="jts-driver-float-chat" aria-label="Open dispatcher chat" title="Dispatcher chat">💬</button>
+    <button id="jtsDriverFloatChat" type="button" class="jts-driver-float-chat" aria-label="Open dispatcher chat" title="Dispatcher chat"><span aria-hidden="true">💬</span><b class="jts-driver-chat-badge" aria-hidden="true">0</b></button>
 
     <aside id="driverChatPopup" class="jts-chat-popover" aria-hidden="true">
       <div class="jts-chat-popover-head">
@@ -463,6 +475,29 @@
     };
     els.chatInput.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); els.chatForm.requestSubmit(); } });
 
+
+    document.addEventListener("click", function(event) {
+      const uploadBol = event.target.closest("[data-driver-upload-bol]");
+      if (uploadBol) {
+        const panel = document.getElementById("uploadPanel");
+        if (panel) {
+          panel.open = true;
+          const category = document.getElementById("category");
+          if (category) category.value = "BOL";
+          panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+      const availability = event.target.closest("[data-driver-availability]");
+      if (availability) {
+        const panels = Array.from(document.querySelectorAll("details.jts-clean-accordion"));
+        const panel = panels.find(function(item){ return (item.textContent || "").toLowerCase().includes("availability"); });
+        if (panel) {
+          panel.open = true;
+          panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    });
+
     loadMyLoads();
     loadMyDocs();
     loadFinishedLoads();
@@ -483,5 +518,6 @@
   <script src="/assets/gps-live-share-final.js"></script>
   <script src="/assets/jts-final-mobile-gps-fix.js"></script>
   <script src="/assets/jts-apex-production-ui.js"></script>
+  <script src="/assets/enterprise-mobile-native-redesign.js"></script>
 </body>
 </html>

@@ -70,6 +70,45 @@ function status(panel, text, kind = "") {
   el.textContent = text || "";
   el.dataset.state = kind;
 }
+
+function cleanValue(v) { return String(v || "").replace(/^[#:\-\s]+/, "").replace(/\s+/g, " ").trim(); }
+function pick(patterns, text) {
+  for (const pattern of patterns) {
+    const m = text.match(pattern);
+    if (m && m[1]) return cleanValue(m[1]);
+  }
+  return "";
+}
+function parseItsText(text) {
+  const raw = String(text || "").replace(/\r/g, "");
+  const one = raw.replace(/\n+/g, " | ");
+  const out = {
+    loadNumber: pick([new RegExp("(?:load\\s*(?:no\\.?|number|#)?|pro\\s*(?:no\\.?|number|#)?)\\s*[:#-]?\\s*([A-Z0-9-]{3,})", "i"), new RegExp("(?:ref(?:erence)?\\s*(?:no\\.?|#)?)\\s*[:#-]?\\s*([A-Z0-9-]{3,})", "i")], one),
+    customer: pick([new RegExp("(?:customer|broker|shipper)\\s*[:#-]?\\s*([^|\\n]{2,80})", "i")], one),
+    pickup: pick([new RegExp("(?:pickup|pick\\s*up|origin|from)\\s*[:#-]?\\s*([^|\\n]{2,120})", "i")], one),
+    delivery: pick([new RegExp("(?:delivery|deliver|destination|drop\\s*off|to)\\s*[:#-]?\\s*([^|\\n]{2,120})", "i")], one),
+    rate: pick([new RegExp("(?:rate|pay|price|amount)\\s*[:#-]?\\s*\\$?\\s*([0-9][0-9,]*(?:\\.\\d{1,2})?)", "i")], one),
+    notes: raw.trim()
+  };
+  if ((!out.pickup || !out.delivery) && /\s(?:->|→| to )\s/i.test(one)) {
+    const m = one.match(/([^|]{3,80})\s(?:->|→| to )\s([^|]{3,80})/i);
+    if (m) { out.pickup = out.pickup || cleanValue(m[1]); out.delivery = out.delivery || cleanValue(m[2]); }
+  }
+  Object.keys(out).forEach(k => { if (!out[k]) delete out[k]; });
+  return out;
+}
+function applyDraftToPanel(panel, draft, overwrite = true) {
+  const fields = getDraftFields(panel);
+  Object.entries(draft || {}).forEach(([key, value]) => {
+    const el = fields[key];
+    if (!el) return;
+    if (!overwrite && el.value) return;
+    el.value = value || "";
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+}
+
 function debounce(fn, wait = 500) {
   let t;
   return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
@@ -148,6 +187,32 @@ function initPanel(panel) {
       if (!auto || auto.checked) fillTargets(draft, false);
       saveDebounced(panel);
     }));
+  });
+
+  const rawBox = $("[data-load-draft-raw]", panel);
+  const parseBtn = $("[data-load-draft-parse]", panel);
+  const pasteBtn = $("[data-load-draft-paste]", panel);
+  const runParse = () => {
+    if (!rawBox) return;
+    const parsed = parseItsText(rawBox.value || "");
+    if (!Object.keys(parsed).length) { status(panel, "No load data detected yet", "warn"); return; }
+    applyDraftToPanel(panel, parsed, true);
+    const draft = currentFromPanel(panel);
+    writeLocal(draft);
+    if (!auto || auto.checked) fillTargets(draft, false);
+    saveDebounced(panel);
+    status(panel, "ITS data mirrored to Create Load", "ok");
+  };
+  if (rawBox) rawBox.addEventListener("input", debounce(runParse, 450));
+  if (parseBtn) parseBtn.addEventListener("click", runParse);
+  if (pasteBtn) pasteBtn.addEventListener("click", async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      rawBox.value = text || rawBox.value || "";
+      runParse();
+    } catch (err) {
+      status(panel, "Clipboard blocked by browser. Paste manually with Ctrl+V / long press Paste.", "warn");
+    }
   });
 
   const copyBtn = $("[data-load-draft-copy]", panel);

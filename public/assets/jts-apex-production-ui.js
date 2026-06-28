@@ -118,7 +118,7 @@
   }
 
   function pageHead(){
-    if(publicPage) return;
+    if(publicPage || file === 'driver.html') return;
     var main = document.querySelector('main');
     if(!main || main.querySelector('.jts-page-titlebar')) return;
     var bar = document.createElement('section');

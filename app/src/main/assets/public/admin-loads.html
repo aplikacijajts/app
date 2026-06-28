@@ -20,6 +20,8 @@
   
   
   <link rel="stylesheet" href="/assets/jts-apex-production-ui.css">
+  <link rel="stylesheet" href="/assets/its-load-capture.css">
+  <link rel="stylesheet" href="/assets/enterprise-mobile-native-redesign.css">
 </head>
 <body class="min-h-screen bg-gray-50">
   <header class="bg-white border-b">
@@ -48,12 +50,12 @@
     <section class="mt-6 bg-white border rounded-lg p-4 shadow-sm">
       <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
         <div>
-          <h2 class="font-semibold text-lg">Market / News iframe</h2>
-          <p class="text-sm text-gray-600 mt-1">Live embedded view from www.time.mk for Admin and Dispatcher load workspace.</p>
+          <h2 class="font-semibold text-lg">ITS Dispatch workspace</h2>
+          <p class="text-sm text-gray-600 mt-1">Open ITS Dispatch here. Because ITS is a secure external site, use the capture box below to mirror copied load details into Create Load.</p>
         </div>
-        <a href="https://www.time.mk" target="_blank" rel="noopener" class="text-sm underline">Open in new tab</a>
+        <a href="https://app.itsdispatch.com/login.php" target="_blank" rel="noopener" class="text-sm underline">Open ITS in new tab</a>
       </div>
-      <iframe title="time.mk" src="https://www.time.mk" class="w-full rounded-lg border bg-white" style="height:420px" loading="lazy" referrerpolicy="no-referrer"></iframe>
+      <iframe title="ITS Dispatch" src="https://app.itsdispatch.com/login.php" class="w-full rounded-lg border bg-white jts-its-frame" style="height:520px" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation-by-user-activation"></iframe>
     </section>
 
 
@@ -64,6 +66,15 @@
           <p class="text-sm text-gray-600 mt-1">Type the load information here and it will be remembered and mirrored into the Create Load form below.</p>
         </div>
         <label class="jts-inline-check"><input type="checkbox" data-load-draft-auto checked> Auto sync to Create Load</label>
+      </div>
+      <div class="jts-its-capture-box mt-4">
+        <label>Paste / type ITS load details</label>
+        <textarea data-load-draft-raw rows="5" placeholder="Copy load details from ITS and paste here. Example: Load #12345, Customer: Amazon, Pickup: Chicago IL, Delivery: Dallas TX, Rate: 2500"></textarea>
+        <div class="jts-its-actions">
+          <button type="button" data-load-draft-paste class="jts-btn">Paste from clipboard</button>
+          <button type="button" data-load-draft-parse class="border bg-white">Parse & mirror</button>
+          <small>Auto-sync keeps Create Load ready. Select driver and click Create Load.</small>
+        </div>
       </div>
       <div class="jts-form-grid mt-4">
         <div><label>Load Number</label><input data-load-draft="loadNumber" placeholder="Load number"></div>
@@ -423,5 +434,6 @@ if (els.viewFinished) els.viewFinished.onclick = () => setView("finished");
   
 
   <script src="/assets/jts-apex-production-ui.js"></script>
+  <script src="/assets/enterprise-mobile-native-redesign.js"></script>
 </body>
 </html>
