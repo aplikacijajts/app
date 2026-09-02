@@ -1,0 +1,25 @@
+{
+  "name": "JTS Logistics Command Center",
+  "short_name": "JTS TMS",
+  "description": "JTS Logistics enterprise transportation management and dispatch platform.",
+  "start_url": "/?page=dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#eef3f5",
+  "theme_color": "#0b2029",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/jts-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/jts-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

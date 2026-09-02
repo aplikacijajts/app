@@ -1,0 +1,10 @@
+Replace these files in your project:
+
+public/js/app.js
+public/css/styles.css
+public/sw.js
+server.js
+index.html
+package.json
+
+Included: role-based menus, dispatcher quick assign, drag/drop dispatch, simplified driver screen, broker portal, admin/dispatcher/driver dashboards, chat quick replies, simplified Install prompt.

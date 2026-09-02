@@ -1,0 +1,159 @@
+JTS LOGISTICS TMS - DEPLOYMENT INSTRUCTIONS
+============================================
+
+PROJECT ROOT
+------------
+The repository root is app-main/. Upload the contents of this directory to the GitHub repository root, or keep app-main/ as the repository root exactly as packaged.
+
+LOCAL START
+-----------
+Requirements: Node.js 20+.
+
+  cd app-main
+  npm install
+  npm start
+
+The local server listens on:
+  http://localhost:4000
+
+Health check:
+  http://localhost:4000/health
+
+OCR readiness check:
+  npm run check:ocr
+
+For scanned/image PDFs on Windows/Linux outside Docker, install Poppler and Tesseract first. Text-based PDFs continue to work with the built-in/Poppler text extractor.
+
+GIT COMMANDS
+------------
+From the project root:
+
+  git init
+  git add .
+  git commit -m "JTS Logistics TMS command center redesign and OCR deployment"
+  git branch -M main
+  git remote add origin <YOUR_GITHUB_REPOSITORY_URL>
+  git push -u origin main
+
+RENDER DEPLOYMENT - IMPORTANT
+-----------------------------
+Use the Docker runtime for this project. This is required for scanned-PDF OCR because Poppler and Tesseract are installed by Dockerfile at image build time.
+
+Render settings when creating/editing the Web Service:
+  Runtime / Language: Docker
+  Dockerfile Path: ./Dockerfile
+  Docker Context: .
+  Docker Command: leave empty so the Dockerfile CMD is used (node server.js)
+  Health Check Path: /health
+  Auto Deploy: enabled/recommended
+
+Do NOT use the native Node.js runtime if you need scanned PDF OCR. A native Node deployment can start the app successfully while still reporting:
+  scanned OCR=not installed
+because Poppler/Tesseract are OS-level dependencies. The included render.yaml already declares runtime: docker.
+
+For an existing Render service that currently logs:
+  Running 'node server.js'
+  scanned OCR=not installed
+change that existing service's runtime to Docker (Render supports changing the runtime), point it at this repository/Dockerfile, and redeploy. Then the startup log should report:
+  scanned OCR=ready
+
+Render does not use a custom Build Command for Docker services. The Dockerfile performs the image build and dependency installation.
+
+RENDER PERSISTENT DISK
+----------------------
+Attach a Render Persistent Disk for production data/documents.
+Recommended mount path from this release:
+  /app/persistent
+
+The included render.yaml configures:
+  DATA_DIR=/app/persistent/data
+  UPLOAD_DIR=/app/persistent/uploads
+  DB_FILE=/app/persistent/data/db.json
+
+Only filesystem changes under the persistent disk mount are retained across deploys/restarts.
+
+ENVIRONMENT VARIABLES
+---------------------
+Required/recommended production settings:
+  NODE_ENV=production
+  DATA_DIR=/app/persistent/data
+  UPLOAD_DIR=/app/persistent/uploads
+  DB_FILE=/app/persistent/data/db.json
+  VAPID_SUBJECT=mailto:dispatch@jtslogistics.com
+
+Push notifications:
+  VAPID_PUBLIC_KEY=<production public key>
+  VAPID_PRIVATE_KEY=<production private key>
+  VAPID_SUBJECT=mailto:dispatch@jtslogistics.com
+
+Optional OCR settings:
+  OCR_MAX_PAGES=5
+  OCR_DPI=200
+  OCR_LANG=eng
+
+Optional app settings may be retained from your existing deployment, including session/upload/voice-call/RTC/RTS settings. Keep credentials and private keys in Render Environment Variables only. Never commit real secrets.
+
+HEALTH CHECK
+------------
+Production URL example:
+  https://jts-ocr.onrender.com/health
+
+A healthy response should report ok=true. For scanned-PDF OCR, inspect:
+  pdfExtraction.ocr=true
+
+The server startup log should also show:
+  scanned OCR=ready
+
+PWA / SERVICE WORKER CACHE
+--------------------------
+This release increments the service-worker cache version. If a browser still shows the previous UI after deployment:
+
+1. Open the site at its production HTTPS URL.
+2. In Chrome/Edge DevTools -> Application -> Storage, clear site data.
+3. In Application -> Service Workers, unregister the old service worker.
+4. Close all tabs for the site.
+5. Reopen the site and hard-refresh.
+6. For an installed PWA, remove/reinstall the old app if it remains pinned to an obsolete cache.
+
+Do not solve a stale cache by deleting the service worker feature; push notifications and PWA functionality depend on it.
+
+SUBSTANTIALLY CHANGED FILES
+---------------------------
+  public/index.html
+  public/css/styles.css
+  public/js/app.js
+  public/manifest.webmanifest
+  public/sw.js
+  public/assets/icon-192.png
+  public/assets/icon-512.png
+  Dockerfile
+  render.yaml
+  README.md
+  DEPLOYMENT_INSTRUCTIONS.txt
+  PRODUCTION_CHANGES.md
+
+OCR SUPPORT
+-----------
+Text PDF extraction is supported without external OCR. Scanned/image PDF auto-fill uses:
+  Poppler: pdftoppm / pdftotext
+  Tesseract: tesseract
+
+The included Dockerfile installs these packages in the Render image. The application also exposes OCR readiness via /health and `npm run check:ocr`.
+
+MIGRATION / DATA NOTES
+----------------------
+No application data files or backend collections were intentionally removed. Preserve the existing persistent data directory when switching the Render service runtime. Do not recreate an empty persistent disk if you need the current production data.
+
+The frontend redesign preserves existing element IDs/data hooks/API routes and role restrictions. Existing account credentials and operational data remain server-side.
+
+KNOWN TEST LIMITATION
+---------------------
+The source project was fully syntax-checked and the local HTTP server/health/static asset paths were smoke-tested. During build verification in this environment, outbound npm registry access was unavailable, so a fresh dependency install could not be completed locally. Render Docker builds perform their own dependency installation.
+
+IMPORTANT DEPLOYMENT OBSERVATION
+--------------------------------
+If Render logs only:
+  Running 'node server.js'
+and then:
+  scanned OCR=not installed
+that proves the currently deployed service is a native Node runtime, not the Docker image in this repository. The fix is to deploy this repository using Render's Docker runtime. The Dockerfile already installs Poppler and Tesseract.

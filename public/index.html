@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0aa9a5" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="JTS TMS" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/assets/jts-icon-192.png" />
+  <title>JTS Logistics INC Dispatch/TMS</title>
+  <link rel="stylesheet" href="css/styles.css?v=20260902" />
+</head>
+<body>
+  <section id="loginScreen" class="login-screen" aria-label="Login screen">
+    <div class="login-bg-grid"></div>
+    <div class="login-orbit orbit-one"></div>
+    <div class="login-orbit orbit-two"></div>
+
+    <main class="login-card" role="main">
+      <div class="login-logo-wrap">
+        <img src="assets/jts-logo.png" alt="JTS Logistics INC logo" class="login-logo" />
+      </div>
+      <div class="login-copy">
+        <p class="eyebrow">Enterprise Dispatch / TMS</p>
+        <h1>JTS Operations Portal</h1>
+        <p id="loginSubtitle">Secure access for administrators, dispatchers, drivers, and brokers.</p>
+      </div>
+
+      <form id="setupForm" class="login-form setup-form is-hidden">
+        <div class="setup-notice">
+          <strong>First-time production setup</strong>
+          <span>Create the first real administrator account. No demo credentials are included.</span>
+        </div>
+        <label>
+          <span>Full name</span>
+          <input name="name" type="text" required autocomplete="name" />
+        </label>
+        <label>
+          <span>Admin email</span>
+          <input name="email" type="email" required autocomplete="email" />
+        </label>
+        <label>
+          <span>Password</span>
+          <input name="password" type="password" required minlength="6" autocomplete="new-password" />
+        </label>
+        <button class="btn btn-primary btn-large" type="submit">Create admin account</button>
+      </form>
+
+      <form id="loginForm" class="login-form">
+        <label>
+          <span>Email</span>
+          <input name="email" type="email" required autocomplete="email" />
+        </label>
+        <label>
+          <span>Password</span>
+          <input name="password" type="password" required autocomplete="current-password" />
+        </label>
+        <button class="btn btn-primary btn-large" type="submit">Sign in</button>
+      </form>
+    </main>
+  </section>
+
+  <div id="appShell" class="app-shell is-hidden">
+    <aside id="navDropdownPanel" class="nav-dropdown-panel" aria-label="Main navigation">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-mark"><img src="assets/jts-logo.png" alt="JTS Logistics INC" /></div>
+        <div class="sidebar-brand-copy"><strong>JTS Logistics</strong><span>Command Center</span></div>
+      </div>
+      <div id="desktopNav" class="nav-groups"></div>
+      <div class="sidebar-footer">
+        <div class="sidebar-status"><span class="sidebar-status-dot"></span><span>Operations online</span></div>
+        <button id="logoutBtn" class="ghost-link" type="button"><span class="logout-icon" aria-hidden="true"></span><span>Sign out</span></button>
+      </div>
+    </aside>
+
+    <header class="topbar topbar-dropdown">
+      <div class="topbar-left">
+        <button id="mobileMenuBtn" class="icon-btn mobile-menu-btn nav-menu-trigger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navDropdownPanel">
+          <span class="hamburger"></span>
+          <span class="nav-menu-trigger-label">Menu</span>
+        </button>
+        <div class="topbar-brand-mini">
+          <img src="assets/jts-logo.png" alt="JTS Logistics INC" />
+        </div>
+        <div class="topbar-page-title">
+          <p id="pageKicker" class="page-kicker">Operations</p>
+          <h2 id="pageTitle">Dashboard</h2>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="quick-search" type="button" data-action="global-search">
+          <span>Search loads, drivers, trucks...</span>
+          <kbd>Ctrl K</kbd>
+        </button>
+        <button class="icon-btn topbar-notifications" type="button" data-action="notifications" aria-label="Notifications"><span class="icon-bell"></span></button>
+        <button class="btn btn-primary" type="button" data-action="new-load">+ New load</button>
+        <div class="topbar-mini-user">
+          <div id="currentUserAvatar" class="avatar">JT</div>
+          <div class="topbar-mini-user-info">
+            <strong id="currentUserName">JTS User</strong>
+            <span id="currentRoleLabel">Role</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div id="mobileScrim" class="mobile-scrim nav-dropdown-scrim"></div>
+
+    <div class="workspace">
+      <main id="pageRoot" class="page-root" tabindex="-1"></main>
+    </div>
+
+    <nav id="mobileBottomNav" class="mobile-bottom-nav" aria-label="Mobile navigation"></nav>
+
+    <button id="floatingBackBtn" class="floating-back-btn" type="button" aria-label="Back"><span class="back-icon" aria-hidden="true"></span><span>Back</span></button>
+    <button id="floatingChatBtn" class="floating-chat-btn is-hidden" type="button" aria-label="Open chat"><span class="chat-float-icon" aria-hidden="true"></span></button>
+    <section id="floatingChatPanel" class="floating-chat-panel is-hidden" aria-label="Floating chat"></section>
+  </div>
+
+  <div id="voiceCallRoot" class="voice-call-root" aria-live="assertive"></div>
+  <audio id="voiceCallRemoteAudio" autoplay playsinline></audio>
+  <div id="modalRoot" class="modal-root" aria-live="polite"></div>
+  <div id="toastRoot" class="toast-root" aria-live="polite"></div>
+  <div id="mobileInstallRoot" class="mobile-install-root" aria-live="polite"></div>
+
+  <script src="js/app.js?v=20260902"></script>
+</body>
+</html>

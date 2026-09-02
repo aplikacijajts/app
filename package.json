@@ -1,0 +1,27 @@
+{
+  "name": "jts-logistics-tms",
+  "version": "2.4.0",
+  "description": "Production-ready Dispatch/TMS with dedicated role-scoped chat, secure attachments, WebRTC voice calls, live Current Load document status, foreground/background push notifications, secure mobile PDF downloads, mobile navigation polish, enhanced Fuel Help, and ITS-Dispatch-style financial reporting (Customer / Dispatcher / Driver Gross, Cut and Net Profit) with Dashboard gauge and line-chart analytics.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check": "node --check server.js && node --check public/js/app.js && node --check public/sw.js",
+    "check:ocr": "node scripts/check-ocr.js",
+    "generate:vapid": "node scripts/generate-vapid-keys.js"
+  },
+  "keywords": [
+    "tms",
+    "dispatch",
+    "logistics",
+    "vanilla-js",
+    "node",
+    "jts"
+  ],
+  "author": "JTS Logistics INC",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "web-push": "^3.6.7"
+  }
+}
+
