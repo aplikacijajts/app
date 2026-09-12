@@ -1,0 +1,24 @@
+JTS Logistics TMS v2.6.0
+
+app-main/
+- server.js
+- package.json
+- package-lock.json
+- render.yaml
+- Dockerfile
+- README.md
+- DEPLOYMENT_INSTRUCTIONS.txt
+- HOW_TO_REPLACE.txt
+- PRODUCTION_CHANGES.md
+- public/
+  - index.html
+  - manifest.webmanifest
+  - sw.js
+  - css/styles.css
+  - js/app.js
+  - assets/
+- data/
+  - db.json
+- scripts/
+  - migrate-v2.6.js
+- uploads/
