@@ -41,7 +41,7 @@ const REMINDER_LEAD_DAYS = 30;
 // awaited service worker registration), the event is missed forever and the Install Now button silently does
 // nothing. (On Samsung/Chrome devices such as the Galaxy S23 Ultra this was combined with a second, more
 // fundamental bug: manifest.webmanifest being served with the wrong Content-Type on the server, which stops
-// Chrome from ever firing "beforeinstallprompt" in the first place — fixed server-side in server.js.)
+// Chrome from ever firing "beforeinstallprompt" in the first place â fixed server-side in server.js.)
 window.addEventListener('beforeinstallprompt', event => {
   event.preventDefault();
   state.deferredInstallPrompt = event;
@@ -100,7 +100,7 @@ function showJtsLoader(options = {}) {
   const determinate = Number.isFinite(Number(options.percent)); const pct = Math.max(0, Math.min(100, Number(options.percent || 0)));
   root.className = `jts-loader-root active ${options.compact ? 'compact' : ''} ${options.error ? 'error' : ''} ${options.success ? 'success' : ''}`;
   const ring = determinate ? `style="--loader-p:${pct}"` : '';
-  root.innerHTML = `<div class="jts-loader-card" role="status" aria-label="${esc(options.label || 'Processing')}"><div class="jts-loader-ring ${determinate ? 'determinate' : ''}" ${ring}><div class="jts-loader-logo"><img src="/assets/jts-logo.png" alt="JTS Logistics"><span class="jts-loader-check">✓</span></div></div><strong>${esc(options.label || 'Processing')}</strong><span>${esc(options.stage || 'Working securely…')}</span>${options.current ? `<small>${esc(options.current)}</small>` : ''}${determinate ? `<div class="jts-loader-progress"><span style="width:${pct}%"></span></div><em>${pct}%</em>` : '<div class="jts-loader-dots"><i></i><i></i><i></i></div>'}${Number.isFinite(Number(options.completed)) || Number.isFinite(Number(options.failed)) ? `<div class="jts-loader-counts"><span>Completed <b>${Number(options.completed || 0)}</b></span><span>Failed <b>${Number(options.failed || 0)}</b></span></div>` : ''}</div>`;
+  root.innerHTML = `<div class="jts-loader-card" role="status" aria-label="${esc(options.label || 'Processing')}"><div class="jts-loader-ring ${determinate ? 'determinate' : ''}" ${ring}><div class="jts-loader-logo"><img src="/assets/jts-logo.png" alt="JTS Logistics"><span class="jts-loader-check">â</span></div></div><strong>${esc(options.label || 'Processing')}</strong><span>${esc(options.stage || 'Working securelyâ¦')}</span>${options.current ? `<small>${esc(options.current)}</small>` : ''}${determinate ? `<div class="jts-loader-progress"><span style="width:${pct}%"></span></div><em>${pct}%</em>` : '<div class="jts-loader-dots"><i></i><i></i><i></i></div>'}${Number.isFinite(Number(options.completed)) || Number.isFinite(Number(options.failed)) ? `<div class="jts-loader-counts"><span>Completed <b>${Number(options.completed || 0)}</b></span><span>Failed <b>${Number(options.failed || 0)}</b></span></div>` : ''}</div>`;
   return loaderState.key;
 }
 function hideJtsLoader(force = false) { if (force) loaderState.active = 0; else loaderState.active = Math.max(0, loaderState.active - 1); const root = document.getElementById('jtsLoaderRoot'); if (!root || loaderState.active > 0) return; root.classList.remove('active'); window.setTimeout(()=>{ if (root && !root.classList.contains('active')) root.innerHTML=''; },180); }
@@ -263,7 +263,7 @@ function renderChatAttachments(message = {}) {
     const name = esc(item.name || 'Attachment');
     const size = formatFileSize(item.sizeBytes);
     if (attachmentKind(item) === 'image') {
-      return `<a class="chat-image-attachment" href="${url}" target="_blank" rel="noreferrer" aria-label="Open ${name}"><img src="${url}" alt="${name}" loading="lazy"><span>${name}${size ? ` · ${esc(size)}` : ''}</span></a>`;
+      return `<a class="chat-image-attachment" href="${url}" target="_blank" rel="noreferrer" aria-label="Open ${name}"><img src="${url}" alt="${name}" loading="lazy"><span>${name}${size ? ` Â· ${esc(size)}` : ''}</span></a>`;
     }
     return `<a class="chat-file-attachment" href="${url}" target="_blank" rel="noreferrer" download><span class="chat-file-type">${esc(attachmentLabel(item))}</span><span class="chat-file-info"><strong>${name}</strong><small>${size ? esc(size) : 'Open / download file'}</small></span><span class="chat-file-open">Open</span></a>`;
   }).join('')}</div>`;
@@ -310,8 +310,8 @@ function renderVoiceCallMessage(message = {}, compact = false) {
     ? `<small class="chat-call-duration">Duration ${esc(formatCallDuration(status === 'answered' ? Math.max(duration, Math.floor((Date.now() - new Date(message.callAnsweredAt).getTime()) / 1000)) : duration))}</small>`
     : '';
   return `<div class="chat-call-card call-status-${esc(status)} ${compact ? 'compact' : ''}">
-    <span class="chat-call-icon">${status === 'missed' || status === 'declined' ? '📵' : '📞'}</span>
-    <span class="chat-call-copy"><strong>Voice call</strong><span>${esc(voiceCallStatusLabel(message))} · ${esc(counterpart)}</span>${durationHtml}</span>
+    <span class="chat-call-icon">${status === 'missed' || status === 'declined' ? 'ðµ' : 'ð'}</span>
+    <span class="chat-call-copy"><strong>Voice call</strong><span>${esc(voiceCallStatusLabel(message))} Â· ${esc(counterpart)}</span>${durationHtml}</span>
   </div>`;
 }
 
@@ -535,17 +535,17 @@ function renderVoiceCallOverlay() {
     ? (incoming ? 'Incoming voice call' : 'Start calling')
     : voiceCallStatusLabel(call);
   const secondary = connected
-    ? `Secure voice connection · ${formatCallDuration(liveCallDuration(call))}`
+    ? `Secure voice connection Â· ${formatCallDuration(liveCallDuration(call))}`
     : terminal
       ? (call.durationSeconds > 0 ? `Duration ${formatCallDuration(call.durationSeconds)}` : (call.endReason || 'Call finished'))
-      : (incoming ? 'Your device is ringing' : 'Waiting for answer…');
+      : (incoming ? 'Your device is ringing' : 'Waiting for answerâ¦');
   const controls = status === 'ringing' && incoming
-    ? `<button class="voice-control decline" data-action="decline-voice-call"><span>✕</span><small>Decline</small></button><button class="voice-control answer" data-action="answer-voice-call"><span>☎</span><small>Answer</small></button>`
+    ? `<button class="voice-control decline" data-action="decline-voice-call"><span>â</span><small>Decline</small></button><button class="voice-control answer" data-action="answer-voice-call"><span>â</span><small>Answer</small></button>`
     : connected
-      ? `<button class="voice-control secondary ${voiceSession.muted ? 'active' : ''}" data-action="toggle-voice-mute"><span>${voiceSession.muted ? '🔇' : '🎙️'}</span><small>${voiceSession.muted ? 'Unmute' : 'Mute'}</small></button><button class="voice-control decline" data-action="end-voice-call"><span>☎</span><small>End Call</small></button>`
+      ? `<button class="voice-control secondary ${voiceSession.muted ? 'active' : ''}" data-action="toggle-voice-mute"><span>${voiceSession.muted ? 'ð' : 'ðï¸'}</span><small>${voiceSession.muted ? 'Unmute' : 'Mute'}</small></button><button class="voice-control decline" data-action="end-voice-call"><span>â</span><small>End Call</small></button>`
       : terminal
-        ? `<button class="voice-control secondary" data-action="close-voice-call"><span>✓</span><small>Close</small></button>`
-        : `<button class="voice-control decline" data-action="end-voice-call"><span>✕</span><small>Cancel</small></button>`;
+        ? `<button class="voice-control secondary" data-action="close-voice-call"><span>â</span><small>Close</small></button>`
+        : `<button class="voice-control decline" data-action="end-voice-call"><span>â</span><small>Cancel</small></button>`;
   root.innerHTML = `<section class="voice-call-overlay call-${esc(status)} ${incoming ? 'incoming' : 'outgoing'}" role="dialog" aria-modal="true" aria-label="Voice call">
     <div class="voice-call-card">
       <div class="voice-call-brand"><img src="/assets/jts-logo.png" alt="JTS"><span>JTS Secure Voice</span></div>
@@ -641,7 +641,7 @@ async function requestVoiceCall() {
     <div class="form-grid">
       <label class="field full">Call participant
         <select data-field="voicePeerId">
-          ${targets.map(user => `<option value="${esc(user.id)}">${esc(user.name)} · ${esc(user.role)}</option>`).join('')}
+          ${targets.map(user => `<option value="${esc(user.id)}">${esc(user.name)} Â· ${esc(user.role)}</option>`).join('')}
         </select>
       </label>
     </div>`, 'Start calling', async () => {
@@ -814,7 +814,7 @@ function installInstructionsHtml(platform) {
           <li>Choose <strong>Add to Home Screen</strong>.</li>
           <li>Tap <strong>Add</strong>, then open JTS TMS from the new icon.</li>
         </ol>
-        <small>iOS does not allow a website to open the install popup automatically. Apple requires the Share → Add to Home Screen flow.</small>
+        <small>iOS does not allow a website to open the install popup automatically. Apple requires the Share â Add to Home Screen flow.</small>
       `;
     }
     return `
@@ -831,7 +831,7 @@ function installInstructionsHtml(platform) {
     return `
       <ol>
         <li>Tap <strong>Install Now</strong>. If your browser supports native PWA install, an install popup will appear.</li>
-        <li>If no popup appears, open the browser menu <strong>⋮</strong>.</li>
+        <li>If no popup appears, open the browser menu <strong>â®</strong>.</li>
         <li>Choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
         <li>Confirm <strong>Install</strong>, then open JTS TMS from the new icon.</li>
       </ol>
@@ -854,7 +854,7 @@ function renderMobilePrompt() {
     root.classList.add('blocking');
     root.innerHTML = `
       <section class="mobile-install-card install-required-card" role="dialog" aria-label="Install JTS TMS" aria-modal="true">
-        <div class="mobile-install-icon">📲</div>
+        <div class="mobile-install-icon">ð²</div>
         <div class="mobile-install-copy">
           <strong>Install JTS TMS as an app</strong>
           <p>For security and full mobile features, install JTS TMS on this device before continuing. The app will open fullscreen, faster, and without the browser toolbar.</p>
@@ -873,8 +873,8 @@ function renderMobilePrompt() {
     const denied = Notification.permission === 'denied';
     root.innerHTML = `
       <section class="mobile-install-card notification-permission-card" role="dialog" aria-label="Enable notifications">
-        <button class="mobile-install-close" type="button" data-pwa-action="dismiss-notifications" aria-label="Close">×</button>
-        <div class="mobile-install-icon">🔔</div>
+        <button class="mobile-install-close" type="button" data-pwa-action="dismiss-notifications" aria-label="Close">Ã</button>
+        <div class="mobile-install-icon">ð</div>
         <div class="mobile-install-copy">
           <strong>Enable notifications for JTS TMS</strong>
           <p>${denied ? 'Notifications are blocked in this browser. Enable them from browser/site settings to receive load, chat, GPS and ELD/HOS alerts.' : 'Allow notifications for load assignments, chat messages, missing POD, GPS loss and HOS risk alerts.'}</p>
@@ -906,7 +906,7 @@ function bindPwaPromptActions() {
       if (action === 'install-now') {
         const platform = mobilePlatform();
         if (platform === 'ios') {
-          toast('On iPhone/iPad use Safari Share → Add to Home Screen. iOS does not allow websites to open the install popup automatically.');
+          toast('On iPhone/iPad use Safari Share â Add to Home Screen. iOS does not allow websites to open the install popup automatically.');
           renderMobilePrompt();
           return;
         }
@@ -918,13 +918,13 @@ function bindPwaPromptActions() {
               markInstallAcknowledged();
               toast('JTS TMS installation started');
             } else {
-              toast('Install was not accepted. Use the browser menu ⋮ and choose Install app or Add to Home screen.');
+              toast('Install was not accepted. Use the browser menu â® and choose Install app or Add to Home screen.');
             }
           } finally {
             state.deferredInstallPrompt = null;
           }
         } else {
-          toast('Your browser did not provide a native install event. Use the browser menu ⋮ and choose Install app or Add to Home screen.');
+          toast('Your browser did not provide a native install event. Use the browser menu â® and choose Install app or Add to Home screen.');
           renderMobilePrompt();
         }
       }
@@ -1488,7 +1488,7 @@ function scheduleText(load, side) {
   const direct = load[`${side}Time`];
   const date = load[`${side}Date`];
   const appt = load[`${side}Appointment`] || load[`${side}Window`];
-  return direct || [date, appt].filter(Boolean).join(' · ');
+  return direct || [date, appt].filter(Boolean).join(' Â· ');
 }
 function stopRefText(load, side) {
   if (!load) return '';
@@ -1758,7 +1758,7 @@ function rtsResultHtml(result = {}) {
       <div class="rts-result-main">
         <span class="status-pill ${rtsClass(status)}">${esc(status)}</span>
         <strong>${mc ? `MC ${esc(mc)}` : 'RTS Financial MC Check'}</strong>
-        <small>${esc(source)}${checkedAt ? ` · ${esc(formatDateTime(checkedAt))}` : ''}</small>
+        <small>${esc(source)}${checkedAt ? ` Â· ${esc(formatDateTime(checkedAt))}` : ''}</small>
       </div>
       ${message ? `<p class="muted">${esc(message)}</p>` : ''}
       ${actionLinks ? `<div class="rts-actions">${actionLinks}</div>` : ''}
@@ -2036,7 +2036,7 @@ function renderApp() {
     documents: renderDocuments,
     chat: renderChat,
     notifications: renderNotifications,
-        gps: renderRoleMapPage,
+        gps: role() === 'driver' ? renderDriverGpsPage : renderRoleMapPage,
     fuel: renderFuelPage,
     eld: renderEld,
     dispatchers: renderDispatchers,
@@ -2085,7 +2085,7 @@ function renderFloatingChat() {
   panel.innerHTML = `
     <div class="floating-chat-head">
       <div class="floating-chat-title"><strong>JTS Chat</strong><span>${esc(chatContactLabel(contact) || 'Chat')}</span></div>
-      <div class="floating-chat-tools"><button class="icon-btn voice-call-trigger" type="button" data-action="start-voice-call" title="Start voice call" aria-label="Start voice call"><span class="voice-phone-icon" aria-hidden="true"></span></button><button class="icon-btn floating-chat-close" type="button" data-action="toggle-floating-chat" title="Close chat" aria-label="Close chat">×</button></div>
+      <div class="floating-chat-tools"><button class="icon-btn voice-call-trigger" type="button" data-action="start-voice-call" title="Start voice call" aria-label="Start voice call"><span class="voice-phone-icon" aria-hidden="true"></span></button><button class="icon-btn floating-chat-close" type="button" data-action="toggle-floating-chat" title="Close chat" aria-label="Close chat">Ã</button></div>
     </div>
     <div class="floating-chat-body">
       <div class="floating-chat-contacts">
@@ -2120,7 +2120,7 @@ function setupChecklist() {
   ];
   return `<div class="setup-checklist">${items.map(([title, done, note]) => `
     <div class="setup-row ${done ? 'done' : ''}">
-      <span>${done ? '✓' : '•'}</span>
+      <span>${done ? 'â' : 'â¢'}</span>
       <div><strong>${esc(title)}</strong><small>${esc(note)}</small></div>
     </div>
   `).join('')}</div>`;
@@ -2155,7 +2155,7 @@ function fleetStatusDot(collection, activePredicate) {
   return { has: items.length > 0, className: items.length ? (hasActive ? 'status-delivered' : 'status-problem') : 'status-missing' };
 }
 /* =========================================================================
-   DASHBOARD TABS — "My Dashboard" (volume + revenue over time) plus
+   DASHBOARD TABS â "My Dashboard" (volume + revenue over time) plus
    Customers / Dispatchers / Drivers tabs with live real-time Gross
    (driver) / Cut / Net Profit split per row. Each dispatcher only ever
    sees their OWN loads on Dispatchers/Customers/Drivers; admins see all.
@@ -2367,7 +2367,7 @@ function renderDashboard() {
             <h3 class="card-title">Recent activity</h3>
             <p class="card-subtitle">Operational events saved by the system.</p>
             <div class="activity-list" style="margin-top:14px">
-              ${arr('auditLog').slice(0, 6).map(item => `<div class="activity-item"><span class="activity-dot"></span><div><strong>${esc(item.action)}</strong><span>${esc(item.entity || '')} · ${esc(formatDate(item.createdAt))}</span></div></div>`).join('') || '<p class="muted">No activity yet.</p>'}
+              ${arr('auditLog').slice(0, 6).map(item => `<div class="activity-item"><span class="activity-dot"></span><div><strong>${esc(item.action)}</strong><span>${esc(item.entity || '')} Â· ${esc(formatDate(item.createdAt))}</span></div></div>`).join('') || '<p class="muted">No activity yet.</p>'}
             </div>
           </div>
         </aside>
@@ -2377,7 +2377,7 @@ function renderDashboard() {
 }
 
 /* =========================================================================
-   DISPATCH BOARD — ITS-Dispatch-style flat table (no kanban scrolling).
+   DISPATCH BOARD â ITS-Dispatch-style flat table (no kanban scrolling).
    Two tabs: "Open Loads" (anything not Delivered/Completed/Closed) and
    "Delivered/Completed Loads" (with a Reopen action per row). Data comes
    straight from Loads; a search box filters by Load #, driver, broker,
@@ -2531,8 +2531,8 @@ function renderIntakeResultCards() {
             ${compactField('Broker', fields.broker)}
             ${compactField('Pickup', fields.pickup)}
             ${compactField('Delivery', fields.delivery)}
-            ${compactField('Pickup date/time', fields.pickupTime || [fields.pickupDate, fields.pickupWindow].filter(Boolean).join(' · '))}
-            ${compactField('Delivery date/time', fields.deliveryTime || [fields.deliveryDate, fields.deliveryWindow].filter(Boolean).join(' · '))}
+            ${compactField('Pickup date/time', fields.pickupTime || [fields.pickupDate, fields.pickupWindow].filter(Boolean).join(' Â· '))}
+            ${compactField('Delivery date/time', fields.deliveryTime || [fields.deliveryDate, fields.deliveryWindow].filter(Boolean).join(' Â· '))}
             ${compactField('PO / Ref', fields.poNumber || fields.reference)}
             ${compactField('BOL', fields.bolNumber)}
             ${compactField('Shipment ID', fields.shipmentId)}
@@ -2666,7 +2666,7 @@ function driverDocStatusClass(doc) {
 
 /* ======================= Documents Hub (Personal / Operational) ======================= */
 // Driver experience is VIEW-ONLY throughout this hub: clicking a document type opens the document
-// immediately — images open in an in-app lightbox (Download button included there), any other file
+// immediately â images open in an in-app lightbox (Download button included there), any other file
 // type opens a small viewer sheet with Open + Download buttons. If a type/folder has several images,
 // clicking opens a gallery grid first; every gallery tile also has its own Download button. Only
 // Personal -> Other uses named folders (created by admin/dispatcher) that the driver can browse
@@ -2736,7 +2736,7 @@ function docsHubPickCategory(category) {
   renderDocumentsHubModal();
 }
 // Clicking a document type: staff always goes to the manage/upload view (or the folder browser for
-// Personal->Other). The driver never sees an upload step here — the document opens immediately when
+// Personal->Other). The driver never sees an upload step here â the document opens immediately when
 // there is exactly one, a gallery is shown when there are several, and a toast appears when there are none.
 function docsHubPickSubType(subType) {
   const hub = state.docsHub;
@@ -2854,15 +2854,15 @@ function docDownloadButtonHtml(doc, classes = 'action-mini') {
   if (!doc?.fileUrl) return '';
   return `<button class="${classes}" type="button" data-action="download-document" data-id="${esc(doc.id)}" data-filename="${esc(doc.filename || '')}">Download</button>`;
 }
-// Staff management row (upload box + list with Approve/Reject) — still used for every subtype and
+// Staff management row (upload box + list with Approve/Reject) â still used for every subtype and
 // inside every folder for admin/dispatcher; now also includes a Download button.
 function docsHubDocRow(doc) {
   const isImage = docsHubIsImage(doc);
   const preview = isImage && doc.fileUrl ? `<a class="docshub-doc-thumb" href="${esc(doc.fileUrl)}" target="_blank" rel="noreferrer"><img src="${esc(doc.fileUrl)}" alt="${esc(doc.filename || 'Document')}" loading="lazy"></a>` : `<a class="docshub-doc-thumb docshub-doc-thumb-file" href="${esc(doc.fileUrl || '#')}" target="_blank" rel="noreferrer">${icons.doc}</a>`;
   const canModerate = docsHubIsStaff() && String(doc.status || 'Uploaded') === 'Uploaded';
-  return `<div class="docshub-doc-row">${preview}<div class="docshub-doc-info"><strong>${esc(doc.filename || doc.type || 'Document')}</strong><span class="status-pill ${statusClass(doc.status)}">${esc(docStateLabel(doc))}</span><small>${esc(formatDate(doc.createdAt))}${doc.uploadedBy ? ' · ' + esc(doc.uploadedBy) : ''}</small></div><div class="docshub-doc-actions">${docDownloadButtonHtml(doc)}${canModerate ? `<button class="action-mini" data-action="approve-doc" data-id="${esc(doc.id)}">Approve</button><button class="action-mini" data-action="reject-doc" data-id="${esc(doc.id)}">Reject</button>` : ''}</div></div>`;
+  return `<div class="docshub-doc-row">${preview}<div class="docshub-doc-info"><strong>${esc(doc.filename || doc.type || 'Document')}</strong><span class="status-pill ${statusClass(doc.status)}">${esc(docStateLabel(doc))}</span><small>${esc(formatDate(doc.createdAt))}${doc.uploadedBy ? ' Â· ' + esc(doc.uploadedBy) : ''}</small></div><div class="docshub-doc-actions">${docDownloadButtonHtml(doc)}${canModerate ? `<button class="action-mini" data-action="approve-doc" data-id="${esc(doc.id)}">Approve</button><button class="action-mini" data-action="reject-doc" data-id="${esc(doc.id)}">Reject</button>` : ''}</div></div>`;
 }
-// Driver gallery grid — view-only tiles; clicking the thumbnail opens the document (lightbox for
+// Driver gallery grid â view-only tiles; clicking the thumbnail opens the document (lightbox for
 // images, a viewer sheet otherwise). Every tile also has its own explicit Download button.
 function docsHubGalleryGrid(docs) {
   return `<div class="docshub-gallery-grid">${docs.map(doc => {
@@ -2889,7 +2889,7 @@ function docsHubOpenDocById(docId) {
 }
 // Opens a document directly: images open in the in-app lightbox (with prev/next through imageSet when
 // provided, and a Download button); any other file type (PDF, DOC, XLS...) opens a compact viewer sheet
-// with Open + Download buttons — never a raw new-tab-only link, so Download is always one tap away.
+// with Open + Download buttons â never a raw new-tab-only link, so Download is always one tap away.
 function openDocumentPreview(doc, imageSet = null) {
   if (!doc || !doc.fileUrl) return toast('Document not available.');
   if (docsHubIsImage(doc)) {
@@ -2901,9 +2901,9 @@ function openDocumentPreview(doc, imageSet = null) {
   }
 }
 // Compact viewer sheet for non-image documents (PDF, DOC, XLS...): shows the file, its status, and
-// Open + Download actions. Not an upload form — purely a viewer.
+// Open + Download actions. Not an upload form â purely a viewer.
 function openFileViewerModal(doc) {
-  openModal(doc.filename || doc.type || 'Document', `${docStateLabel(doc)}${doc.uploadedBy ? ' · uploaded by ' + doc.uploadedBy : ''}`, `
+  openModal(doc.filename || doc.type || 'Document', `${docStateLabel(doc)}${doc.uploadedBy ? ' Â· uploaded by ' + doc.uploadedBy : ''}`, `
     <div class="docs-file-viewer">
       <div class="docs-file-viewer-icon">${icons.doc}</div>
       <div class="docs-file-viewer-actions">
@@ -2924,7 +2924,7 @@ function docsHubBreadcrumb() {
     const folder = arr('docFolders').find(f => f.id === hub.folderId);
     if (folder) parts.push(folder.name);
   }
-  return parts.join(' → ') || 'Documents';
+  return parts.join(' â ') || 'Documents';
 }
 async function docsHubUpload() {
   const hub = state.docsHub;
@@ -3027,11 +3027,11 @@ function renderDocumentsHubModal() {
     <div class="modal-card docshub-modal" role="dialog" aria-modal="true" aria-label="Documents">
       <div class="modal-head">
         <div><p class="docshub-breadcrumb">${esc(docsHubBreadcrumb())}</p><h3>${esc(stepTitles[step] || 'Documents')}</h3><p>${esc(stepSubtitles[step] || '')}</p></div>
-        <button class="icon-btn" data-close-modal aria-label="Close">×</button>
+        <button class="icon-btn" data-close-modal aria-label="Close">Ã</button>
       </div>
       <div class="modal-body">${body}</div>
       <div class="modal-actions docshub-actions">
-        <button class="btn btn-soft" type="button" data-action="docshub-back">${hub.stepIndex === 0 ? 'Close' : '← Back'}</button>
+        <button class="btn btn-soft" type="button" data-action="docshub-back">${hub.stepIndex === 0 ? 'Close' : 'â Back'}</button>
       </div>
     </div>`;
   qsa('[data-close-modal]').forEach(x => { x.onclick = closeDocumentsHub; });
@@ -3069,12 +3069,12 @@ function renderLightbox() {
   el.innerHTML = `
     <div class="docs-lightbox-backdrop" data-lightbox-close></div>
     <div class="docs-lightbox-body">
-      <button class="docs-lightbox-close" type="button" data-lightbox-close aria-label="Close">×</button>
-      ${multi ? '<button class="docs-lightbox-nav prev" type="button" data-lightbox-prev aria-label="Previous">‹</button>' : ''}
+      <button class="docs-lightbox-close" type="button" data-lightbox-close aria-label="Close">Ã</button>
+      ${multi ? '<button class="docs-lightbox-nav prev" type="button" data-lightbox-prev aria-label="Previous">â¹</button>' : ''}
       <img src="${esc(doc.fileUrl)}" alt="${esc(doc.filename || 'Document')}">
-      ${multi ? '<button class="docs-lightbox-nav next" type="button" data-lightbox-next aria-label="Next">›</button>' : ''}
+      ${multi ? '<button class="docs-lightbox-nav next" type="button" data-lightbox-next aria-label="Next">âº</button>' : ''}
       <div class="docs-lightbox-caption">
-        <span>${esc(doc.filename || doc.type || 'Document')}${multi ? ` · ${lightboxIndex + 1}/${lightboxImages.length}` : ''}</span>
+        <span>${esc(doc.filename || doc.type || 'Document')}${multi ? ` Â· ${lightboxIndex + 1}/${lightboxImages.length}` : ''}</span>
         <div class="docs-lightbox-caption-actions">
           <button class="btn btn-soft btn-small" type="button" data-lightbox-download>Download</button>
           <a class="btn btn-soft btn-small" href="${esc(doc.fileUrl)}" target="_blank" rel="noreferrer">Open original</a>
@@ -3100,7 +3100,7 @@ function driverRequiredDocumentPanel(load) {
     ['Load confirmation', confirmation, 'Uploaded by dispatch/admin']
   ];
   return `<section class="driver-doc-status"><div class="driver-doc-status-head"><div><span>Tour documents</span><strong>Uploaded, accepted and missing</strong></div><span class="tag tag-teal">${rows.filter(([,doc]) => doc && String(doc.status).toLowerCase() === 'approved').length}/3 accepted</span></div>
-    <div class="driver-doc-status-list">${rows.map(([name,doc,hint]) => `<div class="driver-doc-row"><span class="driver-doc-dot ${doc ? statusClass(doc.status) : 'status-problem'}"></span><div><strong>${esc(name)}</strong><small>${esc(docStateLabel(doc))} · ${esc(hint)}</small></div>${doc?.fileUrl && normalizeDocType(doc.type) === 'confirmation' ? `<button class="driver-doc-download" type="button" data-action="download-document" data-id="${esc(doc.id)}" data-filename="${esc(doc.filename || `JTS-Confirmation-${load.id}.pdf`)}">Download</button>` : ''}</div>`).join('')}</div>
+    <div class="driver-doc-status-list">${rows.map(([name,doc,hint]) => `<div class="driver-doc-row"><span class="driver-doc-dot ${doc ? statusClass(doc.status) : 'status-problem'}"></span><div><strong>${esc(name)}</strong><small>${esc(docStateLabel(doc))} Â· ${esc(hint)}</small></div>${doc?.fileUrl && normalizeDocType(doc.type) === 'confirmation' ? `<button class="driver-doc-download" type="button" data-action="download-document" data-id="${esc(doc.id)}" data-filename="${esc(doc.filename || `JTS-Confirmation-${load.id}.pdf`)}">Download</button>` : ''}</div>`).join('')}</div>
   </section>`;
 }
 function driverConfirmationLink(load) {
@@ -3147,8 +3147,8 @@ function renderReminderBanner(driver) {
   return `<section class="reminder-banner ${tone}">
     <div class="reminder-banner-icon">${icons.bell}</div>
     <div class="reminder-banner-copy">
-      <strong>${isDeclined ? 'Proof declined — action required' : isWaiting ? 'Reminder pending approval' : 'Upcoming reminder'}</strong>
-      <span>${esc(reminderReasonText(reminder))}${isDeclined && reminder.rejectionReason ? ` · ${esc(reminder.rejectionReason)}` : ''}</span>
+      <strong>${isDeclined ? 'Proof declined â action required' : isWaiting ? 'Reminder pending approval' : 'Upcoming reminder'}</strong>
+      <span>${esc(reminderReasonText(reminder))}${isDeclined && reminder.rejectionReason ? ` Â· ${esc(reminder.rejectionReason)}` : ''}</span>
     </div>
     ${isWaiting ? '<span class="status-pill status-assigned">Waiting for approval</span>' : `<button class="btn btn-dark" type="button" data-action="submit-reminder-proof" data-reminder="${esc(reminder.id)}">Upload proof</button>`}
   </section>`;
@@ -3156,7 +3156,7 @@ function renderReminderBanner(driver) {
 function openReminderProofModal(reminderId) {
   const reminder = findById('reminders', reminderId);
   if (!reminder) return toast('Reminder not found');
-  openModal(`Clear reminder · ${reminder.category}`, 'Upload a document or photo as proof. Your dispatcher or admin must approve it before the reminder is removed.', `
+  openModal(`Clear reminder Â· ${reminder.category}`, 'Upload a document or photo as proof. Your dispatcher or admin must approve it before the reminder is removed.', `
     <div class="form-grid">
       <div class="field full"><span class="muted">Due date</span><strong>${esc(reminder.dueDate || 'Not set')}</strong></div>
       <label class="field full">Proof document / photo<input id="reminderProofInput" type="file" accept="image/*,.pdf,.doc,.docx" required></label>
@@ -3176,8 +3176,8 @@ function openReminderModal(reminder = null) {
   if (!canManageOperations()) return toast('Dispatcher or admin access is required.');
   const drivers = eligibleConfirmationDrivers();
   const selectedEmail = reminder?.driverEmail || drivers[0]?.email || '';
-  const driverOptions = `<label class="field">Driver<select data-field="driverEmail">${drivers.map(u => `<option value="${esc(u.email)}" ${u.email === selectedEmail ? 'selected' : ''}>${esc(u.name)} · ${esc(u.email)}</option>`).join('')}</select></label>`;
-  openModal(reminder ? `Edit reminder · ${reminder.category}` : 'Add reminder', 'Alerts the driver 30 days before the due date. Removed only after the driver uploads proof and it is approved.', `
+  const driverOptions = `<label class="field">Driver<select data-field="driverEmail">${drivers.map(u => `<option value="${esc(u.email)}" ${u.email === selectedEmail ? 'selected' : ''}>${esc(u.name)} Â· ${esc(u.email)}</option>`).join('')}</select></label>`;
+  openModal(reminder ? `Edit reminder Â· ${reminder.category}` : 'Add reminder', 'Alerts the driver 30 days before the due date. Removed only after the driver uploads proof and it is approved.', `
     <div class="form-grid">
       ${driverOptions}
       ${selectField('Category', 'category', reminder?.category || REMINDER_CATEGORIES[0], REMINDER_CATEGORIES)}
@@ -3232,7 +3232,7 @@ function otherDocsForLoad(loadId) {
 // device), in addition to "View" which just opens the file in a new tab/browser preview.
 // (Reuses the shared docDownloadButtonHtml() helper defined in the Documents Hub section above.)
 function driverLoadDocRow(label, doc, status, canUpload, loadId, hint = '', mandatory = false) {
-  return `<div class="driver-doc-row"><span class="driver-doc-dot ${doc ? driverDocStatusClass(doc) : 'status-problem'}"></span><div><strong>${esc(label)}${mandatory ? ' <span class="doc-required" title="Required">*</span>' : ''}</strong><small>${esc(status)}${doc?.filename ? ' · ' + esc(doc.filename) : ''}${hint ? ' · ' + esc(hint) : ''}</small></div>${doc?.fileUrl ? `<a class="driver-doc-download" href="${esc(doc.fileUrl)}" target="_blank" rel="noreferrer">View</a>` : ''}${docDownloadButtonHtml(doc, 'driver-doc-download-btn action-mini')}${canUpload ? `<button class="action-mini" type="button" data-action="upload-driver-doc" data-load="${esc(loadId)}" data-type="${esc(label)}">Upload</button>` : ''}</div>`;
+  return `<div class="driver-doc-row"><span class="driver-doc-dot ${doc ? driverDocStatusClass(doc) : 'status-problem'}"></span><div><strong>${esc(label)}${mandatory ? ' <span class="doc-required" title="Required">*</span>' : ''}</strong><small>${esc(status)}${doc?.filename ? ' Â· ' + esc(doc.filename) : ''}${hint ? ' Â· ' + esc(hint) : ''}</small></div>${doc?.fileUrl ? `<a class="driver-doc-download" href="${esc(doc.fileUrl)}" target="_blank" rel="noreferrer">View</a>` : ''}${docDownloadButtonHtml(doc, 'driver-doc-download-btn action-mini')}${canUpload ? `<button class="action-mini" type="button" data-action="upload-driver-doc" data-load="${esc(loadId)}" data-type="${esc(label)}">Upload</button>` : ''}</div>`;
 }
 function driverLoadDocRows(loadId) {
   const bol = latestDoc(loadId, 'bol');
@@ -3257,7 +3257,7 @@ function openOtherDocumentsModal(loadId) {
   const load = loadById(loadId);
   const isDriver = state.currentUser?.role === 'driver';
   const existing = otherDocsForLoad(loadId).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-  const listHtml = existing.length ? existing.map(doc => `<div class="driver-doc-row"><span class="driver-doc-dot ${driverDocStatusClass(doc)}"></span><div><strong>${esc(doc.type || 'Other')}</strong><small>${esc(driverDocStatusLabel(doc))}${doc.filename ? ' · ' + esc(doc.filename) : ''}</small></div>${doc.fileUrl ? `<a class="driver-doc-download" href="${esc(doc.fileUrl)}" target="_blank" rel="noreferrer">View</a>` : ''}${docDownloadButtonHtml(doc)}</div>`).join('') : '<p class="muted">No additional documents uploaded yet.</p>';
+  const listHtml = existing.length ? existing.map(doc => `<div class="driver-doc-row"><span class="driver-doc-dot ${driverDocStatusClass(doc)}"></span><div><strong>${esc(doc.type || 'Other')}</strong><small>${esc(driverDocStatusLabel(doc))}${doc.filename ? ' Â· ' + esc(doc.filename) : ''}</small></div>${doc.fileUrl ? `<a class="driver-doc-download" href="${esc(doc.fileUrl)}" target="_blank" rel="noreferrer">View</a>` : ''}${docDownloadButtonHtml(doc)}</div>`).join('') : '<p class="muted">No additional documents uploaded yet.</p>';
   openModal('Other documents', 'Fuel receipt, lumper receipt or any other supporting document for this load. Choose the exact type before uploading.', `
     <div class="driver-doc-status-list" style="margin-bottom:16px">${listHtml}</div>
     <form id="otherDocForm" class="form-grid">
@@ -3279,7 +3279,7 @@ function openDriverLoadDetailModal(loadId, readOnly = false) {
   const load = loadById(loadId);
   if (!load) return toast('Load not found');
   const isDriver = state.currentUser?.role === 'driver';
-  openModal(`Load ${load.id}`, `${load.pickup || '-'} → ${load.delivery || '-'}`, `
+  openModal(`Load ${load.id}`, `${load.pickup || '-'} â ${load.delivery || '-'}`, `
     <div class="driver-load-detail">
       <div class="driver-load-detail-head"><span class="status-pill ${statusClass(load.status)}">${esc(load.status || 'Assigned')}</span></div>
       ${isDriver ? driverConfirmationLink(load) : ''}
@@ -3287,7 +3287,7 @@ function openDriverLoadDetailModal(loadId, readOnly = false) {
         <div class="driver-stop"><span class="stop-marker">P</span><div><strong>Pick up</strong><span>${esc(load.pickup || 'Pickup pending')}</span><small>${esc(scheduleText(load, 'pickup') || 'Date and time not set')}</small>${stopRefText(load, 'pickup') ? `<small>${esc(stopRefText(load, 'pickup'))}</small>` : ''}</div></div>
         <div class="driver-stop"><span class="stop-marker">D</span><div><strong>Delivery</strong><span>${esc(load.delivery || 'Delivery pending')}</span><small>${esc(scheduleText(load, 'delivery') || 'Date and time not set')}</small>${stopRefText(load, 'delivery') ? `<small>${esc(stopRefText(load, 'delivery'))}</small>` : ''}</div></div>
       </div>
-      <section class="driver-doc-status"><div class="driver-doc-status-head"><div><span>Load documents</span><strong>BOL and POD are required · Others grouped below</strong></div></div><div class="driver-doc-status-list">${driverLoadDocRows(load.id)}</div></section>
+      <section class="driver-doc-status"><div class="driver-doc-status-head"><div><span>Load documents</span><strong>BOL and POD are required Â· Others grouped below</strong></div></div><div class="driver-doc-status-list">${driverLoadDocRows(load.id)}</div></section>
       ${!readOnly && isDriver ? `<div class="driver-actions" style="margin-top:16px">
         <button class="btn driver-action-card driver-action-success" type="button" data-action="driver-arrived" data-load="${esc(load.id)}"><span class="driver-action-icon" aria-hidden="true">${icons.pin}</span><span class="driver-action-copy"><strong>Arrived</strong><small>Update pickup status</small></span></button>
         <button class="btn driver-action-card driver-action-dark" type="button" data-action="driver-transit" data-load="${esc(load.id)}"><span class="driver-action-icon" aria-hidden="true">${icons.truck}</span><span class="driver-action-copy"><strong>In transit</strong><small>Start route tracking</small></span></button>
@@ -3304,7 +3304,7 @@ function renderPreviousLoadsStrip(driverName) {
     ${completed.length ? `<div class="previous-loads-strip">${completed.map(load => `
       <article class="previous-load-card">
         <div class="mini-row"><strong>${esc(load.id)}</strong><span class="status-pill ${statusClass(load.status)}">${esc(load.status)}</span></div>
-        <p>${esc(load.pickup || '-')} → ${esc(load.delivery || '-')}</p>
+        <p>${esc(load.pickup || '-')} â ${esc(load.delivery || '-')}</p>
         <button class="btn btn-soft" type="button" data-action="view-previous-load" data-load="${esc(load.id)}">View Load</button>
       </article>`).join('')}</div>` : `<p class="muted">Completed and fully confirmed tours will appear here.</p>`}
   </section>`;
@@ -3325,6 +3325,7 @@ function renderDriverMobile() {
       ${header}
       <div class="driver-content driver-content-compact">
         ${reminderBanner}
+        ${isDriver ? renderDriverLocationCard(currentDriver) : ''}
         ${load ? `<article class="driver-load-hero-compact ${state.selectedLoadId === load.id ? 'target-highlight' : ''}">
           <div class="driver-load-title"><div><span class="driver-load-kicker">Load ${esc(load.id)}</span><h4>${esc(load.status || 'Assigned')}</h4></div><span class="status-pill ${statusClass(load.status)}">${esc(load.status || 'Assigned')}</span></div>
           <div class="driver-timeline-compact">
@@ -3388,7 +3389,7 @@ function renderAdmin() {
       </div>
       <div class="card card-pad admin-audit-card">
         <div class="admin-audit-head"><span class="admin-audit-icon">${icons.shield}</span><div><h3 class="card-title">Audit log</h3><p class="card-subtitle">Recent system events.</p></div></div>
-        <div class="activity-list" style="margin-top:14px">${arr('auditLog').slice(0, 12).map(item => `<div class="activity-item"><span class="activity-dot"></span><div><strong>${esc(item.action)}</strong><span>${esc(item.entity || '')} · ${esc(formatDate(item.createdAt))}</span></div></div>`).join('') || '<p class="muted">No audit entries yet.</p>'}</div>
+        <div class="activity-list" style="margin-top:14px">${arr('auditLog').slice(0, 12).map(item => `<div class="activity-item"><span class="activity-dot"></span><div><strong>${esc(item.action)}</strong><span>${esc(item.entity || '')} Â· ${esc(formatDate(item.createdAt))}</span></div></div>`).join('') || '<p class="muted">No audit entries yet.</p>'}</div>
       </div>
     </section>
   `;
@@ -3415,7 +3416,7 @@ function renderDrivers() {
   return `
     <section class="page-section">
       <div class="section-header"><div><h3>Drivers management</h3><p>Driver profiles are created automatically when you add a Driver account in the Admin panel. Edit truck, HOS, safety, GPS tracker link and availability here.</p></div><div class="header-actions"><button class="btn btn-soft" data-action="export-drivers">Export</button>${isAdminUser() ? '<button class="btn btn-primary" data-action="add-user">+ Add driver account</button>' : ''}</div></div>
-      ${drivers.length ? `<div class="grid grid-3">${drivers.map(driver => `<article class="card profile-card"><div class="profile-top"><div class="avatar">${esc(initials(driver.name))}</div><div><h4>${esc(driver.name)}</h4><p>${esc(driver.phone || driver.email || '-')}</p></div></div><div class="profile-meta"><span class="status-pill ${statusClass(driver.status)}">${esc(driver.status || 'Available')}</span><span class="tag">${esc(driver.truck || 'No truck')}</span><span class="tag tag-dark">${esc(driver.load || 'No load')}</span></div><div class="profile-stats"><div><strong>${esc(driver.score || '-')}</strong><span>Performance</span></div><div><strong>${esc(driver.safety || 'Clear')}</strong><span>Safety</span></div></div><button class="btn btn-soft" data-action="edit-driver" data-id="${esc(driver.id)}">Edit profile</button></article>`).join('')}</div>` : `<div class="card table-card">${emptyState('No driver profiles yet', 'Create a Driver account in the Admin panel — the profile is generated automatically and can be edited here.', isAdminUser() ? 'Add driver account' : '', isAdminUser() ? 'add-user' : '')}</div>`}
+      ${drivers.length ? `<div class="grid grid-3">${drivers.map(driver => `<article class="card profile-card"><div class="profile-top"><div class="avatar">${esc(initials(driver.name))}</div><div><h4>${esc(driver.name)}</h4><p>${esc(driver.phone || driver.email || '-')}</p></div></div><div class="profile-meta"><span class="status-pill ${statusClass(driver.status)}">${esc(driver.status || 'Available')}</span><span class="tag">${esc(driver.truck || 'No truck')}</span><span class="tag tag-dark">${esc(driver.load || 'No load')}</span></div><div class="profile-stats"><div><strong>${esc(driver.score || '-')}</strong><span>Performance</span></div><div><strong>${esc(driver.safety || 'Clear')}</strong><span>Safety</span></div></div><button class="btn btn-soft" data-action="edit-driver" data-id="${esc(driver.id)}">Edit profile</button></article>`).join('')}</div>` : `<div class="card table-card">${emptyState('No driver profiles yet', 'Create a Driver account in the Admin panel â the profile is generated automatically and can be edited here.', isAdminUser() ? 'Add driver account' : '', isAdminUser() ? 'add-user' : '')}</div>`}
       ${canManageOperations() ? renderRemindersAdminSection() : ''}
       ${canManageOperations() ? `
       <div class="section-header slim"><div><h3>Driver payout &amp; mileage report</h3><p>Gross paid to driver, dispatch cut and revenue-per-mile, aggregated from real loads for the selected date range.</p></div></div>
@@ -3484,11 +3485,11 @@ function renderDocuments() {
       </div>
     </section>`;
   }
-  return `<section class="page-section"><div class="section-header"><div><h3>Documents / BOL / POD</h3><p>Upload, preview, approve, reject and filter documents by driver, load, date and status.</p></div><div class="header-actions"><button class="btn btn-soft" data-action="open-documents-hub">Personal / Operational document</button><button class="btn btn-soft" data-action="generate-confirmation">Create Confirmation</button><button class="btn btn-soft" data-action="dispatch-import">Import ITS/Dispatch</button><button class="btn btn-soft" data-action="doc-intake">Auto-fill intake</button><button class="btn btn-soft" data-action="export-docs">Export</button><button class="btn btn-primary" data-action="upload-doc-modal">+ Upload document</button></div></div>${docs.length ? `<table class="data-table"><thead><tr><th>Load</th><th>Driver</th><th>Type</th><th>Status</th><th>Date</th><th>File</th><th>Actions</th></tr></thead><tbody>${docs.map(doc => `<tr data-doc-id="${esc(doc.id)}" class="${state.selectedDocId === doc.id ? 'target-highlight' : ''}"><td data-label="Load"><strong>${esc(doc.load || (doc.category ? `${doc.category} · ${doc.subType || ''}` : '-'))}</strong></td><td data-label="Driver">${esc(doc.driver || '-')}</td><td data-label="Type">${esc(doc.type || '-')}</td><td data-label="Status"><span class="status-pill ${statusClass(doc.status)}">${esc(doc.status || 'Uploaded')}</span>${doc.rejectionReason ? `<br><small class="muted">${esc(doc.rejectionReason)}</small>` : ''}</td><td data-label="Date">${esc(doc.date || formatDate(doc.createdAt))}</td><td data-label="File">${doc.fileUrl ? `<a href="${esc(doc.fileUrl)}" target="_blank" rel="noreferrer">${esc(doc.filename || 'Open')}</a>` : esc(doc.filename || '-')}</td><td data-label="Actions">${canManageDocuments() ? `<button class="action-mini" data-action="approve-doc" data-id="${esc(doc.id)}">Approve</button><button class="action-mini" data-action="reject-doc" data-id="${esc(doc.id)}">Reject</button>` : ''}</td></tr>`).join('')}</tbody></table>` : emptyState('No documents uploaded', 'Upload real BOL, POD, rate confirmation or receipts. Uploaded files will be stored locally.', 'Upload document', 'upload-doc-modal')}</section>`;
+  return `<section class="page-section"><div class="section-header"><div><h3>Documents / BOL / POD</h3><p>Upload, preview, approve, reject and filter documents by driver, load, date and status.</p></div><div class="header-actions"><button class="btn btn-soft" data-action="open-documents-hub">Personal / Operational document</button><button class="btn btn-soft" data-action="generate-confirmation">Create Confirmation</button><button class="btn btn-soft" data-action="dispatch-import">Import ITS/Dispatch</button><button class="btn btn-soft" data-action="doc-intake">Auto-fill intake</button><button class="btn btn-soft" data-action="export-docs">Export</button><button class="btn btn-primary" data-action="upload-doc-modal">+ Upload document</button></div></div>${docs.length ? `<table class="data-table"><thead><tr><th>Load</th><th>Driver</th><th>Type</th><th>Status</th><th>Date</th><th>File</th><th>Actions</th></tr></thead><tbody>${docs.map(doc => `<tr data-doc-id="${esc(doc.id)}" class="${state.selectedDocId === doc.id ? 'target-highlight' : ''}"><td data-label="Load"><strong>${esc(doc.load || (doc.category ? `${doc.category} Â· ${doc.subType || ''}` : '-'))}</strong></td><td data-label="Driver">${esc(doc.driver || '-')}</td><td data-label="Type">${esc(doc.type || '-')}</td><td data-label="Status"><span class="status-pill ${statusClass(doc.status)}">${esc(doc.status || 'Uploaded')}</span>${doc.rejectionReason ? `<br><small class="muted">${esc(doc.rejectionReason)}</small>` : ''}</td><td data-label="Date">${esc(doc.date || formatDate(doc.createdAt))}</td><td data-label="File">${doc.fileUrl ? `<a href="${esc(doc.fileUrl)}" target="_blank" rel="noreferrer">${esc(doc.filename || 'Open')}</a>` : esc(doc.filename || '-')}</td><td data-label="Actions">${canManageDocuments() ? `<button class="action-mini" data-action="approve-doc" data-id="${esc(doc.id)}">Approve</button><button class="action-mini" data-action="reject-doc" data-id="${esc(doc.id)}">Reject</button>` : ''}</td></tr>`).join('')}</tbody></table>` : emptyState('No documents uploaded', 'Upload real BOL, POD, rate confirmation or receipts. Uploaded files will be stored locally.', 'Upload document', 'upload-doc-modal')}</section>`;
 }
 function renderChat() {
 
-  const brokerOperationalPanel = role()==='broker' ? `<section class="card broker-operational-panel"><div><span class="tag tag-teal">Operations</span><h3>Message dispatch about a Driver</h3><p>Select only a Driver tied to one of your currently authorized Loads.</p></div><select id="brokerMessageDriver" class="filter-input"><option value="">Select Driver</option>${arr('drivers').map(d=>`<option value="${esc(d.id||d.email)}">${esc(d.name)}</option>`).join('')}</select><textarea id="brokerOperationalMessage" rows=3 maxlength=2000 placeholder="Operational update…"></textarea><div class="header-actions"><button id="brokerOperationalSend" class="btn btn-primary" data-action="send-broker-operational-message">Send to Operations</button></div></section>` : '';
+  const brokerOperationalPanel = role()==='broker' ? `<section class="card broker-operational-panel"><div><span class="tag tag-teal">Operations</span><h3>Message dispatch about a Driver</h3><p>Select only a Driver tied to one of your currently authorized Loads.</p></div><select id="brokerMessageDriver" class="filter-input"><option value="">Select Driver</option>${arr('drivers').map(d=>`<option value="${esc(d.id||d.email)}">${esc(d.name)}</option>`).join('')}</select><textarea id="brokerOperationalMessage" rows=3 maxlength=2000 placeholder="Operational updateâ¦"></textarea><div class="header-actions"><button id="brokerOperationalSend" class="btn btn-primary" data-action="send-broker-operational-message">Send to Operations</button></div></section>` : '';
   
   const contacts = getChatContacts();
   if (state.selectedChat && !contacts.includes(state.selectedChat)) state.selectedChat = '';
@@ -3506,12 +3507,12 @@ function renderChat() {
         : 'This conversation is available only to your account and administrators.';
   return `
     <section class="page-section chat-page">
-      <div class="section-header"><div><h3>Chat system</h3><p>${esc(accessDescription)}</p></div><div class="header-actions"><button class="btn btn-call" data-action="start-voice-call" ${selected ? '' : 'disabled'}>☎ Voice call</button><button class="btn btn-soft" data-action="mark-all-chat-read">Mark chat read</button><button class="btn btn-primary" data-action="chat-attach-file" ${selected ? '' : 'disabled'}>Attach files</button></div></div>
+      <div class="section-header"><div><h3>Chat system</h3><p>${esc(accessDescription)}</p></div><div class="header-actions"><button class="btn btn-call" data-action="start-voice-call" ${selected ? '' : 'disabled'}>â Voice call</button><button class="btn btn-soft" data-action="mark-all-chat-read">Mark chat read</button><button class="btn btn-primary" data-action="chat-attach-file" ${selected ? '' : 'disabled'}>Attach files</button></div></div>
       ${contacts.length ? `<div class="chat-layout card">
         <aside class="chat-contacts">${contacts.map(contact => `<button class="chat-contact ${selected === contact ? 'active' : ''}" data-chat="${esc(contact)}"><div class="avatar">${esc(initials(chatContactLabel(contact)))}</div><div><strong>${esc(chatContactLabel(contact))}</strong><span>${esc(chatMessagePreview((appData.chats?.[contact] || []).slice(-1)[0] || {}) || chatContactSubtitle(contact))}</span></div>${badgeHtml(unreadMessagesForContact(contact).length)}</button>`).join('')}</aside>
         <main class="chat-window">
-          <div class="chat-head"><div><h3>${esc(chatContactLabel(selected))}</h3><p>${activeLoad ? `Load ${esc(activeLoad.id)} · ${esc(activeLoad.pickup || '-')} → ${esc(activeLoad.delivery || '-')}` : esc(chatContactSubtitle(selected))}</p></div><div class="chat-head-actions"><button class="btn btn-call" data-action="start-voice-call">☎ Voice call</button><button class="btn btn-soft" data-action="chat-mark-read">Mark read</button></div></div>
-          <div id="chatMessages" class="chat-messages">${messages.map(msg => `<div class="message ${isOwnMessage(msg) ? 'out' : 'in'} ${!isOwnMessage(msg) && !isReadByCurrentUser(msg) ? 'unread-message' : ''} ${isVoiceCallMessage(msg) ? 'call-message' : ''}">${renderChatMessageBody(msg)}<span>${esc(msg.user || '')} · ${esc(msg.time || formatDate(msg.createdAt))}${isOwnMessage(msg) ? (msg.readBy?.length > 1 ? ' · Read' : ' · Sent') : (!isReadByCurrentUser(msg) ? ' · Unread' : '')}</span></div>`).join('') || '<p class="muted">No messages in this dedicated conversation yet.</p>'}</div>
+          <div class="chat-head"><div><h3>${esc(chatContactLabel(selected))}</h3><p>${activeLoad ? `Load ${esc(activeLoad.id)} Â· ${esc(activeLoad.pickup || '-')} â ${esc(activeLoad.delivery || '-')}` : esc(chatContactSubtitle(selected))}</p></div><div class="chat-head-actions"><button class="btn btn-call" data-action="start-voice-call">â Voice call</button><button class="btn btn-soft" data-action="chat-mark-read">Mark read</button></div></div>
+          <div id="chatMessages" class="chat-messages">${messages.map(msg => `<div class="message ${isOwnMessage(msg) ? 'out' : 'in'} ${!isOwnMessage(msg) && !isReadByCurrentUser(msg) ? 'unread-message' : ''} ${isVoiceCallMessage(msg) ? 'call-message' : ''}">${renderChatMessageBody(msg)}<span>${esc(msg.user || '')} Â· ${esc(msg.time || formatDate(msg.createdAt))}${isOwnMessage(msg) ? (msg.readBy?.length > 1 ? ' Â· Read' : ' Â· Sent') : (!isReadByCurrentUser(msg) ? ' Â· Unread' : '')}</span></div>`).join('') || '<p class="muted">No messages in this dedicated conversation yet.</p>'}</div>
           <div class="chat-input"><button class="icon-btn file-btn" title="Attach images or files" aria-label="Attach images or files"><span>+</span><input type="file" accept="image/jpeg,image/png,image/webp,image/gif,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.rtf" data-chat-upload="main" multiple></button><input id="chatInput" placeholder="Write a message..." /><button id="sendChatBtn" class="btn btn-primary">Send</button></div>
         </main>
       </div>` : `<div class="card table-card">${emptyState('No authorized chat contacts', state.currentUser?.role === 'driver' ? 'An administrator must assign a dedicated dispatcher to this driver account.' : state.currentUser?.role === 'dispatcher' ? 'No driver accounts are currently assigned to you.' : 'Create driver accounts and assign each one to a dispatcher.', state.currentUser?.role === 'admin' ? 'Add user' : '', state.currentUser?.role === 'admin' ? 'add-user' : '')}</div>`}
@@ -3529,7 +3530,7 @@ function renderNotifications() {
       <div class="card card-pad"><div class="activity-list notification-list">${notifications.length ? notifications.map(n => {
         const unreadItem = !isReadByCurrentUser(n);
         const isCall = Boolean(n.callId || /voice call|incoming call/i.test(`${n.type || ''} ${n.title || ''}`));
-        return `<button class="activity-item notification-item ${unreadItem ? 'unread' : 'read'} ${isCall ? 'voice-call-notification' : ''}" data-action="open-notification" data-notification="${esc(n.id)}"><span class="activity-dot">${isCall ? '☎' : ''}</span><div><strong>${esc(n.title)}</strong><span>${esc(n.text || n.message || '')}</span>${n.relatedLoadId ? `<small>Load ${esc(n.relatedLoadId)}</small>` : ''}${isCall ? '<small>Tap to open call controls</small>' : ''}</div><span class="tag ${unreadItem ? 'tag-teal' : ''}">${unreadItem ? 'Unread' : 'Read'} · ${esc(n.time || formatDate(n.createdAt))}</span></button>`;
+        return `<button class="activity-item notification-item ${unreadItem ? 'unread' : 'read'} ${isCall ? 'voice-call-notification' : ''}" data-action="open-notification" data-notification="${esc(n.id)}"><span class="activity-dot">${isCall ? 'â' : ''}</span><div><strong>${esc(n.title)}</strong><span>${esc(n.text || n.message || '')}</span>${n.relatedLoadId ? `<small>Load ${esc(n.relatedLoadId)}</small>` : ''}${isCall ? '<small>Tap to open call controls</small>' : ''}</div><span class="tag ${unreadItem ? 'tag-teal' : ''}">${unreadItem ? 'Unread' : 'Read'} Â· ${esc(n.time || formatDate(n.createdAt))}</span></button>`;
       }).join('') : emptyState('No notifications', 'Operational notifications will appear here once real activity starts.', 'Add alert', 'add-notification')}</div></div>
     </section>
   `;
@@ -3565,14 +3566,14 @@ function renderGps() {
       <div class="grid grid-2 gps-layout">
         <div class="card live-map-card gps-iframe-card">
           <div class="gps-iframe-head">
-            <div><span class="tag tag-teal">${esc(provider)}</span><h3>${liveLoad ? esc(`${liveLoad.id} · ${liveLoad.driver || 'Unassigned'}`) : 'Live GPS'}</h3><p>${liveLoad ? esc(`${liveLoad.pickup || '-'} → ${liveLoad.delivery || '-'}`) : 'Add a GPS iframe/link in Settings, upload a document with iframe src, or start driver browser GPS.'}</p></div>
+            <div><span class="tag tag-teal">${esc(provider)}</span><h3>${liveLoad ? esc(`${liveLoad.id} Â· ${liveLoad.driver || 'Unassigned'}`) : 'Live GPS'}</h3><p>${liveLoad ? esc(`${liveLoad.pickup || '-'} â ${liveLoad.delivery || '-'}`) : 'Add a GPS iframe/link in Settings, upload a document with iframe src, or start driver browser GPS.'}</p></div>
             ${liveUrl ? `<a class="btn btn-soft" href="${esc(liveUrl)}" target="_blank" rel="noreferrer">Open full map</a>` : ''}
           </div>
           ${liveUrl ? `<div class="gps-iframe-shell"><iframe class="gps-iframe" src="${esc(liveUrl)}" title="JTS Live GPS" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>` : locationMap ? `<div class="gps-iframe-shell"><iframe class="gps-iframe" src="${esc(locationMap)}" title="Last known driver location" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>` : `<div class="map-visual large gps-empty"><div class="route-line"></div><span class="map-pin pin-a"></span><span class="map-pin pin-b"></span><span class="map-pin pin-c"></span><strong>No live GPS yet</strong><p>For broker iframe GPS, paste the link in Settings. For driver GPS, open Current Load and press Start live GPS.</p></div>`}
         </div>
         <div class="grid">
           <div class="card card-pad"><h3 class="card-title">Driver browser GPS</h3><p class="card-subtitle">Drivers can share live location from mobile browser while logged in. Works on localhost or HTTPS with location permission.</p><div class="gps-status-grid">${selectedLocation ? `<div><span>Last driver</span><strong>${esc(selectedLocation.driver || '-')}</strong></div><div><span>Coordinates</span><strong>${esc(Number(selectedLocation.lat).toFixed(5))}, ${esc(Number(selectedLocation.lng).toFixed(5))}</strong></div><div><span>Updated</span><strong>${esc(formatDate(selectedLocation.timestamp || selectedLocation.createdAt))}</strong></div>` : '<p class="muted">No browser GPS points saved yet.</p>'}</div>${selectedLocation ? `<div class="header-actions" style="margin-top:14px"><a class="btn btn-soft" href="${esc(mapsPointUrl(selectedLocation))}" target="_blank" rel="noreferrer">Open current position</a></div>` : ''}</div>
-          <div class="card card-pad"><h3 class="card-title">Active routes</h3><p class="card-subtitle">Navigation shortcuts and on-time risk for real active loads.</p><div class="activity-list" style="margin-top:14px">${loads.length ? loads.map(load => { const risk = tripRiskForLoad(load); return `<div class="activity-item gps-route-item"><span class="activity-dot"></span><div><strong>${esc(load.id)} · ${esc(load.driver || 'Unassigned')}</strong><span>${esc(load.pickup || '-')} → ${esc(load.delivery || '-')}</span>${scheduleText(load) ? `<small>${esc(scheduleText(load))}</small>` : ''}<small>${esc(risk.detail)}</small>${gpsUrlForLoad(load) ? `<small>Live GPS link detected</small>` : ''}</div><span class="status-pill ${risk.className}">${esc(risk.label)}</span><button class="action-mini" data-action="navigate" data-load="${esc(load.id)}">Open</button></div>`; }).join('') : '<p class="muted">No active routes yet.</p>'}</div></div>
+          <div class="card card-pad"><h3 class="card-title">Active routes</h3><p class="card-subtitle">Navigation shortcuts and on-time risk for real active loads.</p><div class="activity-list" style="margin-top:14px">${loads.length ? loads.map(load => { const risk = tripRiskForLoad(load); return `<div class="activity-item gps-route-item"><span class="activity-dot"></span><div><strong>${esc(load.id)} Â· ${esc(load.driver || 'Unassigned')}</strong><span>${esc(load.pickup || '-')} â ${esc(load.delivery || '-')}</span>${scheduleText(load) ? `<small>${esc(scheduleText(load))}</small>` : ''}<small>${esc(risk.detail)}</small>${gpsUrlForLoad(load) ? `<small>Live GPS link detected</small>` : ''}</div><span class="status-pill ${risk.className}">${esc(risk.label)}</span><button class="action-mini" data-action="navigate" data-load="${esc(load.id)}">Open</button></div>`; }).join('') : '<p class="muted">No active routes yet.</p>'}</div></div>
         </div>
       </div>
     </section>
@@ -3593,7 +3594,7 @@ function renderEld() {
   return `
     <section class="page-section eld-page">
       <div class="section-header"><div><h3>ELD / HOS report</h3><p>Real calculation page using manual HOS values now, ready for Motive/Samsara/Geotab API later.</p></div><div class="header-actions"><button class="btn btn-soft" data-action="update-hos">Update HOS</button><button class="btn btn-soft" data-action="export-eld">Export</button><button class="btn btn-primary" data-action="print">Print</button></div></div>
-      ${driver ? `<article class="card eld-report"><header class="eld-report-head eld-report-header"><div><h3>Hours of Service Daily Report</h3><p>Driver legality, ETA risk and delivery on-time calculation.</p></div><span class="status-pill ${statusClass(driver.safety)}">${esc(driver.safety || 'Clear')}</span></header><div class="eld-report-body"><div class="eld-driver-line">${[['Driver name', driver.name], ['Date range', todayLabel()], ['Truck', driver.truck || '-'], ['Current load', driver.load || driverLoads[0]?.id || '-']].map(([a,b]) => `<div class="eld-field"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`).join('')}</div><div class="eld-hours-grid">${hosCards.map(([title, val, width]) => `<div class="eld-hour-card"><h4>${esc(title)}</h4><strong>${esc(val)}</strong><div class="progress-bar" style="margin-top:14px"><span style="width:${Number(width) || 0}%"></span></div></div>`).join('')}</div><div class="grid grid-2"><div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Violations / alerts</h3><div class="eld-alerts" style="margin-top:12px"><div class="eld-alert ${hos.remainingDrive <= 1 ? 'warning' : 'safe'}"><strong>11-hour drive limit</strong><span>${esc(hoursLabel(hos.remainingDrive))} remaining</span></div><div class="eld-alert ${hos.remainingShift <= 1 ? 'warning' : 'safe'}"><strong>14-hour shift window</strong><span>${esc(hoursLabel(hos.remainingShift))} remaining</span></div><div class="eld-alert ${hos.breakDueIn <= 0.5 ? 'warning' : 'safe'}"><strong>30-minute break</strong><span>${esc(hos.breakDueIn <= 0 ? 'Break due now' : `${hoursLabel(hos.breakDueIn)} until break`)}</span></div><div class="eld-alert ${hos.cycleLeft <= 5 ? 'warning' : 'safe'}"><strong>70-hour cycle</strong><span>${esc(hoursLabel(hos.cycleLeft))} left</span></div></div></div><div class="card card-pad" style="box-shadow:none"><h3 class="card-title">On-time risk by load</h3><p class="card-subtitle">Calculation uses miles, average speed, delivery appointment and available HOS.</p><div class="activity-list" style="margin-top:12px">${driverLoads.length ? driverLoads.map(load => { const risk = tripRiskForLoad(load, driver); return `<div class="activity-item"><span class="activity-dot"></span><div><strong>${esc(load.id)} · ${esc(load.delivery || '-')}</strong><span>${esc(risk.detail)}</span><small>Need ${esc(hoursLabel(risk.totalNeeded))}; drive ${esc(hoursLabel(risk.drivingNeeded))}${risk.breakNeeded ? ` + break ${esc(hoursLabel(risk.breakNeeded))}` : ''}</small></div><span class="status-pill ${risk.className}">${esc(risk.label)}</span></div>`; }).join('') : '<p class="muted">No active load assigned to this driver.</p>'}</div></div></div></div></article>` : `<div class="card table-card">${emptyState('No driver for HOS report', 'Add driver profiles to use the ELD/HOS report page.', 'Add driver', 'add-driver')}</div>`}
+      ${driver ? `<article class="card eld-report"><header class="eld-report-head eld-report-header"><div><h3>Hours of Service Daily Report</h3><p>Driver legality, ETA risk and delivery on-time calculation.</p></div><span class="status-pill ${statusClass(driver.safety)}">${esc(driver.safety || 'Clear')}</span></header><div class="eld-report-body"><div class="eld-driver-line">${[['Driver name', driver.name], ['Date range', todayLabel()], ['Truck', driver.truck || '-'], ['Current load', driver.load || driverLoads[0]?.id || '-']].map(([a,b]) => `<div class="eld-field"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`).join('')}</div><div class="eld-hours-grid">${hosCards.map(([title, val, width]) => `<div class="eld-hour-card"><h4>${esc(title)}</h4><strong>${esc(val)}</strong><div class="progress-bar" style="margin-top:14px"><span style="width:${Number(width) || 0}%"></span></div></div>`).join('')}</div><div class="grid grid-2"><div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Violations / alerts</h3><div class="eld-alerts" style="margin-top:12px"><div class="eld-alert ${hos.remainingDrive <= 1 ? 'warning' : 'safe'}"><strong>11-hour drive limit</strong><span>${esc(hoursLabel(hos.remainingDrive))} remaining</span></div><div class="eld-alert ${hos.remainingShift <= 1 ? 'warning' : 'safe'}"><strong>14-hour shift window</strong><span>${esc(hoursLabel(hos.remainingShift))} remaining</span></div><div class="eld-alert ${hos.breakDueIn <= 0.5 ? 'warning' : 'safe'}"><strong>30-minute break</strong><span>${esc(hos.breakDueIn <= 0 ? 'Break due now' : `${hoursLabel(hos.breakDueIn)} until break`)}</span></div><div class="eld-alert ${hos.cycleLeft <= 5 ? 'warning' : 'safe'}"><strong>70-hour cycle</strong><span>${esc(hoursLabel(hos.cycleLeft))} left</span></div></div></div><div class="card card-pad" style="box-shadow:none"><h3 class="card-title">On-time risk by load</h3><p class="card-subtitle">Calculation uses miles, average speed, delivery appointment and available HOS.</p><div class="activity-list" style="margin-top:12px">${driverLoads.length ? driverLoads.map(load => { const risk = tripRiskForLoad(load, driver); return `<div class="activity-item"><span class="activity-dot"></span><div><strong>${esc(load.id)} Â· ${esc(load.delivery || '-')}</strong><span>${esc(risk.detail)}</span><small>Need ${esc(hoursLabel(risk.totalNeeded))}; drive ${esc(hoursLabel(risk.drivingNeeded))}${risk.breakNeeded ? ` + break ${esc(hoursLabel(risk.breakNeeded))}` : ''}</small></div><span class="status-pill ${risk.className}">${esc(risk.label)}</span></div>`; }).join('') : '<p class="muted">No active load assigned to this driver.</p>'}</div></div></div></div></article>` : `<div class="card table-card">${emptyState('No driver for HOS report', 'Add driver profiles to use the ELD/HOS report page.', 'Add driver', 'add-driver')}</div>`}
     </section>
   `;
 }
@@ -3893,7 +3894,16 @@ async function handleAction(action, element) {
     'end-voice-call': () => endVoiceCall(),
     'toggle-voice-mute': () => toggleVoiceMute(),
     'close-voice-call': () => closeVoiceCallOverlay(),
-    'enable-location-consent': () => { const c=qs('#locationConsentCheck'); if(!c?.checked) throw new Error('Please review the location notice and check the consent box first.'); setStoredLocationConsent(true); locationUiState.status='Ready'; renderApp(); toast('Location sharing consent saved on this device.'); },
+    'enable-location-consent': () => {
+      const checkbox = qs('#locationConsentCheck');
+      if (!checkbox?.checked) throw new Error('Please review the location notice and check the consent box first.');
+      setStoredLocationConsent(true);
+      locationUiState.consent = true;
+      locationUiState.status = 'Ready';
+      locationUiState.lastError = '';
+      renderApp();
+      toast('Location Sharing consent saved. Press Start Location Sharing to allow GPS access.');
+    },
     'start-live-gps': () => startLiveGps(),
     'stop-live-gps': () => stopLiveGps(),
     'send-current-location': () => sendCurrentLocation(),
@@ -3921,7 +3931,7 @@ async function handleAction(action, element) {
     'issue-report': () => openIssueModal(),
     'open-map': () => openLiveGps(loadId),
     'navigate': () => openNavigation(loadId),
-    'refresh-location': () => { renderApp(); toast('Location view refreshed'); },
+    'refresh-location': async () => { await loadData(); renderApp(); toast('Location view refreshed'); },
     'open-url': () => openExternal(element?.dataset?.url || '', 'Link is not available.'),
     'go-loads': () => navigate('loads')
   };
@@ -3972,43 +3982,186 @@ async function sendFloatingChatMessage() {
   state.floatingChatOpen = true;
   renderApp();
 }
-function geolocationOptions() { return { enableHighAccuracy: true, maximumAge: 15000, timeout: 15000 }; }
+function geolocationOptions() {
+  return { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 };
+}
 function locationPermissionState() {
   if (!navigator.geolocation) return 'Unsupported';
-  if (!navigator.permissions?.query) return locationUiState.status === 'Sharing active' ? 'Granted' : locationUiState.status;
-  return locationUiState.status;
+  return locationUiState.status === 'Sharing active' ? 'Granted' : locationUiState.status;
+}
+function locationErrorMessage(error) {
+  if (!error) return 'Current location is unavailable.';
+  if (error.code === 1) return 'Location permission was denied. Enable Location Services for Safari/JTS TMS in device settings and try again.';
+  if (error.code === 2) return 'The device could not determine the current location. Check Location Services and GPS signal.';
+  if (error.code === 3) return 'The location request timed out. Move to an open area and try again.';
+  return error.message || 'Current location is unavailable.';
 }
 async function ensureLocationConsent() {
   if (state.currentUser?.role !== 'driver') throw new Error('Only Drivers can enable device location sharing.');
-  if (!isStandaloneApp()) throw new Error('Install and open JTS TMS from the Home Screen before enabling location sharing.');
+  if (!window.isSecureContext) {
+    locationUiState.status = 'HTTPS required';
+    throw new Error('Location Sharing requires HTTPS. Open the secure https:// version of JTS TMS.');
+  }
+  locationUiState.consent = locationUiState.consent || hasStoredLocationConsent();
   if (!locationUiState.consent) throw new Error('Review and enable Location Sharing before GPS is started.');
-  const permission = await navigator.permissions?.query?.({ name: 'geolocation' }).catch(() => null);
-  if (permission?.state === 'denied') { locationUiState.status = 'Permission denied'; throw new Error('Location permission is blocked. Enable location access for JTS TMS in device/site settings, then try again.'); }
-  if (!navigator.geolocation) { locationUiState.status = 'Unsupported'; throw new Error('Location services are not supported on this device.'); }
+  if (!navigator.geolocation) {
+    locationUiState.status = 'Unsupported';
+    throw new Error('Location services are not supported on this device or browser.');
+  }
+  let permission = null;
+  if (navigator.permissions?.query) {
+    try { permission = await navigator.permissions.query({ name: 'geolocation' }); }
+    catch (error) { permission = null; }
+  }
+  if (permission?.state === 'denied') {
+    locationUiState.status = 'Permission denied';
+    throw new Error('Location permission is blocked. Enable location access for JTS TMS in device or Safari settings, then try again.');
+  }
   return true;
 }
-async function startLocationSession() { const payload = await api('/api/location/session',{method:'POST'}); locationUiState.session=payload.session; return payload.session; }
-async function stopLocationSession() { await api('/api/location/stop',{method:'POST',body:'{}'}); locationUiState.session=null; }
+async function startLocationSession() {
+  const payload = await api('/api/location/session', { method: 'POST', body: '{}' });
+  locationUiState.session = payload.session;
+  return payload.session;
+}
+async function stopLocationSession() {
+  await api('/api/location/stop', { method: 'POST', body: '{}' });
+  locationUiState.session = null;
+}
+function currentDriverLocation() {
+  const userId = String(state.currentUser?.id || '').trim().toLowerCase();
+  const email = String(state.currentUser?.email || '').trim().toLowerCase();
+  const name = String(state.currentUser?.name || '').trim().toLowerCase();
+  return arr('locations').filter(loc => {
+    const locId = String(loc.driverUserId || loc.userId || '').trim().toLowerCase();
+    const locEmail = String(loc.driverEmail || loc.email || '').trim().toLowerCase();
+    const locName = String(loc.driver || '').trim().toLowerCase();
+    return (userId && locId === userId) || (email && locEmail === email) || (name && locName === name);
+  }).sort((a, b) => new Date(b.timestamp || b.updatedAt || b.createdAt || 0) - new Date(a.timestamp || a.updatedAt || a.createdAt || 0))[0] || null;
+}
 async function postBrowserLocation(position) {
-  const coords = position.coords || {}; const currentDriver = findDriverForCurrentUser(); const activeLoad = currentDriver ? arr('loads').find(load => load.driver === currentDriver.name && !isDeliveredStatus(load.status)) : null;
-  const result = await api('/api/location/update',{method:'POST',body:JSON.stringify({loadId:activeLoad?.id||'',lat:coords.latitude,lng:coords.longitude,speed:coords.speed||0,heading:coords.heading||0,accuracy:coords.accuracy||0})});
-  if (result.rest?.event) locationUiState.restEvent=result.rest.event;
+  if (!position?.coords) throw new Error('The device did not return valid GPS coordinates.');
+  const coords = position.coords;
+  const lat = Number(coords.latitude);
+  const lng = Number(coords.longitude);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) throw new Error('The device returned invalid GPS coordinates.');
+  const currentDriver = findDriverForCurrentUser();
+  const driverName = currentDriver?.name || state.currentUser?.name || '';
+  const activeLoad = arr('loads').find(load =>
+    (load.driver === driverName || String(load.driverEmail || '').toLowerCase() === String(state.currentUser?.email || '').toLowerCase()) &&
+    !isDeliveredStatus(load.status)
+  );
+  const payload = {
+    loadId: activeLoad?.id || '',
+    driverUserId: state.currentUser?.id || '',
+    driverEmail: state.currentUser?.email || '',
+    driver: driverName,
+    lat,
+    lng,
+    speed: Number.isFinite(Number(coords.speed)) ? Number(coords.speed) : 0,
+    heading: Number.isFinite(Number(coords.heading)) ? Number(coords.heading) : 0,
+    accuracy: Number.isFinite(Number(coords.accuracy)) ? Number(coords.accuracy) : 0,
+    altitude: Number.isFinite(Number(coords.altitude)) ? Number(coords.altitude) : null,
+    timestamp: new Date(position.timestamp || Date.now()).toISOString()
+  };
+  const result = await api('/api/location/update', { method: 'POST', body: JSON.stringify(payload) });
+  if (result?.rest?.event) locationUiState.restEvent = result.rest.event;
   return result;
 }
-async function sendCurrentLocation() { try { await ensureLocationConsent(); showJtsLoader({key:'location',label:'Sharing location',stage:'Acquiring a secure GPS sample'}); await startLocationSession(); await new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(async p=>{try{await postBrowserLocation(p);resolve();}catch(e){reject(e)}},reject,geolocationOptions())); locationUiState.status='Sharing active'; await refresh(); toast('Current GPS location sent'); } catch(error){ locationUiState.lastError=error.message; toast(error.message); } finally { hideJtsLoader(true); } }
-async function startLiveGps() {
-  try { await ensureLocationConsent(); if (state.liveGpsWatchId !== null) return toast('Live GPS sharing is already active'); showJtsLoader({key:'location',label:'Starting Location Sharing',stage:'Opening secure sharing session'}); await startLocationSession();
-    state.liveGpsWatchId = navigator.geolocation.watchPosition(async position => { try { const result=await postBrowserLocation(position); state.gpsSharing=true; locationUiState.status='Sharing active'; if(result.rest?.event) locationUiState.restEvent=result.rest.event; await loadData(); updateLocationUiOnly(); if(result.rest?.event) maybeRenderRestPrompt(); } catch(error){ locationUiState.lastError=error.message; } }, error=>{ locationUiState.status = error.code===1 ? 'Permission denied' : error.code===3 ? 'Location unavailable' : 'Location unavailable'; toast(error.message || 'Location permission denied'); stopLiveGps().catch(()=>{}); }, geolocationOptions());
-    state.gpsSharing=true; locationUiState.status='Sharing active'; updateLocationUiOnly(); toast('Live GPS sharing started');
-  } catch(error){ locationUiState.lastError=error.message; toast(error.message); } finally { hideJtsLoader(true); }
+async function sendCurrentLocation() {
+  showJtsLoader({ key: 'location', label: 'Sharing location', stage: 'Acquiring a secure GPS sample' });
+  try {
+    await ensureLocationConsent();
+    await startLocationSession();
+    const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, geolocationOptions()));
+    await postBrowserLocation(position);
+    locationUiState.status = state.gpsSharing ? 'Sharing active' : 'Location sent';
+    locationUiState.lastError = '';
+    await loadData();
+    renderApp();
+    toast('Current GPS location sent successfully');
+  } catch (error) {
+    locationUiState.lastError = locationErrorMessage(error);
+    locationUiState.status = error?.code === 1 ? 'Permission denied' : 'Location unavailable';
+    updateLocationUiOnly();
+    toast(locationUiState.lastError);
+  } finally { hideJtsLoader(true); }
 }
-async function stopLiveGps() { stopLocationWatch(); try { if(state.currentUser?.role==='driver') await stopLocationSession(); } catch(error) { locationUiState.lastError=error.message; } locationUiState.status='Sharing paused'; locationUiState.restEvent=null; updateLocationUiOnly(); toast('Live GPS sharing stopped'); }
-function updateLocationUiOnly(){ const el=document.getElementById('driverLocationControl'); if(el) { const wrap=el.closest('.driver-location-card') || el; const parent=wrap.parentElement; if(parent){ const html=renderDriverLocationCard(findDriverForCurrentUser()); const holder=document.createElement('div'); holder.innerHTML=html; wrap.replaceWith(holder.firstElementChild); } } }
-function maybeRenderRestPrompt(){ if(role()!=='driver'||!locationUiState.restEvent)return; const e=locationUiState.restEvent; const existing=document.getElementById('restPromptCard'); if(existing)return; const root=qs('#pageRoot'); if(!root)return; const card=document.createElement('section'); card.id='restPromptCard'; card.className='driver-rest-prompt'; card.innerHTML=`<div><span class="tag tag-teal">Confirmation required</span><h3>Possible Rest</h3><p>You have remained in approximately the same location for about ${esc(e.durationMinutes)} minutes. Were you resting during this period?</p><small>Start ${esc(formatDate(e.startAt))} · ${esc(e.sampleCount)} valid samples · max radius ${esc(e.radiusMeters)} m</small></div><div class="driver-rest-actions"><button class="btn btn-primary" data-action="confirm-rest" data-rest="${esc(e.id)}">Confirm rest</button><button class="btn btn-soft" data-action="reject-rest" data-rest="${esc(e.id)}">Not resting</button></div>`; root.prepend(card); card.querySelectorAll('[data-action]').forEach(btn=>btn.onclick=()=>handleAction(btn.dataset.action,btn)); }
+async function startLiveGps() {
+  if (state.liveGpsWatchId !== null) return toast('Live GPS sharing is already active.');
+  showJtsLoader({ key: 'location', label: 'Starting Location Sharing', stage: 'Opening secure sharing session' });
+  try {
+    await ensureLocationConsent();
+    await startLocationSession();
+    state.liveGpsWatchId = navigator.geolocation.watchPosition(async position => {
+      try {
+        const result = await postBrowserLocation(position);
+        state.gpsSharing = true;
+        locationUiState.status = 'Sharing active';
+        locationUiState.lastError = '';
+        await loadData();
+        updateLocationUiOnly();
+        if (result?.rest?.event) maybeRenderRestPrompt();
+      } catch (error) {
+        locationUiState.lastError = locationErrorMessage(error);
+        updateLocationUiOnly();
+      }
+    }, error => {
+      locationUiState.lastError = locationErrorMessage(error);
+      locationUiState.status = error.code === 1 ? 'Permission denied' : 'Location unavailable';
+      toast(locationUiState.lastError);
+      stopLiveGps({ silent: true }).catch(() => {});
+    }, geolocationOptions());
+    state.gpsSharing = true;
+    locationUiState.status = 'Sharing active';
+    locationUiState.lastError = '';
+    updateLocationUiOnly();
+    toast('Live GPS sharing started');
+  } catch (error) {
+    locationUiState.lastError = locationErrorMessage(error);
+    if (error?.code === 1) locationUiState.status = 'Permission denied';
+    updateLocationUiOnly();
+    toast(locationUiState.lastError);
+  } finally { hideJtsLoader(true); }
+}
+async function stopLiveGps(options = {}) {
+  stopLocationWatch();
+  try { if (state.currentUser?.role === 'driver') await stopLocationSession(); }
+  catch (error) { locationUiState.lastError = locationErrorMessage(error); }
+  state.gpsSharing = false;
+  if (locationUiState.status !== 'Permission denied') locationUiState.status = 'Sharing paused';
+  locationUiState.restEvent = null;
+  updateLocationUiOnly();
+  if (!options.silent) toast('Live GPS sharing stopped');
+}
+function updateLocationUiOnly() {
+  const existing = document.querySelector('.driver-location-card');
+  if (!existing) return;
+  const holder = document.createElement('div');
+  holder.innerHTML = renderDriverLocationCard(findDriverForCurrentUser()).trim();
+  const replacement = holder.firstElementChild;
+  if (!replacement) return;
+  existing.replaceWith(replacement);
+  replacement.querySelectorAll('[data-action]').forEach(button => {
+    button.onclick = () => handleAction(button.dataset.action, button);
+  });
+}
+function maybeRenderRestPrompt(){ if(role()!=='driver'||!locationUiState.restEvent)return; const e=locationUiState.restEvent; const existing=document.getElementById('restPromptCard'); if(existing)return; const root=qs('#pageRoot'); if(!root)return; const card=document.createElement('section'); card.id='restPromptCard'; card.className='driver-rest-prompt'; card.innerHTML=`<div><span class="tag tag-teal">Confirmation required</span><h3>Possible Rest</h3><p>You have remained in approximately the same location for about ${esc(e.durationMinutes)} minutes. Were you resting during this period?</p><small>Start ${esc(formatDate(e.startAt))} Â· ${esc(e.sampleCount)} valid samples Â· max radius ${esc(e.radiusMeters)} m</small></div><div class="driver-rest-actions"><button class="btn btn-primary" data-action="confirm-rest" data-rest="${esc(e.id)}">Confirm rest</button><button class="btn btn-soft" data-action="reject-rest" data-rest="${esc(e.id)}">Not resting</button></div>`; root.prepend(card); card.querySelectorAll('[data-action]').forEach(btn=>btn.onclick=()=>handleAction(btn.dataset.action,btn)); }
 function openRestClassificationModal(eventId, confirm=true){ const e=arr('restEvents').find(x=>String(x.id)===String(eventId))||locationUiState.restEvent; if(!e)return; if(!confirm){ submitRestDecision(eventId,'reject','Not Resting'); return; } openModal('Classify possible rest','Browser GPS is advisory and is not an ELD record. Select what actually occurred.',`${selectField('Classification','classification','Resting / Off Duty',['Resting / Off Duty','Sleeper Berth','On Duty Not Driving','Loading or Unloading','Waiting','Fuel Stop','Inspection','Traffic','Breakdown','Other'])}${textArea('Note','note','')}`,'Confirm',async()=>{const d=getFormData(qs('#modalRoot')); await submitRestDecision(eventId,'confirm',d.classification,d.note||'');}); }
 async function submitRestDecision(eventId, action, classification, note=''){ const payload={classification,note}; if(action==='confirm')payload.driverConfirmedAt=new Date().toISOString(); const out=await api(`/api/rest-events/${encodeURIComponent(eventId)}/${action}`,{method:'POST',body:JSON.stringify(payload)}); locationUiState.restEvent=out.event; await refresh(); toast(action==='confirm'?'Rest classification saved':'Possible rest rejected'); }
 async function handleLogoutLocationCleanup(){ stopLocationWatch(); if(storedToken()){ try{ await api('/api/location/stop',{method:'POST',body:'{}',timeoutMs:8000}); }catch(error){} } }
-function renderDriverLocationCard(driver){ if(role()!=='driver') return ''; locationUiState.consent = locationUiState.consent || hasStoredLocationConsent(); const active=state.gpsSharing; const e=locationUiState.restEvent || arr('restEvents').find(x=>['Awaiting Confirmation','Possible Rest'].includes(x.state)); const status=active?'Sharing active':locationUiState.status||'Not requested'; const last=arr('locations')[0]; return `<section class="card driver-location-card"><div class="driver-location-head"><div><span class="tag tag-teal">Privacy-controlled GPS</span><h3>Location Sharing</h3><p>Only starts after your explicit action. JTS does not treat missing GPS as rest and does not track while you are off duty.</p></div><span class="status-pill ${active?'status-completed':'status-assigned'}">${esc(status)}</span></div>${!locationUiState.consent ? `<div class="location-consent-copy"><strong>Before GPS starts</strong><p>JTS collects your device location only while you authorize sharing. Operations may use it for active-load visibility, ETA/delay estimates and stationary review. Location history is retained only for the configured operational window.</p><label class="consent-check"><input id="locationConsentCheck" type="checkbox"><span>I understand and consent to Location Sharing while working.</span></label><button class="btn btn-primary btn-large" id="driverLocationControl" type="button" data-action="enable-location-consent">Enable Location Sharing</button></div>`:`<div class="location-live-panel"><div><span>Current state</span><strong>${esc(status)}</strong></div><div><span>Last update</span><strong>${esc(last?formatDate(last.timestamp||last.createdAt):'No GPS sample yet')}</strong></div><div><span>Accuracy</span><strong>${last?.accuracy?`${Math.round(last.accuracy)} m`:'—'}</strong></div><div class="location-actions"><button class="btn ${active?'btn-soft':'btn-primary'}" id="driverLocationControl" type="button" data-action="${active?'stop-live-gps':'start-live-gps'}">${active?'Stop Sharing':'Start Location Sharing'}</button><button class="btn btn-soft" type="button" data-action="send-current-location">Send one update</button></div></div>`}${e?`<div class="rest-inline"><strong>Possible Rest · Confirmation Required</strong><span>${esc(e.durationMinutes||0)} min stationary · ${esc(e.startAt?formatDate(e.startAt):'')}</span><button class="btn btn-soft btn-small" data-action="confirm-rest" data-rest="${esc(e.id)}">Review</button></div>`:''}</section>`; }
+function renderDriverLocationCard(driver) {
+  if (role() !== 'driver') return '';
+  locationUiState.consent = locationUiState.consent || hasStoredLocationConsent();
+  const active = state.gpsSharing && state.liveGpsWatchId !== null;
+  const event = locationUiState.restEvent || arr('restEvents').find(x => ['Awaiting Confirmation', 'Possible Rest'].includes(x.state));
+  const status = active ? 'Sharing active' : (locationUiState.status || 'Not requested');
+  const last = currentDriverLocation();
+  const problem = ['Permission denied', 'Location unavailable', 'HTTPS required', 'Unsupported'].includes(status);
+  const errorHtml = locationUiState.lastError ? `<div class="location-error-message"><strong>Location notice</strong><p>${esc(locationUiState.lastError)}</p></div>` : '';
+  const body = !locationUiState.consent ? `<div class="location-consent-copy"><strong>Before GPS starts</strong><p>JTS collects your device location only while you authorize sharing. Operations may use it for active-load visibility, ETA or delay estimates and stationary review.</p><p>You can stop Location Sharing at any time.</p><label class="consent-check"><input id="locationConsentCheck" type="checkbox"><span>I understand and consent to Location Sharing while working.</span></label><button class="btn btn-primary btn-large" id="driverLocationControl" type="button" data-action="enable-location-consent">Enable Location Sharing</button></div>` : `<div class="location-live-panel"><div><span>Current state</span><strong>${esc(status)}</strong></div><div><span>Last update</span><strong>${esc(last ? formatDate(last.timestamp || last.updatedAt || last.createdAt) : 'No GPS sample yet')}</strong></div><div><span>Accuracy</span><strong>${last?.accuracy ? `${Math.round(Number(last.accuracy))} m` : 'â'}</strong></div>${last ? `<div><span>Coordinates</span><strong>${Number(last.lat).toFixed(5)}, ${Number(last.lng).toFixed(5)}</strong></div>` : ''}<div class="location-actions"><button class="btn ${active ? 'btn-soft' : 'btn-primary'}" id="driverLocationControl" type="button" data-action="${active ? 'stop-live-gps' : 'start-live-gps'}">${active ? 'Stop Location Sharing' : 'Start Location Sharing'}</button><button class="btn btn-soft" type="button" data-action="send-current-location">Send one update</button>${last && mapsPointUrl(last) ? `<a class="btn btn-soft" href="${esc(mapsPointUrl(last))}" target="_blank" rel="noopener noreferrer">Open position</a>` : ''}</div></div>`;
+  return `<section class="card driver-location-card"><div class="driver-location-head"><div><span class="tag tag-teal">Privacy-controlled GPS</span><h3>Location Sharing</h3><p>Location starts only after your explicit action and stops when you press Stop Location Sharing.</p></div><span class="status-pill ${active ? 'status-completed' : problem ? 'status-problem' : 'status-assigned'}">${esc(status)}</span></div>${errorHtml}${body}${event ? `<div class="rest-inline"><strong>Possible Rest Â· Confirmation Required</strong><span>${esc(event.durationMinutes || 0)} min stationary Â· ${esc(event.startAt ? formatDate(event.startAt) : '')}</span><button class="btn btn-soft btn-small" data-action="confirm-rest" data-rest="${esc(event.id)}">Review</button></div>` : ''}</section>`;
+}
 function openHosModal() {
   const driver = findDriverForCurrentUser() || arr('drivers')[0];
   if (!driver) return toast('Add driver first');
@@ -4091,7 +4244,7 @@ async function updateNextStatus(id) {
 // Reopen: moves a Delivered/Completed load back to the Open Loads tab (e.g. a document was
 // rejected/incorrect after delivery and dispatch needs to fix it before it can close again).
 async function reopenLoad(id) {
-  await patchLoad(id, { status: 'Open' }, 'Load reopened — moved back to Open Loads.');
+  await patchLoad(id, { status: 'Open' }, 'Load reopened â moved back to Open Loads.');
 }
 
 async function updateDocStatus(id, status) {
@@ -4298,10 +4451,10 @@ function selectField(label, name, value, options) {
 }
 
 /* =========================================================================
-   LOAD WORKSPACE — ITS-Dispatch-style "Load Information" screen.
+   LOAD WORKSPACE â ITS-Dispatch-style "Load Information" screen.
    Single modal with an in-memory working copy (state.loadEditor) so the
    "Other Charges" and "Edit Driver Pay" popups can appear "on top" of the
-   form without losing any typed data — the whole modal body is re-rendered
+   form without losing any typed data â the whole modal body is re-rendered
    from state.loadEditor on every interaction, and DOM inputs are synced
    back into it first.
    ========================================================================= */
@@ -4320,7 +4473,7 @@ function emptyConsigneeRow(existing = null) {
   }
   return { name: '', location: '', date: '', time: '', showTime: true, description: '', type: '', qty: '', weight: '', value: '', notes: '', poNumbers: '' };
 }
-// Recent delivery (consignee) locations for a driver's previous loads — shown via the small icon next
+// Recent delivery (consignee) locations for a driver's previous loads â shown via the small icon next
 // to Shipper so dispatch can see roughly where the truck is coming from before booking the next pickup.
 function driverRecentDrops(driverName, excludeLoadId = '') {
   if (!driverName) return [];
@@ -4575,7 +4728,7 @@ function renderLoadWorkspaceModal() {
           <button class="le-tab ${ed.tab === 'post' ? 'active' : ''}" type="button" data-action="le-tab-post">Post to TRUCKSTOP.COM</button>
           <button class="le-tab ${ed.tab === 'waypoints' ? 'active' : ''}" type="button" data-action="le-tab-waypoints">Waypoints</button>
         </div>
-        <button class="icon-btn" data-close-modal aria-label="Close">×</button>
+        <button class="icon-btn" data-close-modal aria-label="Close">Ã</button>
       </div>
       <div class="modal-body le-modal-body">
         ${ed.tab === 'post' ? renderLoadWorkspacePostTab() : ed.tab === 'waypoints' ? renderLoadWorkspaceWaypointsTab(ed) : `
@@ -4608,7 +4761,7 @@ function renderLoadWorkspaceModal() {
               <label class="field">Type<select data-le-field="loadType"><option ${ed.loadType === 'Line Haul' ? 'selected' : ''}>Line Haul</option><option ${ed.loadType === 'TONU' ? 'selected' : ''}>TONU</option></select></label>
               <label class="field">Driver Rate ($)<input type="number" step="0.01" data-le-field="driverRate" value="${esc(ed.driverRate)}"></label>
               <label class="field">Cut ($)<input type="number" step="0.01" data-le-field="cutAmount" value="${esc(ed.cutAmount)}"></label>
-              <label class="field">Other Charges<button class="btn btn-soft le-charges-btn" type="button" data-action="le-open-charges">${moneyPrecise(otherCharges)} · Edit</button></label>
+              <label class="field">Other Charges<button class="btn btn-soft le-charges-btn" type="button" data-action="le-open-charges">${moneyPrecise(otherCharges)} Â· Edit</button></label>
               <label class="field le-broker-rate"><span>Broker Rate</span><strong>USD ${moneyPrecise(brokerRate)}</strong></label>
               <label class="field">Flat Rate<input type="number" step="0.01" data-le-field="flatRate" value="${esc(ed.flatRate)}"></label>
             </div>
@@ -4638,7 +4791,7 @@ function renderLoadWorkspaceModal() {
               <label class="field">Driver Miles<input type="number" data-le-field="driverMiles" value="${esc(ed.driverMiles)}"></label>
               <label class="field">Empty<input type="number" data-le-field="driverMilesEmpty" value="${esc(ed.driverMilesEmpty)}"></label>
             </div>
-            <p class="muted le-miles-hint">Loaded miles = Miles − Empty. Empty miles here feed the IFTA mileage report; use the pin icon above to check the driver's last drop-off city before estimating.</p>
+            <p class="muted le-miles-hint">Loaded miles = Miles â Empty. Empty miles here feed the IFTA mileage report; use the pin icon above to check the driver's last drop-off city before estimating.</p>
           </div>
 
           <div class="form-grid" style="margin-top:16px">
@@ -4661,7 +4814,7 @@ function renderLoadWorkspacePostTab() {
 }
 function renderLoadWorkspaceWaypointsTab(ed) {
   const stops = [...ed.shippers.map((s, i) => ({ kind: 'Pickup', label: `Shipper ${i + 1}`, row: s })), ...ed.consignees.map((c, i) => ({ kind: 'Delivery', label: `Consignee ${i + 1}`, row: c }))];
-  return `<div class="le-waypoints"><div class="activity-list">${stops.map(s => `<div class="activity-item"><span class="activity-dot"></span><div><strong>${esc(s.label)} · ${esc(s.kind)}</strong><span>${esc(s.row.location || 'No location set')} ${s.row.date ? '· ' + esc(s.row.date) : ''} ${s.row.time ? esc(s.row.time) : ''}</span></div></div>`).join('') || '<p class="muted">No stops added yet.</p>'}</div></div>`;
+  return `<div class="le-waypoints"><div class="activity-list">${stops.map(s => `<div class="activity-item"><span class="activity-dot"></span><div><strong>${esc(s.label)} Â· ${esc(s.kind)}</strong><span>${esc(s.row.location || 'No location set')} ${s.row.date ? 'Â· ' + esc(s.row.date) : ''} ${s.row.time ? esc(s.row.time) : ''}</span></div></div>`).join('') || '<p class="muted">No stops added yet.</p>'}</div></div>`;
 }
 function renderChargesSubView(root) {
   const ed = state.loadEditor;
@@ -4675,7 +4828,7 @@ function renderChargesSubView(root) {
     <div class="modal-card le-subview-modal" role="dialog" aria-modal="true" aria-label="Other Charges">
       <div class="modal-head le-subview-head">
         <h3>Other Charges</h3>
-        <button class="icon-btn" type="button" data-le-charges-cancel aria-label="Close">×</button>
+        <button class="icon-btn" type="button" data-le-charges-cancel aria-label="Close">Ã</button>
       </div>
       <div class="le-subview-tabs">
         <button class="le-tab ${activeTab === 'charges' ? 'active' : ''}" type="button" data-action="le-charges-tab-charges">Charges</button>
@@ -4691,7 +4844,7 @@ function renderChargesSubView(root) {
         </tbody></table>
         <button class="btn btn-soft" type="button" data-action="le-add-charge-row" data-list="${listName}">+ Add row</button>
         <p class="muted le-charges-note">* Total Amount Calculated on Edit/Add Load.<br>* Information saved when the load is saved.</p>
-        <div class="le-charges-total">Charges: ${moneyPrecise(chargesTotal)} &nbsp;·&nbsp; Advances: ${moneyPrecise(advancesTotal)} &nbsp;·&nbsp; <strong>Total: ${moneyPrecise(chargesTotal + advancesTotal)}</strong></div>
+        <div class="le-charges-total">Charges: ${moneyPrecise(chargesTotal)} &nbsp;Â·&nbsp; Advances: ${moneyPrecise(advancesTotal)} &nbsp;Â·&nbsp; <strong>Total: ${moneyPrecise(chargesTotal + advancesTotal)}</strong></div>
       </div>
       <div class="modal-actions">
         <button class="btn btn-soft" type="button" data-le-charges-cancel>Cancel</button>
@@ -4712,8 +4865,8 @@ function renderDriverPaySubView(root) {
     <div class="modal-backdrop" data-le-driverpay-cancel></div>
     <div class="modal-card le-subview-modal" role="dialog" aria-modal="true" aria-label="Edit Driver Pay">
       <div class="modal-head le-subview-head">
-        <h3>Edit Driver Pay · ${esc(ed.driver)}</h3>
-        <button class="icon-btn" type="button" data-le-driverpay-cancel aria-label="Close">×</button>
+        <h3>Edit Driver Pay Â· ${esc(ed.driver)}</h3>
+        <button class="icon-btn" type="button" data-le-driverpay-cancel aria-label="Close">Ã</button>
       </div>
       <div class="le-subview-tabs">
         <button class="le-tab ${activeTab === 'additionalPay' ? 'active' : ''}" type="button" data-action="le-driverpay-tab-additionalPay">Additional Pay</button>
@@ -4749,7 +4902,7 @@ function renderLastDropsSubView(root) {
     <div class="modal-card le-subview-modal le-subview-modal-sm" role="dialog" aria-modal="true" aria-label="Last drop-off addresses">
       <div class="modal-head le-subview-head">
         <h3>Last drop-off addresses</h3>
-        <button class="icon-btn" type="button" data-le-lastdrops-cancel aria-label="Close">×</button>
+        <button class="icon-btn" type="button" data-le-lastdrops-cancel aria-label="Close">Ã</button>
       </div>
       <div class="modal-body">
         <p class="muted">Most recent completed loads for ${esc(ed.driver || 'this driver')}. Pick one to use as the reference drop location, or type a custom one below.</p>
@@ -4774,7 +4927,7 @@ function bindLoadWorkspaceEvents(root) {
 function openLoadModal(load = null) {
   const c = appData.company || emptyData().company;
   const fallbackId = `${c.loadPrefix || 'JTS'}-${String(Date.now()).slice(-6)}`;
-  openModal(load ? `Edit load · ${load.id}` : 'Create new load', 'Save real dispatch data. This record will be stored in data/db.json.', `
+  openModal(load ? `Edit load Â· ${load.id}` : 'Create new load', 'Save real dispatch data. This record will be stored in data/db.json.', `
     <div class="form-grid">
       ${field('Load ID', 'id', load?.id || fallbackId)}
       ${selectField('Status', 'status', load?.status || 'New', statusList)}
@@ -4848,7 +5001,7 @@ function bindLoadPayoutBreakdown() {
 }
 
 function openDriverModal(driver = null) {
-  openModal(driver ? `Edit driver · ${driver.name}` : 'Add driver', 'Driver profile used for dispatching, mobile app, safety and HOS reporting.', `
+  openModal(driver ? `Edit driver Â· ${driver.name}` : 'Add driver', 'Driver profile used for dispatching, mobile app, safety and HOS reporting.', `
     <div class="form-grid">
       ${field('Full name', 'name', driver?.name || '')}
       ${field('Email', 'email', driver?.email || '', 'email')}
@@ -4876,7 +5029,7 @@ function openDriverModal(driver = null) {
 }
 
 function openFleetModal(unit = null) {
-  openModal(unit ? `Edit unit · ${unit.unit}` : 'Add truck / trailer', 'Fleet record with status, assigned driver, expirations and maintenance.', `
+  openModal(unit ? `Edit unit Â· ${unit.unit}` : 'Add truck / trailer', 'Fleet record with status, assigned driver, expirations and maintenance.', `
     <div class="form-grid">
       ${field('Unit number', 'unit', unit?.unit || '')}
       ${field('Truck type', 'type', unit?.type || '', 'text', 'placeholder="2022 Freightliner Cascadia"')}
@@ -4897,7 +5050,7 @@ function openFleetModal(unit = null) {
 }
 
 function openBrokerModal(broker = null) {
-  openModal(broker ? `Edit broker · ${broker.company}` : 'Add broker / customer', 'Customer record with contacts, payment status, history and notes.', `
+  openModal(broker ? `Edit broker Â· ${broker.company}` : 'Add broker / customer', 'Customer record with contacts, payment status, history and notes.', `
     <div class="form-grid">
       ${field('Company', 'company', broker?.company || broker?.name || '')}
       ${field('Contact person', 'contact', broker?.contact || '')}
@@ -4917,8 +5070,8 @@ function openBrokerModal(broker = null) {
 function openUserModal(user = null) {
   const dispatchers = arr('users').filter(item => item.role === 'dispatcher' && item.status !== 'Disabled');
   const selectedDispatcher = user?.dispatcherId || dispatchers.find(item => item.email === user?.dispatcherEmail)?.id || '';
-  const dispatcherOptions = `<label class="field">Dedicated dispatcher<select data-field="dispatcherId"><option value="">Select dispatcher</option>${dispatchers.map(item => `<option value="${esc(item.id)}" ${item.id === selectedDispatcher ? 'selected' : ''}>${esc(item.name)} · ${esc(item.email)}</option>`).join('')}</select><small class="muted">Required only for Driver accounts. This controls Chat access.</small></label>`;
-  openModal(user ? `Edit user · ${user.name}` : 'Add user account', 'Create real login accounts and assign every Driver to one dedicated Dispatcher.', `
+  const dispatcherOptions = `<label class="field">Dedicated dispatcher<select data-field="dispatcherId"><option value="">Select dispatcher</option>${dispatchers.map(item => `<option value="${esc(item.id)}" ${item.id === selectedDispatcher ? 'selected' : ''}>${esc(item.name)} Â· ${esc(item.email)}</option>`).join('')}</select><small class="muted">Required only for Driver accounts. This controls Chat access.</small></label>`;
+  openModal(user ? `Edit user Â· ${user.name}` : 'Add user account', 'Create real login accounts and assign every Driver to one dedicated Dispatcher.', `
     <div class="form-grid">
       ${field('Full name', 'name', user?.name || '')}
       ${field('Email', 'email', user?.email || '', 'email')}
@@ -4944,7 +5097,7 @@ function openUploadModal(loadId = '', fixedType = '', driverMode = false) {
   const typeOptions = fixedType ? `<option>${esc(fixedType)}</option>` : '<option>BOL</option><option>POD</option><option>Load confirmation</option><option>Rate confirmation</option><option>Fuel receipt</option><option>Lumper receipt</option><option>Other</option>';
   openModal(`Upload ${fixedType || 'document'}`, driverMode ? `Upload ${fixedType} for dispatcher/admin approval.` : 'Upload BOL, POD, load confirmation, rate confirmation, fuel receipt or any operational file.', `
     <form id="modalUploadForm" class="form-grid">
-      <label class="field">Load<select name="load">${arr('loads').map(l => `<option value="${esc(l.id)}" ${l.id === loadId ? 'selected' : ''}>${esc(l.id)} · ${esc(l.pickup || '')} → ${esc(l.delivery || '')}</option>`).join('')}<option value="">General document</option></select></label>
+      <label class="field">Load<select name="load">${arr('loads').map(l => `<option value="${esc(l.id)}" ${l.id === loadId ? 'selected' : ''}>${esc(l.id)} Â· ${esc(l.pickup || '')} â ${esc(l.delivery || '')}</option>`).join('')}<option value="">General document</option></select></label>
       <label class="field">Driver<input name="driver" value="${esc(selectedLoad?.driver || (driverMode ? state.currentUser?.name : ''))}" placeholder="Driver name" ${driverMode ? 'readonly' : ''}></label>
       <label class="field">Type<select name="type" ${fixedType ? 'disabled' : ''}>${typeOptions}</select></label>
       ${fixedType ? `<input type="hidden" name="type" value="${esc(fixedType)}">` : ''}
@@ -4993,7 +5146,7 @@ function openDispatchImportModal() {
 function openNotificationModal() {
   const accountOptions = arr('users')
     .filter(user => user?.email && user?.status !== 'Disabled')
-    .map(user => `<option value="user:${esc(user.email)}">${esc(user.name || user.email)} · ${esc(user.role || 'user')}</option>`)
+    .map(user => `<option value="user:${esc(user.email)}">${esc(user.name || user.email)} Â· ${esc(user.role || 'user')}</option>`)
     .join('');
   const audienceField = `<label class="field">Audience<select data-field="audience">
     <option value="role:dispatcher">All dispatchers</option>
@@ -5030,9 +5183,9 @@ async function sendBrokerOperationalMessage(){ if(role()!=='broker') throw new E
 
 function openSearchModal() {
   const sampleResults = [
-    ...arr('loads').slice(0, 3).map(load => [load.id, `${load.pickup || '-'} to ${load.delivery || '-'} · ${load.status}`]),
-    ...arr('drivers').slice(0, 2).map(driver => [driver.name, `${driver.status || '-'} · ${driver.truck || '-'}`]),
-    ...arr('fleet').slice(0, 2).map(unit => [unit.unit, `${unit.status || '-'} · ${unit.driver || '-'}`])
+    ...arr('loads').slice(0, 3).map(load => [load.id, `${load.pickup || '-'} to ${load.delivery || '-'} Â· ${load.status}`]),
+    ...arr('drivers').slice(0, 2).map(driver => [driver.name, `${driver.status || '-'} Â· ${driver.truck || '-'}`]),
+    ...arr('fleet').slice(0, 2).map(unit => [unit.unit, `${unit.status || '-'} Â· ${unit.driver || '-'}`])
   ];
   openModal('Global search', 'Search loads, drivers, trucks, documents and brokers.', `
     <label class="field full">Search<input autofocus placeholder="Type load ID, driver, truck, broker..."></label>
@@ -5056,23 +5209,23 @@ function openLoadDetails(id) {
   const load = loadById(id);
   if (!load) return toast('Load not found');
   const relatedDocs = arr('docs').filter(doc => doc.load === load.id);
-  openModal(`Load details · ${load.id}`, 'Timeline, activity, notes, documents, status, GPS and communication context.', `
+  openModal(`Load details Â· ${load.id}`, 'Timeline, activity, notes, documents, status, GPS and communication context.', `
     <div class="grid grid-2">
       <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Lane</h3><p class="card-subtitle"><strong>${esc(load.pickup || '-')}</strong><br>to<br><strong>${esc(load.delivery || '-')}</strong></p></div>
-      <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Assignment</h3><p class="card-subtitle">${esc(load.driver || 'Unassigned')} · ${esc(load.truck || '-') }<br>${esc(load.broker || '-')}</p></div>
+      <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Assignment</h3><p class="card-subtitle">${esc(load.driver || 'Unassigned')} Â· ${esc(load.truck || '-') }<br>${esc(load.broker || '-')}</p></div>
       <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Schedule</h3><p class="card-subtitle">${esc(scheduleText(load) || 'No pickup/delivery hours saved')}</p></div>
       <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">References</h3><p class="card-subtitle">PO: ${esc([load.poNumber, load.secondaryPoNumber].filter(Boolean).join(' / ') || load.reference || '-')}<br>BOL: ${esc(load.bolNumber || '-')}<br>Shipment: ${esc(load.shipmentId || '-')}<br>Customer Ref: ${esc(load.customerRef || '-')}<br>PU/DEL Ref: ${esc([load.pickupNumber, load.deliveryNumber].filter(Boolean).join(' / ') || '-')}</p></div>
-      <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Freight</h3><p class="card-subtitle">${esc(load.commodity || '-')}<br>${esc(load.weight || '-')} · ${esc([load.equipment, load.equipmentSize].filter(Boolean).join(' / ') || '-')}<br>${esc(load.driverRequirements || '')}</p></div>
-      <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Financial</h3><p class="card-subtitle">${money(load.rate)} · ${esc(load.miles || 0)} miles (${esc(loadEmptyMiles(load))} empty) · ${loadRevenuePerMile(load) ? '$' + loadRevenuePerMile(load).toFixed(2) + '/mile' : 'Revenue/mile n/a'}<br>Cargo value: ${esc(load.cargoValue || '-')}</p>${canManageOperations() ? `<div class="payout-breakdown"><div><span>Gross for driver</span><strong>${money(loadDriverGross(load))}</strong></div><div><span>Cut (${esc(loadCutPercent(load))}%)</span><strong>${money(loadCutAmount(load))}</strong></div><div><span>Net profit</span><strong>${money(loadNetProfit(load))}</strong></div></div>` : ''}</div>
+      <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Freight</h3><p class="card-subtitle">${esc(load.commodity || '-')}<br>${esc(load.weight || '-')} Â· ${esc([load.equipment, load.equipmentSize].filter(Boolean).join(' / ') || '-')}<br>${esc(load.driverRequirements || '')}</p></div>
+      <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Financial</h3><p class="card-subtitle">${money(load.rate)} Â· ${esc(load.miles || 0)} miles (${esc(loadEmptyMiles(load))} empty) Â· ${loadRevenuePerMile(load) ? '$' + loadRevenuePerMile(load).toFixed(2) + '/mile' : 'Revenue/mile n/a'}<br>Cargo value: ${esc(load.cargoValue || '-')}</p>${canManageOperations() ? `<div class="payout-breakdown"><div><span>Gross for driver</span><strong>${money(loadDriverGross(load))}</strong></div><div><span>Cut (${esc(loadCutPercent(load))}%)</span><strong>${money(loadCutAmount(load))}</strong></div><div><span>Net profit</span><strong>${money(loadNetProfit(load))}</strong></div></div>` : ''}</div>
       <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">RTS Financial MC Check</h3><p class="card-subtitle">MC: ${esc(load.brokerMc || '-')}<br>Status: ${esc(load.rtsStatus || 'Not checked')}<br>${esc(load.rtsMessage || '')}</p>${canManageOperations() ? `<button class="btn btn-soft" data-action="check-rts-mc" data-load="${esc(load.id)}">Check RTS</button>` : ''}</div>
       <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Status</h3><span class="status-pill ${statusClass(load.status)}">${esc(load.status)}</span><br><br><span class="status-pill ${statusClass(load.docs)}">Docs: ${esc(load.docs || 'Missing')}</span></div>
       <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">GPS</h3><p class="card-subtitle">${gpsUrlForLoad(load) ? 'Live GPS link available' : 'No GPS link saved'}</p>${gpsUrlForLoad(load) ? `<button class="btn btn-soft" data-action="navigate" data-load="${esc(load.id)}">Open GPS</button>` : ''}</div>
     </div>
     <div class="grid grid-2" style="margin-top:16px">
       <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Notes</h3><p class="card-subtitle">${esc(load.notes || 'No general notes saved.')}</p>${canManageOperations() ? `<hr><strong>Internal notes</strong><p class="card-subtitle">${esc(load.internalNotes || 'No internal notes.')}</p>` : ''}<hr><strong>Broker-visible notes</strong><p class="card-subtitle">${esc(load.brokerNotes || 'No broker-visible notes.')}</p></div>
-      <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Documents</h3><div class="activity-list">${relatedDocs.length ? relatedDocs.map(doc => `<div class="activity-item"><span class="activity-dot"></span><div><strong>${esc(doc.type)}</strong><span>${esc(doc.status)} · ${doc.fileUrl ? `<a href="${esc(doc.fileUrl)}" target="_blank" rel="noreferrer">Open file</a>` : esc(doc.filename || '')}${doc.rejectionReason ? ` · ${esc(doc.rejectionReason)}` : ''}</span></div></div>`).join('') : '<p class="muted">No documents linked to this load yet.</p>'}</div></div>
+      <div class="card card-pad" style="box-shadow:none"><h3 class="card-title">Documents</h3><div class="activity-list">${relatedDocs.length ? relatedDocs.map(doc => `<div class="activity-item"><span class="activity-dot"></span><div><strong>${esc(doc.type)}</strong><span>${esc(doc.status)} Â· ${doc.fileUrl ? `<a href="${esc(doc.fileUrl)}" target="_blank" rel="noreferrer">Open file</a>` : esc(doc.filename || '')}${doc.rejectionReason ? ` Â· ${esc(doc.rejectionReason)}` : ''}</span></div></div>`).join('') : '<p class="muted">No documents linked to this load yet.</p>'}</div></div>
     </div>
-    <div class="card card-pad" style="box-shadow:none;margin-top:16px"><h3 class="card-title">Activity timeline</h3><div class="activity-list" style="margin-top:14px">${arr('activities').filter(item => String(item.loadId || item.load) === String(load.id)).slice(0, 12).map(item => `<div class="activity-item"><span class="activity-dot"></span><div><strong>${esc(item.title || item.action)}</strong><span>${esc(item.text || '')} · ${esc(item.actor || item.createdBy || '')} · ${esc(formatDate(item.createdAt))}</span></div></div>`).join('') || '<p class="muted">No timeline events yet.</p>'}</div></div>
+    <div class="card card-pad" style="box-shadow:none;margin-top:16px"><h3 class="card-title">Activity timeline</h3><div class="activity-list" style="margin-top:14px">${arr('activities').filter(item => String(item.loadId || item.load) === String(load.id)).slice(0, 12).map(item => `<div class="activity-item"><span class="activity-dot"></span><div><strong>${esc(item.title || item.action)}</strong><span>${esc(item.text || '')} Â· ${esc(item.actor || item.createdBy || '')} Â· ${esc(formatDate(item.createdAt))}</span></div></div>`).join('') || '<p class="muted">No timeline events yet.</p>'}</div></div>
   `, 'Close');
 }
 
@@ -5137,7 +5290,7 @@ function fuelStationCard(station = {}) {
     station.openingHours || ''
   ].filter(Boolean);
   return `<article class="fuel-station-card">
-    <div class="fuel-station-top"><div class="fuel-station-icon">⛽</div><div><strong>${esc(station.name || 'Fuel station')}</strong><span>${esc(station.brand || 'Independent')}</span></div><b>${esc(station.distanceMiles ?? '-')} mi</b></div>
+    <div class="fuel-station-top"><div class="fuel-station-icon">â½</div><div><strong>${esc(station.name || 'Fuel station')}</strong><span>${esc(station.brand || 'Independent')}</span></div><b>${esc(station.distanceMiles ?? '-')} mi</b></div>
     <p>${esc(station.address || 'Address not listed')}</p>
     <div class="fuel-station-tags">${badges.map(item => `<span>${esc(item)}</span>`).join('')}</div>
     <div class="fuel-station-actions"><a class="btn btn-primary" href="${esc(station.navigationUrl || station.mapUrl || '#')}" target="_blank" rel="noopener noreferrer">Navigate</a><a class="btn btn-soft" href="${esc(station.mapUrl || station.navigationUrl || '#')}" target="_blank" rel="noopener noreferrer">View map</a></div>
@@ -5149,20 +5302,20 @@ function renderFuelHelpContent() {
   if (!root) return;
   const fuel = state.fuelHelp;
   const locationText = hasFuelLocation()
-    ? `Location ready · accuracy ${Math.round(Number(fuel.accuracy || 0)) || '-'} m`
+    ? `Location ready Â· accuracy ${Math.round(Number(fuel.accuracy || 0)) || '-'} m`
     : 'Location has not been shared yet.';
   root.innerHTML = `
-    <div class="fuel-help-hero"><div><span class="fuel-help-kicker">Driver location assistance</span><h3>Find fuel close to your truck</h3><p>Use live location, choose a preferred chain, and open turn-by-turn navigation.</p></div><div class="fuel-help-pump">⛽</div></div>
+    <div class="fuel-help-hero"><div><span class="fuel-help-kicker">Driver location assistance</span><h3>Find fuel close to your truck</h3><p>Use live location, choose a preferred chain, and open turn-by-turn navigation.</p></div><div class="fuel-help-pump">â½</div></div>
     <div class="fuel-help-controls">
       <label><span>Preferred station</span><select id="fuelHelpBrand">${fuelHelpBrandOptions(fuel.brand)}</select></label>
       <label><span>Search radius</span><select id="fuelHelpRadius"><option value="25" ${Number(fuel.radiusKm) === 25 ? 'selected' : ''}>25 km / 16 mi</option><option value="50" ${Number(fuel.radiusKm) === 50 ? 'selected' : ''}>50 km / 31 mi</option><option value="80" ${Number(fuel.radiusKm) === 80 ? 'selected' : ''}>80 km / 50 mi</option><option value="100" ${Number(fuel.radiusKm) === 100 ? 'selected' : ''}>100 km / 62 mi</option></select></label>
-      <button class="btn btn-primary fuel-locate-btn" type="button" data-action="fuel-help-locate">◎ Use my location</button>
+      <button class="btn btn-primary fuel-locate-btn" type="button" data-action="fuel-help-locate">â Use my location</button>
       <button class="btn btn-soft" type="button" data-action="fuel-help-search" ${hasFuelLocation() ? '' : 'disabled'}>Search again</button>
     </div>
-    <div class="fuel-location-status ${fuel.error ? 'error' : ''}"><span>${fuel.loading ? 'Searching nearby fuel stations…' : esc(fuel.error || locationText)}</span>${hasFuelLocation() ? `<a href="https://www.google.com/maps?q=${encodeURIComponent(`${fuel.lat},${fuel.lng}`)}" target="_blank" rel="noopener noreferrer">Current position</a>` : ''}</div>
+    <div class="fuel-location-status ${fuel.error ? 'error' : ''}"><span>${fuel.loading ? 'Searching nearby fuel stationsâ¦' : esc(fuel.error || locationText)}</span>${hasFuelLocation() ? `<a href="https://www.google.com/maps?q=${encodeURIComponent(`${fuel.lat},${fuel.lng}`)}" target="_blank" rel="noopener noreferrer">Current position</a>` : ''}</div>
     <div class="fuel-example-strip"><strong>Example preferred chains:</strong><span>Love's</span><span>Pilot / Flying J</span><span>TA / Petro</span><span>Speedway</span></div>
     <div class="fuel-results-head"><div><strong>${fuel.stations.length ? `${fuel.stations.length} nearest stations` : 'Nearby stations'}</strong><span>${fuel.stations.length ? 'Sorted by straight-line distance from the current location.' : 'Share the current location to load real nearby results.'}</span></div></div>
-    <div class="fuel-results">${fuel.loading ? '<div class="fuel-loading"><span></span><p>Finding the best nearby options…</p></div>' : fuel.stations.length ? fuel.stations.map(fuelStationCard).join('') : `<div class="fuel-empty"><div>⛽</div><strong>No stations loaded</strong><p>${esc(fuel.error || 'Tap “Use my location” to search nearby.')}</p></div>`}</div>
+    <div class="fuel-results">${fuel.loading ? '<div class="fuel-loading"><span></span><p>Finding the best nearby optionsâ¦</p></div>' : fuel.stations.length ? fuel.stations.map(fuelStationCard).join('') : `<div class="fuel-empty"><div>â½</div><strong>No stations loaded</strong><p>${esc(fuel.error || 'Tap âUse my locationâ to search nearby.')}</p></div>`}</div>
     <p class="fuel-source-note">Fuel locations are sourced from OpenStreetMap. Confirm access, diesel availability, pricing and truck clearance before arrival.</p>`;
   root.querySelectorAll('[data-action]').forEach(btn => { btn.onclick = () => handleAction(btn.dataset.action, btn); });
   const brand = qs('#fuelHelpBrand');
@@ -5176,7 +5329,7 @@ function openFuelHelpModal() {
   state.fuelHelp.error = '';
   const modal = qs('#modalRoot');
   modal.classList.add('active');
-  modal.innerHTML = `<div class="modal-backdrop" data-close-modal></div><div class="modal-card fuel-help-modal" role="dialog" aria-modal="true" aria-label="Fuel Help"><div class="modal-head"><div><h3>Fuel Help</h3><p>Location-based fuel station finder for drivers.</p></div><button class="icon-btn" data-close-modal aria-label="Close">×</button></div><div class="modal-body"><div id="fuelHelpContent"></div></div></div>`;
+  modal.innerHTML = `<div class="modal-backdrop" data-close-modal></div><div class="modal-card fuel-help-modal" role="dialog" aria-modal="true" aria-label="Fuel Help"><div class="modal-head"><div><h3>Fuel Help</h3><p>Location-based fuel station finder for drivers.</p></div><button class="icon-btn" data-close-modal aria-label="Close">Ã</button></div><div class="modal-body"><div id="fuelHelpContent"></div></div></div>`;
   qsa('[data-close-modal]').forEach(item => item.addEventListener('click', closeModal));
   renderFuelHelpContent();
   setTimeout(() => locateAndSearchFuelStations(), 120);
@@ -5216,7 +5369,7 @@ async function searchNearbyFuelStations(options = {}) {
     const params = new URLSearchParams({ lat: String(state.fuelHelp.lat), lng: String(state.fuelHelp.lng), radiusKm: String(radiusKm), brand });
     const payload = await api(`/api/fuel/nearby?${params.toString()}`);
     state.fuelHelp.stations = Array.isArray(payload.stations) ? payload.stations : [];
-    state.fuelHelp.error = state.fuelHelp.stations.length ? '' : 'No matching stations were found in this radius. Try “Any fuel station” or a larger radius.';
+    state.fuelHelp.error = state.fuelHelp.stations.length ? '' : 'No matching stations were found in this radius. Try âAny fuel stationâ or a larger radius.';
   } catch (error) {
     state.fuelHelp.stations = [];
     state.fuelHelp.error = error.message;
@@ -5284,7 +5437,7 @@ function openModal(title, subtitle, body, primaryText = 'Save', onSave = null) {
   modal.innerHTML = `
     <div class="modal-backdrop" data-close-modal></div>
     <div class="modal-card" role="dialog" aria-modal="true" aria-label="${esc(title)}">
-      <div class="modal-head"><div><h3>${esc(title)}</h3><p>${esc(subtitle)}</p></div><button class="icon-btn" data-close-modal aria-label="Close">×</button></div>
+      <div class="modal-head"><div><h3>${esc(title)}</h3><p>${esc(subtitle)}</p></div><button class="icon-btn" data-close-modal aria-label="Close">Ã</button></div>
       <div class="modal-body">${body}</div>
       <div class="modal-actions"><button class="btn btn-soft" data-close-modal>Cancel</button><button class="btn btn-primary" data-save-modal>${esc(primaryText)}</button></div>
     </div>
@@ -5337,7 +5490,7 @@ async function init() {
       if (event.data?.type === 'PUSH_RECEIVED') {
         const payload = event.data.payload || {};
         const isChatPush = payload.page === 'chat' || payload.chatContact || /chat|message/i.test(`${payload.type || ''} ${payload.title || ''}`);
-        if (payload.title) toast(`${payload.title}${payload.body ? ` · ${payload.body}` : ''}`);
+        if (payload.title) toast(`${payload.title}${payload.body ? ` Â· ${payload.body}` : ''}`);
         if (isChatPush && !document.hidden) playChatNotificationTone();
         window.setTimeout(() => syncLiveData({ force: true, forceRender: state.page === 'driver-mobile' }), 250);
         window.setTimeout(() => syncLiveData({ force: true, forceRender: state.page === 'driver-mobile' }), 1400);
@@ -5376,7 +5529,7 @@ async function init() {
 
   if (hasUsers) await restoreSession();
 
-  // Single dropdown menu trigger — same button/behavior on desktop and mobile now that the
+  // Single dropdown menu trigger â same button/behavior on desktop and mobile now that the
   // persistent side sidebar has been replaced by a top dropdown menu.
   qs('#mobileMenuBtn').addEventListener('click', () => {
     toggleNavDropdown();
@@ -5422,10 +5575,40 @@ async function init() {
 // Leaflet command-center map layer. Dynamic loading keeps the existing SPA architecture and provides a list fallback.
 let leafletPromise = null; const mapRegistry = new Map();
 function loadLeaflet(){ if(window.L&&window.L.markerClusterGroup)return Promise.resolve(window.L); if(leafletPromise)return leafletPromise; leafletPromise=new Promise((resolve,reject)=>{ const css=document.createElement('link'); css.rel='stylesheet'; css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(css); const clusterCss=document.createElement('link'); clusterCss.rel='stylesheet'; clusterCss.href='https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css'; document.head.appendChild(clusterCss); const clusterCss2=document.createElement('link'); clusterCss2.rel='stylesheet'; clusterCss2.href='https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css'; document.head.appendChild(clusterCss2); const js=document.createElement('script'); js.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'; js.onload=()=>{ const plugin=document.createElement('script'); plugin.src='https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js'; plugin.onload=()=>resolve(window.L); plugin.onerror=()=>resolve(window.L); document.head.appendChild(plugin); }; js.onerror=()=>reject(new Error('Live map library could not be loaded. The accessible list fallback remains available.')); document.head.appendChild(js); }); return leafletPromise; }
-function buildOperationalMap(rootId, locations, options={}){ const root=document.getElementById(rootId); if(!root)return; const list=Array.isArray(locations)?locations.filter(x=>Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lng))):[]; const listRoot=document.getElementById(`${rootId}-list`); if(listRoot)listRoot.innerHTML=list.length?list.map(loc=>`<button class="map-list-row" type="button" data-lat="${esc(loc.lat)}" data-lng="${esc(loc.lng)}"><strong>${esc(loc.driver||'Driver')}</strong><span>${esc(loc.loadId||'No active Load')} · ${esc(loc.accuracy?Math.round(loc.accuracy)+' m':'accuracy n/a')}</span></button>`).join(''):'<p class="muted">No authorized live locations are available.</p>'; loadLeaflet().then(L=>{ let map=mapRegistry.get(rootId); if(!map){map=L.map(rootId,{zoomControl:true,scrollWheelZoom:false,attributionControl:true}); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map); map._jtsCluster=L.markerClusterGroup?L.markerClusterGroup({maxClusterRadius:48,showCoverageOnHover:false,spiderfyOnMaxZoom:true}):L.layerGroup(); map.addLayer(map._jtsCluster); mapRegistry.set(rootId,map);} if(!map._jtsMarkers)map._jtsMarkers=new Map(); const ids=new Set(); list.forEach(loc=>{const id=String(loc.driverUserId||loc.driverEmail||loc.id); ids.add(id);let marker=map._jtsMarkers.get(id);const popup=`<strong>${esc(loc.driver||'Driver')}</strong><br>${esc(loc.loadId||'No active Load')}<br>Accuracy ${esc(loc.accuracy?Math.round(loc.accuracy)+' m':'n/a')}<br>${esc(formatDate(loc.timestamp||loc.createdAt))}`;if(!marker){marker=L.marker([Number(loc.lat),Number(loc.lng)]);map._jtsCluster.addLayer(marker);map._jtsMarkers.set(id,marker);}else marker.setLatLng([Number(loc.lat),Number(loc.lng)]);marker.bindPopup(popup);}); map._jtsMarkers.forEach((marker,id)=>{if(!ids.has(id)){map._jtsCluster.removeLayer(marker);map._jtsMarkers.delete(id);}}); if(list.length){const bounds=L.latLngBounds(list.map(x=>[Number(x.lat),Number(x.lng)]));map.fitBounds(bounds,{padding:[28,28],maxZoom:12});} setTimeout(()=>map.invalidateSize(),100); }).catch(()=>{root.classList.add('map-fallback-mode');}); }
-function renderOpsMapCard(title, locations, rootId, subtitle='Authorized live Driver locations'){ return `<section class="card command-map-card"><div class="command-map-head"><div><span class="tag tag-teal">Leaflet · OpenStreetMap</span><h3>${esc(title)}</h3><p>${esc(subtitle)}</p></div><span class="map-sync-state">${locations.length} visible</span></div><div class="command-map" id="${esc(rootId)}"></div><div id="${esc(rootId)}-list" class="map-list" aria-label="Accessible Driver location list"></div></section>`; }
+function buildOperationalMap(rootId, locations, options={}){ const root=document.getElementById(rootId); if(!root)return; const list=Array.isArray(locations)?locations.filter(x=>Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lng))):[]; const listRoot=document.getElementById(`${rootId}-list`); if(listRoot)listRoot.innerHTML=list.length?list.map(loc=>`<button class="map-list-row" type="button" data-lat="${esc(loc.lat)}" data-lng="${esc(loc.lng)}"><strong>${esc(loc.driver||'Driver')}</strong><span>${esc(loc.loadId||'No active Load')} Â· ${esc(loc.accuracy?Math.round(loc.accuracy)+' m':'accuracy n/a')}</span></button>`).join(''):'<p class="muted">No authorized live locations are available.</p>'; loadLeaflet().then(L=>{ let map=mapRegistry.get(rootId); if(!map){map=L.map(rootId,{zoomControl:true,scrollWheelZoom:false,attributionControl:true}); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'Â© OpenStreetMap contributors'}).addTo(map); map._jtsCluster=L.markerClusterGroup?L.markerClusterGroup({maxClusterRadius:48,showCoverageOnHover:false,spiderfyOnMaxZoom:true}):L.layerGroup(); map.addLayer(map._jtsCluster); mapRegistry.set(rootId,map);} if(!map._jtsMarkers)map._jtsMarkers=new Map(); const ids=new Set(); list.forEach(loc=>{const id=String(loc.driverUserId||loc.driverEmail||loc.id); ids.add(id);let marker=map._jtsMarkers.get(id);const popup=`<strong>${esc(loc.driver||'Driver')}</strong><br>${esc(loc.loadId||'No active Load')}<br>Accuracy ${esc(loc.accuracy?Math.round(loc.accuracy)+' m':'n/a')}<br>${esc(formatDate(loc.timestamp||loc.createdAt))}`;if(!marker){marker=L.marker([Number(loc.lat),Number(loc.lng)]);map._jtsCluster.addLayer(marker);map._jtsMarkers.set(id,marker);}else marker.setLatLng([Number(loc.lat),Number(loc.lng)]);marker.bindPopup(popup);}); map._jtsMarkers.forEach((marker,id)=>{if(!ids.has(id)){map._jtsCluster.removeLayer(marker);map._jtsMarkers.delete(id);}}); if(list.length){const bounds=L.latLngBounds(list.map(x=>[Number(x.lat),Number(x.lng)]));map.fitBounds(bounds,{padding:[28,28],maxZoom:12});} setTimeout(()=>map.invalidateSize(),100); }).catch(()=>{root.classList.add('map-fallback-mode');}); }
+function renderOpsMapCard(title, locations, rootId, subtitle='Authorized live Driver locations'){ return `<section class="card command-map-card"><div class="command-map-head"><div><span class="tag tag-teal">Leaflet Â· OpenStreetMap</span><h3>${esc(title)}</h3><p>${esc(subtitle)}</p></div><span class="map-sync-state">${locations.length} visible</span></div><div class="command-map" id="${esc(rootId)}"></div><div id="${esc(rootId)}-list" class="map-list" aria-label="Accessible Driver location list"></div></section>`; }
+function renderDriverGpsPage() {
+  const visible = arr('locations').filter(locationAccessClient);
+  const title = 'Driver Location';
+  const subtitle = 'Enable Location Sharing and send your live GPS position to dispatch.';
+  const html = `<section class="page-section driver-gps-page"><div class="section-header"><div><h3>${esc(title)}</h3><p>${esc(subtitle)}</p></div><div class="header-actions"><button class="btn btn-soft" type="button" data-action="send-current-location">Send current location</button><button class="btn ${state.gpsSharing ? 'btn-soft' : 'btn-primary'}" type="button" data-action="${state.gpsSharing ? 'stop-live-gps' : 'start-live-gps'}">${state.gpsSharing ? 'Stop Location Sharing' : 'Start Location Sharing'}</button><button class="btn btn-soft" type="button" data-action="refresh-map">Refresh map</button></div></div>${renderDriverLocationCard(findDriverForCurrentUser())}${renderOpsMapCard(title, visible, 'commandMapMain', subtitle)}</section>`;
+  setTimeout(() => buildOperationalMap('commandMapMain', visible), 30);
+  return html;
+}
 function renderRoleMapPage(){ const locations=arr('locations'); const visible=locations.filter(x=>locationAccessClient(x)); const title=role()==='broker'?'Broker live map':role()==='dispatcher'?'Assigned Driver map':'Operations live map'; const subtitle=role()==='broker'?'Authorized active-load relationships only. No private HOS or off-duty history.':role()==='dispatcher'?'Only Drivers assigned to this Dispatcher are server-scoped into this map.':'Active sharing Drivers with operational ETA, freshness and delay context.'; const html=`<section class="page-section"><div class="section-header"><div><h3>${title}</h3><p>${subtitle}</p></div><div class="header-actions"><button class="btn btn-soft" data-action="refresh-map">Refresh map</button></div></div>${renderOpsMapCard(title,visible,'commandMapMain',subtitle)}</section>`; setTimeout(()=>buildOperationalMap('commandMapMain',visible),20); return html; }
-function locationAccessClient(loc){ if(role()==='admin')return true; if(role()==='driver')return String(loc.driverUserId||loc.driverEmail||'')===String(state.currentUser?.id||state.currentUser?.email||''); if(role()==='dispatcher'){return arr('drivers').some(d=>String(d.email||'').toLowerCase()===String(loc.driverEmail||'').toLowerCase()&&String(d.dispatcherId||d.dispatcherEmail||'')===String(state.currentUser?.id||state.currentUser?.email||''));} if(role()==='broker')return arr('loads').some(l=>String(l.id)===String(loc.loadId||'')); return false; }
+function locationAccessClient(loc) {
+  if (!loc) return false;
+  const currentRole = role();
+  const currentUserId = String(state.currentUser?.id || '').trim().toLowerCase();
+  const currentUserEmail = String(state.currentUser?.email || '').trim().toLowerCase();
+  const locationDriverId = String(loc.driverUserId || loc.userId || '').trim().toLowerCase();
+  const locationDriverEmail = String(loc.driverEmail || loc.email || '').trim().toLowerCase();
+  if (currentRole === 'admin') return true;
+  if (currentRole === 'driver') return (locationDriverId && locationDriverId === currentUserId) || (locationDriverEmail && locationDriverEmail === currentUserEmail);
+  if (currentRole === 'dispatcher') {
+    return arr('drivers').some(driver => {
+      const driverId = String(driver.userId || driver.id || '').trim().toLowerCase();
+      const driverEmail = String(driver.email || '').trim().toLowerCase();
+      const dispatcherId = String(driver.dispatcherId || '').trim().toLowerCase();
+      const dispatcherEmail = String(driver.dispatcherEmail || '').trim().toLowerCase();
+      const matchesDriver = (locationDriverId && locationDriverId === driverId) || (locationDriverEmail && locationDriverEmail === driverEmail);
+      const matchesDispatcher = (dispatcherId && dispatcherId === currentUserId) || (dispatcherEmail && dispatcherEmail === currentUserEmail);
+      return matchesDriver && matchesDispatcher;
+    });
+  }
+  if (currentRole === 'broker') return arr('loads').some(load => String(load.id || '') === String(loc.loadId || ''));
+  return false;
+}
 window.renderRoleMapPage=renderRoleMapPage; window.buildOperationalMap=buildOperationalMap;
 init().catch(error => { hideJtsLoader(true); toast(error.message); });
 
