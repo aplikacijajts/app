@@ -1,0 +1,17 @@
+/node_modules/
+.env
+.DS_Store
+*.log
+npm-debug.log*
+data/*.lock
+data/*.tmp
+data/backups/
+uploads/tmp/
+.env.*
+!.env.example
+# private Web Push key pair (generated at runtime) and database safety copies
+data/vapid-keys.json
+data/*.bak
+data/*.corrupt-*
+data/*.pre-import-*
+uploads/

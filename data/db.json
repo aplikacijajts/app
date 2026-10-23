@@ -1,0 +1,98 @@
+{
+  "company": {
+    "name": "JTS Logistics Inc",
+    "description": "JTS Logistics Inc is the leading and fast growing logistics company in the Midwest. JTS Logistics operates as a 100% Owner Operator company, meaning it does not own any trucks, but rather possesses equipment such as Dry Vans, Flat Beds, and reefers. We are a trucking company dedicated to professionalism, dependable service, customized solutions, cutting-edge tracking technology, and the highest quality service for clients.",
+    "address": "2138 W 47th Avenue Gary IN 46408",
+    "mcNumber": "MC-1574089",
+    "dotNumber": "DOT-4117506",
+    "supportEmail": "peak@dispatch.com",
+    "phone": "",
+    "timezone": "America/Chicago",
+    "primaryColor": "#0aa9a5",
+    "secondaryColor": "#5f6267",
+    "loadPrefix": "JTS",
+    "gpsProvider": "Live GPS iframe",
+    "gpsIframeUrl": "",
+    "gpsOpenUrl": "",
+    "gpsIframeHtml": "",
+    "gpsLastUpdated": "",
+    "gpsRefreshSeconds": 60,
+    "gpsMode": "browser-gps",
+    "eldProvider": "manual",
+    "defaultAverageMph": 55,
+    "rtsProvider": "RTS Financial",
+    "rtsLoginUrl": "https://beta.rtspro.com/",
+    "defaultCutPercent": 10
+  },
+  "users": [
+    {
+      "id": "user_mvb8gufr_640c95a6",
+      "name": "Admin JTS",
+      "email": "admin@jts.com",
+      "role": "admin",
+      "status": "Active",
+      "passwordHash": "001209a524bbd9e69ad91434d3af4675:927496ae51c0d4d3ceb6968d830755335beb62d6d8bab6805dd9eaf282d9b1c7",
+      "requiresPasswordChange": false,
+      "passwordChangedAt": "2026-10-16T17:20:13.357Z",
+      "createdAt": "2026-10-16T17:20:13.357Z",
+      "dispatcherId": "",
+      "dispatcherEmail": ""
+    }
+  ],
+  "loads": [],
+  "drivers": [],
+  "fleet": [],
+  "brokers": [],
+  "docs": [],
+  "chats": {},
+  "calls": [],
+  "notifications": [],
+  "activities": [],
+  "locations": [],
+  "hosLogs": [],
+  "intake": [],
+  "auditLog": [
+    {
+      "id": "audit_mvb8guox_830c3760",
+      "action": "Push notifications subscribed",
+      "entity": "admin@jts.com",
+      "user": "admin@jts.com",
+      "createdAt": "2026-10-16T17:20:13.665Z"
+    },
+    {
+      "id": "audit_mvb8gugd_2bbda3bd",
+      "action": "Initial admin created",
+      "entity": "admin@jts.com",
+      "user": "admin@jts.com",
+      "createdAt": "2026-10-16T17:20:13.357Z"
+    }
+  ],
+  "pushSubscriptions": [
+    {
+      "id": "push_mvb8guox_299465ec",
+      "userId": "user_mvb8gufr_640c95a6",
+      "userEmail": "admin@jts.com",
+      "userRole": "admin",
+      "endpoint": "https://fcm.googleapis.com/fcm/send/dDvUio5TlSk:APA91bEfrVux4VYALD07dOumILmmvCwny2SLscHVZTrmLP441ZBB9VNzj-ZHVkDJ2E1VJ_0iDjp7CTHNgDPGpdhgBTWnAeo44WI28QzCUqL3DyO0camK1gy_ganEilOYj0cMN17qQ-XA",
+      "subscription": {
+        "endpoint": "https://fcm.googleapis.com/fcm/send/dDvUio5TlSk:APA91bEfrVux4VYALD07dOumILmmvCwny2SLscHVZTrmLP441ZBB9VNzj-ZHVkDJ2E1VJ_0iDjp7CTHNgDPGpdhgBTWnAeo44WI28QzCUqL3DyO0camK1gy_ganEilOYj0cMN17qQ-XA",
+        "expirationTime": null,
+        "keys": {
+          "p256dh": "BCKJt0BVx5RyHfvB3ILmH1C_X0vB4v82MLyeLSr6Vto9k6mssvZvAGn8fsvGp-RV9G4cIieXHrIAevlpxaPJXmk",
+          "auth": "TUtS31UZxwq5E1yxWOmfzQ"
+        }
+      },
+      "createdAt": "2026-10-16T17:20:13.665Z",
+      "updatedAt": "2026-10-16T17:20:13.665Z",
+      "lastSuccessAt": "",
+      "lastErrorAt": "",
+      "lastError": ""
+    }
+  ],
+  "reminders": [],
+  "docFolders": [],
+  "driverPayAdjustments": [],
+  "locationSessions": [],
+  "restEvents": [],
+  "delayAlerts": []
+}

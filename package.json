@@ -1,0 +1,30 @@
+{
+  "name": "jts-logistics-tms",
+  "version": "3.0.2",
+  "description": "JTS Logistics Transport Management System: dispatch board, loads, document intake/auto-fill, driver mobile workspace, role-scoped chat and WebRTC calls, GPS, push notifications and financial reporting. Vanilla Node.js + JSON storage.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check": "node --check server.js && node --check public/js/app.js && node --check public/js/theme-init.js && node --check public/sw.js",
+    "check:ocr": "node scripts/check-ocr.js",
+    "generate:vapid": "node scripts/generate-vapid-keys.js",
+    "test": "node --test --test-concurrency=1 tests/*.test.js"
+  },
+  "keywords": [
+    "tms",
+    "dispatch",
+    "logistics",
+    "vanilla-js",
+    "node",
+    "jts"
+  ],
+  "author": "JTS Logistics INC",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "web-push": "^3.6.7"
+  },
+  "engines": {
+    "node": ">=18.17"
+  }
+}

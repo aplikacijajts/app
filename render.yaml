@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: jts-logistics-tms
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: node server.js
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      name: jts-tms-data
+      mountPath: /app/persistent
+      sizeGB: 10
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /app/persistent/data
+      - key: UPLOAD_DIR
+        value: /app/persistent/uploads
+      - key: DB_FILE
+        value: /app/persistent/data/db.json
+      - key: VAPID_SUBJECT
+        value: mailto:dispatch@jtslogistics.com
